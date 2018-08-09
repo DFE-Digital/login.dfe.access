@@ -8,6 +8,7 @@ const config = require('./infrastructure/config');
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
 const healthCheck = require('login.dfe.healthcheck');
+const { getErrorHandler } = require('login.dfe.express-error-handling');
 
 const app = express();
 app.use(helmet({
@@ -30,6 +31,12 @@ app.set('layout', 'layouts/layout');
 
 app.use('/healthcheck', healthCheck({
   config,
+}));
+
+
+// Error handing
+app.use(getErrorHandler({
+  logger,
 }));
 
 if (config.hostingEnvironment.env === 'dev') {
