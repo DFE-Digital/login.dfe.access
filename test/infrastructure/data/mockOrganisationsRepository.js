@@ -3,6 +3,8 @@ const uuid = require('uuid/v4');
 const mockTable = () => {
   return {
     findAll: jest.fn(),
+    find: jest.fn(),
+    create: jest.fn(),
   };
 };
 const mockRepository = () => {
@@ -10,6 +12,8 @@ const mockRepository = () => {
     userServices: mockTable(),
     mockResetAll: function () {
       this.userServices.findAll.mockReset().mockReturnValue([]);
+      this.userServices.find.mockReset();
+      this.userServices.create.mockReset();
     },
   };
 };

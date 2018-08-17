@@ -70,5 +70,5 @@ describe('When getting user services from the repository', () => {
       identifiers: [{ key: 'groups', value: 'g1,g2' }],
       accessGrantedOn: services[2].createdAt,
     });
-  })
+  });
 });
