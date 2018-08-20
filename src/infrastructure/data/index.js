@@ -70,9 +70,26 @@ const removeAllUserServiceIdentifiers = async (uid, sid, oid) => {
   });
 };
 
+const removeUserService = async (uid, sid, oid) => {
+  await userServices.destroy({
+    where: {
+      user_id: {
+        [Op.eq]: uid,
+      },
+      service_id: {
+        [Op.eq]: sid,
+      },
+      organisation_id: {
+        [Op.eq]: oid,
+      },
+    },
+  });
+};
+
 module.exports = {
   getUserServices,
   addUserService,
   addUserServiceIdentifier,
   removeAllUserServiceIdentifiers,
+  removeUserService,
 };
