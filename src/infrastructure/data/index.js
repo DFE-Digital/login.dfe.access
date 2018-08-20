@@ -1,6 +1,6 @@
 const { userServices, userServiceIdentifiers } = require('./organisationsRepository');
 const { Op } = require('sequelize');
-const { mapUserServiceEntities } = require('./mappers');
+const { mapUserServiceEntities, mapUserServiceEntity } = require('./mappers');
 const uuid = require('uuid/v4');
 
 const getUserServices = async (uid) => {
@@ -13,6 +13,23 @@ const getUserServices = async (uid) => {
     order: ['service_id', 'organisation_id'],
   });
   return mapUserServiceEntities(entities);
+};
+
+const getUserService = async (uid, sid, oid) => {
+  const entities = await userServices.find({
+    where: {
+      user_id: {
+        [Op.eq]: uid,
+      },
+      service_id: {
+        [Op.eq]: sid,
+      },
+      organisation_id: {
+        [Op.eq]: oid,
+      },
+    },
+  });
+  return mapUserServiceEntity(entities);
 };
 
 const addUserService = async (uid, sid, oid) => {
@@ -88,6 +105,7 @@ const removeUserService = async (uid, sid, oid) => {
 
 module.exports = {
   getUserServices,
+  getUserService,
   addUserService,
   addUserServiceIdentifier,
   removeAllUserServiceIdentifiers,
