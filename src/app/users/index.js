@@ -11,8 +11,8 @@ const router = express.Router();
 
 const buildArea = () => {
   router.get('/:uid/services', asyncWrapper(listUserServices));
-  router.put('/:uid/services/:sid', asyncWrapper(addServiceToUser));
-  router.delete('/:uid/services/:sid', asyncWrapper(removeServiceFromUser));
+  router.put('/:uid/services/:sid/organisations/:oid', asyncWrapper(addServiceToUser)); // Duplicate for /:uid/services/:sid when org becomes optional
+  router.delete('/:uid/services/:sid/organisations/:oid', asyncWrapper(removeServiceFromUser)); // Duplicate for /:uid/services/:sid when org becomes optional
 
   return router;
 };

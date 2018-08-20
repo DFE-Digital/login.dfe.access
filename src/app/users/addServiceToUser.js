@@ -5,7 +5,7 @@ const parseAndValidateRequest = (req) => {
   const model = {
     uid: req.params.uid,
     sid: req.params.sid,
-    oid: req.body.organisation,
+    oid: req.params.oid,
     identifiers: req.body.identifiers || [],
     errors: [],
   };
