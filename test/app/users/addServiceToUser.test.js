@@ -26,9 +26,9 @@ describe('When adding service to user', () => {
       params: {
         uid,
         sid,
+        oid,
       },
       body: {
-        organisation: oid,
         identifiers: [
           { key: 'some', value: 'thing' },
           { key: 'something', value: 'else' },
@@ -75,21 +75,6 @@ describe('When adding service to user', () => {
     expect(res.status).toHaveBeenCalledTimes(1);
     expect(res.status).toHaveBeenCalledWith(202);
     expect(res.send).toHaveBeenCalledTimes(1);
-  });
-
-  it('then it should return 400 with details if oid missing', async () => {
-    req.body.organisation = undefined;
-
-    await addServiceToUser(req, res);
-
-    expect(res.status).toHaveBeenCalledTimes(1);
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledTimes(1);
-    expect(res.send.mock.calls[0][0]).toEqual({
-      details: [
-        'Must specify organisation',
-      ]
-    });
   });
 
   it('then it should return 400 if identifiers specified but not array', async () => {

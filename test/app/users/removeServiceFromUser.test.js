@@ -24,9 +24,7 @@ describe('When adding service to user', () => {
       params: {
         uid,
         sid,
-      },
-      body: {
-        organisation: oid,
+        oid,
       },
     });
     res.mockResetAll();
@@ -52,20 +50,5 @@ describe('When adding service to user', () => {
     expect(res.status).toHaveBeenCalledTimes(1);
     expect(res.status).toHaveBeenCalledWith(204);
     expect(res.send).toHaveBeenCalledTimes(1);
-  });
-
-  it('then it should return 400 with details if oid missing', async () => {
-    req.body.organisation = undefined;
-
-    await removeServiceFromUser(req, res);
-
-    expect(res.status).toHaveBeenCalledTimes(1);
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledTimes(1);
-    expect(res.send.mock.calls[0][0]).toEqual({
-      details: [
-        'Must specify organisation',
-      ]
-    });
   });
 });
