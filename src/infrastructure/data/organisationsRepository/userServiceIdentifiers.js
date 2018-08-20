@@ -5,18 +5,22 @@ const define = (db, schema) => {
     user_id: {
       type: Sequelize.UUID,
       allowNull: false,
+      primaryKey: true,
     },
     organisation_id: {
       type: Sequelize.UUID,
       allowNull: false,
+      primaryKey: true,
     },
     service_id: {
       type: Sequelize.UUID,
       allowNull: false,
+      primaryKey: true,
     },
     identifier_key: {
       type: Sequelize.STRING,
       allowNull: false,
+      primaryKey: true,
     },
     identifier_value: {
       type: Sequelize.STRING,

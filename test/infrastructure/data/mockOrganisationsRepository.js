@@ -5,15 +5,24 @@ const mockTable = () => {
     findAll: jest.fn(),
     find: jest.fn(),
     create: jest.fn(),
+    upsert: jest.fn(),
+    destroy: jest.fn(),
+    mockResetAll: function () {
+      this.findAll.mockReset().mockReturnValue([]);
+      this.find.mockReset();
+      this.create.mockReset();
+      this.upsert.mockReset();
+      this.destroy.mockReset();
+    },
   };
 };
 const mockRepository = () => {
   return {
     userServices: mockTable(),
+    userServiceIdentifiers: mockTable(),
     mockResetAll: function () {
-      this.userServices.findAll.mockReset().mockReturnValue([]);
-      this.userServices.find.mockReset();
-      this.userServices.create.mockReset();
+      this.userServices.mockResetAll();
+      this.userServiceIdentifiers.mockResetAll();
     },
   };
 };
