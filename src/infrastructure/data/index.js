@@ -1,4 +1,4 @@
-const { userServices } = require('./organisationsRepository');
+const { userServices, userServiceIdentifiers } = require('./organisationsRepository');
 const { Op } = require('sequelize');
 const { mapUserServiceEntities } = require('./mappers');
 const uuid = require('uuid/v4');
@@ -44,7 +44,35 @@ const addUserService = async (uid, sid, oid) => {
   }
 };
 
+const addUserServiceIdentifier = async (uid, sid, oid, key, value) => {
+  await userServiceIdentifiers.upsert({
+    user_id: uid,
+    organisation_id: oid,
+    service_id: sid,
+    identifier_key: key,
+    identifier_value: value,
+  });
+};
+
+const removeAllUserServiceIdentifiers = async (uid, sid, oid) => {
+  await userServiceIdentifiers.destroy({
+    where: {
+      user_id: {
+        [Op.eq]: uid,
+      },
+      service_id: {
+        [Op.eq]: sid,
+      },
+      organisation_id: {
+        [Op.eq]: oid,
+      },
+    },
+  });
+};
+
 module.exports = {
   getUserServices,
   addUserService,
+  addUserServiceIdentifier,
+  removeAllUserServiceIdentifiers,
 };
