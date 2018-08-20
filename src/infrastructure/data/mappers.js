@@ -1,4 +1,7 @@
 const mapUserServiceEntity = async (entity) => {
+  if (!entity) {
+    return undefined;
+  }
   const identifiers = (await entity.getIdentifiers() || []).map(x => ({
     key: x.identifier_key,
     value: x.identifier_value
