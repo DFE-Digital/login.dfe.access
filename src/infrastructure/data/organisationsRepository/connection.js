@@ -48,7 +48,7 @@ const makeConnection = () => {
     dialectOptions: {
       encrypt: encryptDb,
     },
-    logging: true,
+    logging: false,
   };
   if (config.database.pool) {
     dbOpts.pool = {

@@ -9,6 +9,7 @@ const mapUserServiceEntity = async (entity) => {
   const groups = identifiers.find(x => x.key === 'groups');
   const roles = (groups ? groups.value : '').split(',').filter(x => x.length > 0);
   return Promise.resolve({
+    userId: entity.user_id,
     serviceId: entity.service_id,
     organisationId: entity.organisation_id || undefined,
     roles,
