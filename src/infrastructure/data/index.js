@@ -201,6 +201,18 @@ const removeAllInvitationServiceIdentifiers = async (iid, sid, oid) => {
   });
 };
 
+const getInvitationServices = async (iid) => {
+  const entities = await invitationServices.findAll({
+    where: {
+      invitation_id: {
+        [Op.eq]: iid,
+      },
+    },
+    order: ['service_id', 'organisation_id'],
+  });
+  return mapUserServiceEntities(entities);
+};
+
 module.exports = {
   getUserServices,
   getUserService,
@@ -212,4 +224,5 @@ module.exports = {
   addInvitationService,
   addInvitationServiceIdentifier,
   removeAllInvitationServiceIdentifiers,
+  getInvitationServices,
 };
