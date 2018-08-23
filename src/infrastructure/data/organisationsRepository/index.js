@@ -29,6 +29,7 @@ buildDataModel(dataModel, db, [
   userServicesModel,
   userServiceIdentifiersModel,
 ]);
+dataModel.connection = db;
 
 
 module.exports = dataModel;
