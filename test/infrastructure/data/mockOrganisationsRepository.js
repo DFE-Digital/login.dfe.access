@@ -22,9 +22,13 @@ const mockRepository = () => {
   return {
     userServices: mockTable(),
     userServiceIdentifiers: mockTable(),
+    invitationServices: mockTable(),
+    invitationServiceIdentifiers: mockTable(),
     mockResetAll: function () {
       this.userServices.mockResetAll();
       this.userServiceIdentifiers.mockResetAll();
+      this.invitationServices.mockResetAll();
+      this.invitationServiceIdentifiers.mockResetAll();
     },
   };
 };

@@ -1,4 +1,4 @@
-const { connection, userServices, userServiceIdentifiers } = require('./organisationsRepository');
+const { connection, userServices, userServiceIdentifiers, invitationServices, invitationServiceIdentifiers } = require('./organisationsRepository');
 const { Op, QueryTypes } = require('sequelize');
 const { mapUserServiceEntities, mapUserServiceEntity } = require('./mappers');
 const uuid = require('uuid/v4');
@@ -146,6 +146,61 @@ const getUsersOfServicePaged = async (sid, filters, pageNumber, pageSize) => {
   };
 };
 
+
+const addInvitationService = async (iid, sid, oid) => {
+  const existing = await invitationServices.find({
+    where: {
+      invitation_id: {
+        [Op.eq]: iid,
+      },
+      service_id: {
+        [Op.eq]: sid,
+      },
+      organisation_id: {
+        [Op.eq]: oid,
+      },
+    },
+  });
+  if (!existing) {
+    const id = uuid();
+    await invitationServices.create({
+      id,
+      invitation_id: iid,
+      organisation_id: oid,
+      service_id: sid,
+    });
+    return id;
+  } else {
+    return existing.id;
+  }
+};
+
+const addInvitationServiceIdentifier = async (iid, sid, oid, key, value) => {
+  await invitationServiceIdentifiers.upsert({
+    invitation_id: iid,
+    organisation_id: oid,
+    service_id: sid,
+    identifier_key: key,
+    identifier_value: value,
+  });
+};
+
+const removeAllInvitationServiceIdentifiers = async (iid, sid, oid) => {
+  await invitationServiceIdentifiers.destroy({
+    where: {
+      invitation_id: {
+        [Op.eq]: iid,
+      },
+      service_id: {
+        [Op.eq]: sid,
+      },
+      organisation_id: {
+        [Op.eq]: oid,
+      },
+    },
+  });
+};
+
 module.exports = {
   getUserServices,
   getUserService,
@@ -154,4 +209,7 @@ module.exports = {
   removeAllUserServiceIdentifiers,
   removeUserService,
   getUsersOfServicePaged,
+  addInvitationService,
+  addInvitationServiceIdentifier,
+  removeAllInvitationServiceIdentifiers,
 };
