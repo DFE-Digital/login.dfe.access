@@ -16,5 +16,17 @@
   },
   "loggerSettings": {
     "applicationName": "Access API"
+  },
+  "database": {
+    "host": "localhost",
+    "name": "your-database-name",
+    "username": "your-user",
+    "password": "your-password",
+    "dialect": "mssql",
+    "schema": "dbo",
+    "pool": {
+      "max": 5,
+      "min": 0
+    }
   }
 }
