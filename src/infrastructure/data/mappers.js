@@ -26,7 +26,51 @@ const mapUserServiceEntities = async (entities) => {
   return mapped;
 };
 
+const mapPolicyEntity = async (entity) => {
+  if (!entity) {
+    return undefined;
+  }
+
+  const conditions = entity.conditions.map((condition) => {
+    return {
+      field: condition.field,
+      operator: condition.operator,
+      value: condition.value,
+    };
+  });
+
+  const roles = entity.roles.map((role) => {
+    return {
+      id: role.id,
+      name: role.name,
+      status: {
+        id: role.status,
+      },
+    }
+  });
+
+  return Promise.resolve({
+    id: entity.id,
+    name: entity.name,
+    applicationId: entity.applicationId,
+    status: {
+      id: entity.status,
+    },
+    conditions,
+    roles,
+  });
+};
+const mapPolicyEntities = async (entities) => {
+  const mapped = [];
+  for (let i = 0; i < entities.length; i++) {
+    mapped.push(await mapPolicyEntity(entities[i]));
+  }
+  return mapped;
+};
+
 module.exports = {
   mapUserServiceEntity,
   mapUserServiceEntities,
+  mapPolicyEntity,
+  mapPolicyEntities,
 };
