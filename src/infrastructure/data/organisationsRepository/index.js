@@ -3,10 +3,14 @@
 const config = require('./../../config');
 
 const { makeConnection } = require('./connection');
-const userServicesModel = require('./userServices');
-const userServiceIdentifiersModel = require('./userServiceIdentifiers');
-const invitationServicesModel = require('./invitationServices');
-const invitationServiceIdentifiersModel = require('./invitationServiceIdentifiers');
+const userServices = require('./userServices');
+const userServiceIdentifiers = require('./userServiceIdentifiers');
+const invitationServices = require('./invitationServices');
+const invitationServiceIdentifiers = require('./invitationServiceIdentifiers');
+const policies = require('./policy');
+const roles = require('./role');
+const policyRoles = require('./policyRole');
+const policyConditions = require('./policyCondition');
 
 const db = makeConnection();
 
@@ -28,10 +32,14 @@ const buildDataModel = (model, connection, entityModels) => {
 };
 const dataModel = {};
 buildDataModel(dataModel, db, [
-  userServicesModel,
-  userServiceIdentifiersModel,
-  invitationServicesModel,
-  invitationServiceIdentifiersModel,
+  userServices,
+  userServiceIdentifiers,
+  invitationServices,
+  invitationServiceIdentifiers,
+  policies,
+  roles,
+  policyRoles,
+  policyConditions,
 ]);
 dataModel.connection = db;
 
