@@ -265,6 +265,26 @@ const addPolicyRole = async (pid, rid) => {
   });
 };
 
+const deletePolicyConditions = async (pid) => {
+  await policyConditions.destroy({
+    where: {
+      policyId: {
+        [Op.eq]: pid,
+      },
+    },
+  });
+};
+
+const deletePolicyRoles = async (pid) => {
+  await policyRoles.destroy({
+    where: {
+      policyId: {
+        [Op.eq]: pid,
+      },
+    },
+  });
+};
+
 module.exports = {
   getUserServices,
   getUserService,
@@ -282,4 +302,6 @@ module.exports = {
   addPolicy,
   addPolicyCondition,
   addPolicyRole,
+  deletePolicyConditions,
+  deletePolicyRoles,
 };
