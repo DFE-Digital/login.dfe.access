@@ -1,6 +1,6 @@
 const { connection, userServices, userServiceIdentifiers, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles } = require('./organisationsRepository');
 const { Op, QueryTypes } = require('sequelize');
-const { mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities } = require('./mappers');
+const { mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity } = require('./mappers');
 const uuid = require('uuid/v4');
 
 const getUserServices = async (uid) => {
@@ -227,6 +227,18 @@ const getPoliciesForService = async (sid) => {
   return await mapPolicyEntities(entities);
 };
 
+const getPolicy = async (id) => {
+  const entity = await policies.find({
+    where: {
+      id: {
+        [Op.eq]: id,
+      },
+    },
+    include: ['conditions', 'roles'],
+  });
+  return mapPolicyEntity(entity);
+};
+
 const addPolicy = async (id, name, sid, status) => {
   await policies.upsert({
     id,
@@ -266,6 +278,7 @@ module.exports = {
   removeAllInvitationServiceIdentifiers,
   getInvitationServices,
   getPoliciesForService,
+  getPolicy,
   addPolicy,
   addPolicyCondition,
   addPolicyRole,
