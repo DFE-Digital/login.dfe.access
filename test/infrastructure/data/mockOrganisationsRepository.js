@@ -24,11 +24,19 @@ const mockRepository = () => {
     userServiceIdentifiers: mockTable(),
     invitationServices: mockTable(),
     invitationServiceIdentifiers: mockTable(),
+    roles: mockTable(),
+    policies: mockTable(),
+    policyRoles: mockTable(),
+    policyConditions: mockTable(),
     mockResetAll: function () {
       this.userServices.mockResetAll();
       this.userServiceIdentifiers.mockResetAll();
       this.invitationServices.mockResetAll();
       this.invitationServiceIdentifiers.mockResetAll();
+      this.roles.mockResetAll();
+      this.policies.mockResetAll();
+      this.policyRoles.mockResetAll();
+      this.policyConditions.mockResetAll();
     },
   };
 };
@@ -47,7 +55,57 @@ const mockUserServiceEntity = (data, identifiers = undefined) => {
   return entity;
 };
 
+const mockPolicyEntity = (data) => {
+  const defaultEntity = {
+    id: uuid(),
+    name: uuid(),
+    applicationId: uuid(),
+    status: 1,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    roles: [],
+    conditions: [],
+  };
+  const entity = Object.assign({}, defaultEntity, data);
+  entity.mockResetAll = function () {
+  };
+  return entity;
+};
+const mockRoleEntity = (data) => {
+  const defaultEntity = {
+    id: uuid(),
+    name: uuid(),
+    applicationId: uuid(),
+    status: 1,
+    status: 1,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+  const entity = Object.assign({}, defaultEntity, data);
+  entity.mockResetAll = function () {
+  };
+  return entity;
+};
+const mockPolicyConditionEntity = (data) => {
+  const defaultEntity = {
+    id: uuid(),
+    policyId: uuid(),
+    field: 'id',
+    operator: 'Is',
+    value: uuid(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+  const entity = Object.assign({}, defaultEntity, data);
+  entity.mockResetAll = function () {
+  };
+  return entity;
+};
+
 module.exports = {
   mockRepository,
   mockUserServiceEntity,
+  mockPolicyEntity,
+  mockRoleEntity,
+  mockPolicyConditionEntity,
 };
