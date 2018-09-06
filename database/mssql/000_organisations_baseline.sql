@@ -40,7 +40,7 @@ BEGIN
         service_id uniqueidentifier not null,
         organisation_id uniqueidentifier not null,
         identifier_key varchar(25) not null,
-        identifier_value varchar(255) not null,
+        identifier_value varchar(max) not null,
         constraint user_service_identifiers_pkey
             primary key (user_id, service_id, organisation_id, identifier_key)
     )
@@ -55,7 +55,7 @@ BEGIN
         service_id uniqueidentifier not null,
         organisation_id uniqueidentifier not null,
         identifier_key varchar(25) not null,
-        identifier_value varchar(255) not null,
+        identifier_value varchar(max) not null,
         constraint invitation_service_identifiers_pkey
             primary key (invitation_id, service_id, organisation_id, identifier_key)
     )
