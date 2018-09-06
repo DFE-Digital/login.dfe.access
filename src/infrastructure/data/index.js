@@ -1,6 +1,6 @@
-const { connection, userServices, userServiceIdentifiers, invitationServices, invitationServiceIdentifiers } = require('./organisationsRepository');
+const { connection, userServices, userServiceIdentifiers, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles } = require('./organisationsRepository');
 const { Op, QueryTypes } = require('sequelize');
-const { mapUserServiceEntities, mapUserServiceEntity } = require('./mappers');
+const { mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity } = require('./mappers');
 const uuid = require('uuid/v4');
 
 const getUserServices = async (uid) => {
@@ -213,6 +213,88 @@ const getInvitationServices = async (iid) => {
   return mapUserServiceEntities(entities);
 };
 
+
+const getPoliciesForService = async (sid) => {
+  const entities = await policies.findAll({
+    where: {
+      applicationId: {
+        [Op.eq]: sid
+      },
+    },
+    include: ['conditions', 'roles'],
+    order: ['name'],
+  });
+  return await mapPolicyEntities(entities);
+};
+
+const getPolicy = async (id) => {
+  const entity = await policies.find({
+    where: {
+      id: {
+        [Op.eq]: id,
+      },
+    },
+    include: ['conditions', 'roles'],
+  });
+  return mapPolicyEntity(entity);
+};
+
+const addPolicy = async (id, name, sid, status) => {
+  await policies.upsert({
+    id,
+    name,
+    applicationId: sid,
+    status,
+  });
+};
+
+const addPolicyCondition = async (id, pid, field, operator, value) => {
+  await policyConditions.upsert({
+    id,
+    policyId: pid,
+    field,
+    operator,
+    value,
+  });
+};
+
+const addPolicyRole = async (pid, rid) => {
+  await policyRoles.upsert({
+    policyId: pid,
+    roleId: rid,
+  });
+};
+
+const deletePolicy = async (pid) => {
+  await policies.destroy({
+    where: {
+      id: {
+        [Op.eq]: pid,
+      },
+    },
+  });
+};
+
+const deletePolicyConditions = async (pid) => {
+  await policyConditions.destroy({
+    where: {
+      policyId: {
+        [Op.eq]: pid,
+      },
+    },
+  });
+};
+
+const deletePolicyRoles = async (pid) => {
+  await policyRoles.destroy({
+    where: {
+      policyId: {
+        [Op.eq]: pid,
+      },
+    },
+  });
+};
+
 module.exports = {
   getUserServices,
   getUserService,
@@ -225,4 +307,12 @@ module.exports = {
   addInvitationServiceIdentifier,
   removeAllInvitationServiceIdentifiers,
   getInvitationServices,
+  getPoliciesForService,
+  getPolicy,
+  addPolicy,
+  addPolicyCondition,
+  addPolicyRole,
+  deletePolicy,
+  deletePolicyConditions,
+  deletePolicyRoles,
 };

@@ -31,11 +31,13 @@ const mockResponse = (customResponse) => {
     send: jest.fn(),
     contentType: jest.fn(),
     json: jest.fn(),
+    set: jest.fn(),
     mockResetAll: function() {
       this.status.mockReset().mockReturnValue(this);
       this.send.mockReset().mockReturnValue(this);
       this.contentType.mockReset().mockReturnValue(this);
       this.json.mockReset().mockReturnValue(this);
+      this.set.mockReset().mockReturnValue(this);
     }
   }, customResponse);
   res.mockResetAll();
