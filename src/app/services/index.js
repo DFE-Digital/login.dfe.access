@@ -14,6 +14,7 @@ const router = express.Router();
 
 const buildArea = () => {
   router.get('/:sid/users', asyncWrapper(listUsersOfService));
+
   router.get('/:sid/policies', asyncWrapper(listPoliciesOfService));
   router.post('/:sid/policies', asyncWrapper(createPolicyOfService));
   router.get('/:sid/policies/:pid', asyncWrapper(getPolicyOfService));
