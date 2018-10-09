@@ -71,6 +71,26 @@ const addUserServiceIdentifier = async (uid, sid, oid, key, value) => {
   });
 };
 
+const getUserOfServiceIdentifier = async (sid, key, value) => {
+  const entity = await userServiceIdentifiers.find({
+    where: {
+      service_id: {
+        [Op.eq]: sid,
+      },
+      identifier_key: {
+        [Op.eq]: key,
+      },
+      identifier_value: {
+        [Op.eq]: value,
+      },
+    }
+  });
+  if (entity) {
+    return entity.user_id;
+  }
+  return undefined;
+};
+
 const removeAllUserServiceIdentifiers = async (uid, sid, oid) => {
   await userServiceIdentifiers.destroy({
     where: {
@@ -300,6 +320,7 @@ module.exports = {
   getUserService,
   addUserService,
   addUserServiceIdentifier,
+  getUserOfServiceIdentifier,
   removeAllUserServiceIdentifiers,
   removeUserService,
   getUsersOfServicePaged,

@@ -1,10 +1,11 @@
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').mockLogger());
 jest.mock('./../../../src/infrastructure/data', () => ({
   addUserServiceIdentifier: jest.fn(),
+  getUserOfServiceIdentifier: jest.fn(),
 }));
 
 const { mockRequest, mockResponse } = require('./../../utils');
-const { addUserServiceIdentifier } = require('./../../../src/infrastructure/data');
+const { addUserServiceIdentifier, getUserOfServiceIdentifier } = require('./../../../src/infrastructure/data');
 const addServiceIdentifierToUser = require('./../../../src/app/users/addServiceIdentifierToUser');
 
 const uid = 'user1';
@@ -19,6 +20,7 @@ describe('When adding service to user', () => {
 
   beforeEach(() => {
     addUserServiceIdentifier.mockReset();
+    getUserOfServiceIdentifier.mockReset();
 
     req = mockRequest({
       params: {
@@ -60,6 +62,21 @@ describe('When adding service to user', () => {
     expect(res.send.mock.calls[0][0]).toEqual({
       details: [
         'Must specify value',
+      ],
+    });
+  });
+
+  it('then it should return 409 if identifier already in use for service', async () => {
+    getUserOfServiceIdentifier.mockReturnValue('user-1');
+
+    await addServiceIdentifierToUser(req, res);
+
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(409);
+    expect(res.send).toHaveBeenCalledTimes(1);
+    expect(res.send.mock.calls[0][0]).toEqual({
+      details: [
+        'Identifier already in use',
       ],
     });
   });
