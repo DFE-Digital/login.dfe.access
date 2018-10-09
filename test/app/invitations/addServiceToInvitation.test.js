@@ -3,10 +3,11 @@ jest.mock('./../../../src/infrastructure/data', () => ({
   addInvitationService: jest.fn(),
   addInvitationServiceIdentifier: jest.fn(),
   removeAllInvitationServiceIdentifiers: jest.fn(),
+  getUserOfServiceIdentifier: jest.fn(),
 }));
 
 const { mockRequest, mockResponse } = require('./../../utils');
-const { addInvitationService, addInvitationServiceIdentifier, removeAllInvitationServiceIdentifiers } = require('./../../../src/infrastructure/data');
+const { addInvitationService, addInvitationServiceIdentifier, removeAllInvitationServiceIdentifiers, getUserOfServiceIdentifier } = require('./../../../src/infrastructure/data');
 const addServiceToInvitation = require('./../../../src/app/invitations/addServiceToInvitation');
 
 const iid = 'invitation1';
@@ -21,6 +22,7 @@ describe('When adding service to invitation', () => {
     addInvitationService.mockReset().mockReturnValue('mapping-id');
     addInvitationServiceIdentifier.mockReset();
     removeAllInvitationServiceIdentifiers.mockReset();
+    getUserOfServiceIdentifier.mockReset();
 
     req = mockRequest({
       params: {
@@ -118,6 +120,22 @@ describe('When adding service to invitation', () => {
     expect(res.send.mock.calls[0][0]).toEqual({
       details: [
         'Identifiers items must contain key and value',
+      ],
+    });
+  });
+
+  it('then it should return 409 if identifier already in use', async () => {
+    getUserOfServiceIdentifier.mockReturnValue('user-1');
+
+    await addServiceToInvitation(req, res);
+
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(409);
+    expect(res.send).toHaveBeenCalledTimes(1);
+    expect(res.send.mock.calls[0][0]).toEqual({
+      details: [
+        'Identifier some already in use',
+        'Identifier something already in use',
       ],
     });
   });
