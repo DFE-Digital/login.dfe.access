@@ -8,7 +8,7 @@ const { Op } = require('sequelize');
 const id = 'policy-1';
 const policy = mockPolicyEntity({
   roles: [mockRoleEntity(), mockRoleEntity()],
-  conditions: [mockPolicyConditionEntity(), mockPolicyConditionEntity()],
+  conditions: [mockPolicyConditionEntity({ field: 'id' }), mockPolicyConditionEntity({ field: 'organisation.id' }), mockPolicyConditionEntity({ field: 'id' })],
 });
 
 describe('When getting policy from the repository', () => {
@@ -47,12 +47,12 @@ describe('When getting policy from the repository', () => {
         {
           field: policy.conditions[0].field,
           operator: policy.conditions[0].operator,
-          value: policy.conditions[0].value,
+          value: [policy.conditions[0].value, policy.conditions[2].value],
         },
         {
           field: policy.conditions[1].field,
           operator: policy.conditions[1].operator,
-          value: policy.conditions[1].value,
+          value: [policy.conditions[1].value],
         },
       ],
       roles: [

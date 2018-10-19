@@ -25,7 +25,7 @@ const policy = {
     {
       field: 'id',
       operator: 'Is',
-      value: 'user1',
+      value: ['user1'],
     },
   ],
   roles: [
@@ -121,7 +121,7 @@ describe('When patching a policy of a service', () => {
     req.body.conditions = [{
       field: 'id',
       operator: 'Is',
-      value: '123456',
+      value: ['123456'],
     }];
 
     await updatePolicyOfService(req, res);
@@ -129,7 +129,7 @@ describe('When patching a policy of a service', () => {
     expect(deletePolicyConditions).toHaveBeenCalledTimes(1);
     expect(deletePolicyConditions).toHaveBeenCalledWith(pid);
     expect(addPolicyCondition).toHaveBeenCalledTimes(1);
-    expect(addPolicyCondition).toHaveBeenCalledWith('new-uuid-1', pid, req.body.conditions[0].field, req.body.conditions[0].operator, req.body.conditions[0].value);
+    expect(addPolicyCondition).toHaveBeenCalledWith('new-uuid-1', pid, req.body.conditions[0].field, req.body.conditions[0].operator, req.body.conditions[0].value[0]);
   });
 
   it('then it should not update roles if not included', async () => {
@@ -186,7 +186,7 @@ describe('When patching a policy of a service', () => {
     req.body.conditions = [{
       field: undefined,
       operator: 'Is',
-      value: '123456',
+      value: ['123456'],
     }];
 
     await updatePolicyOfService(req, res);
@@ -205,7 +205,7 @@ describe('When patching a policy of a service', () => {
     req.body.conditions = [{
       field: 'id',
       operator: undefined,
-      value: '123456',
+      value: ['123456'],
     }];
 
     await updatePolicyOfService(req, res);
@@ -235,6 +235,25 @@ describe('When patching a policy of a service', () => {
     expect(res.send).toHaveBeenCalledWith({
       errors: [
         'Conditions entries must have value',
+      ],
+    });
+  });
+
+  it('then it should return 400 if conditions entry value is not an array', async () => {
+    req.body.conditions = [{
+      field: 'id',
+      operator: 'Is',
+      value: 'just-a-value',
+    }];
+
+    await updatePolicyOfService(req, res);
+
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledTimes(1);
+    expect(res.send).toHaveBeenCalledWith({
+      errors: [
+        'Conditions entries value must be an array',
       ],
     });
   });
