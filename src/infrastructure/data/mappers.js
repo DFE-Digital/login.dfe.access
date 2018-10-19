@@ -66,15 +66,7 @@ const mapPolicyEntity = async (entity) => {
     }
   });
 
-  const roles = entity.roles.map((role) => {
-    return {
-      id: role.id,
-      name: role.name,
-      status: {
-        id: role.status,
-      },
-    }
-  });
+  const roles = await mapRoleEntities(entity.roles);
 
   return Promise.resolve({
     id: entity.id,
