@@ -31,12 +31,18 @@ const mapPolicyEntity = async (entity) => {
     return undefined;
   }
 
-  const conditions = entity.conditions.map((condition) => {
-    return {
-      field: condition.field,
-      operator: condition.operator,
-      value: condition.value,
-    };
+  const conditions = [];
+  entity.conditions.forEach((conditionEntity) => {
+    const condition = conditions.find(c => c.field === conditionEntity.field);
+    if (condition) {
+      condition.value.push(conditionEntity.value);
+    } else {
+      conditions.push({
+        field: conditionEntity.field,
+        operator: conditionEntity.operator,
+        value: [conditionEntity.value],
+      });
+    }
   });
 
   const roles = entity.roles.map((role) => {
