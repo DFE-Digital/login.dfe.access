@@ -26,6 +26,27 @@ const mapUserServiceEntities = async (entities) => {
   return mapped;
 };
 
+const mapRoleEntity = async (entity) => {
+  if (!entity) {
+    return undefined;
+  }
+
+  return Promise.resolve({
+    id: entity.id,
+    name: entity.name,
+    status: {
+      id: entity.status,
+    },
+  });
+};
+const mapRoleEntities = async (entities) => {
+  const mapped = [];
+  for (let i = 0; i < entities.length; i++) {
+    mapped.push(await mapRoleEntity(entities[i]));
+  }
+  return mapped;
+};
+
 const mapPolicyEntity = async (entity) => {
   if (!entity) {
     return undefined;
@@ -77,6 +98,8 @@ const mapPolicyEntities = async (entities) => {
 module.exports = {
   mapUserServiceEntity,
   mapUserServiceEntities,
+  mapRoleEntity,
+  mapRoleEntities,
   mapPolicyEntity,
   mapPolicyEntities,
 };

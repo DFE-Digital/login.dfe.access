@@ -3,7 +3,6 @@ const { getUsersOfServicePaged } = require('./../../infrastructure/data');
 const getQueryStringValue = (req, key) => {
   const qsKey = Object.keys(req.query).find(x => x.toLowerCase() === key.toLowerCase());
   return qsKey ? req.query[qsKey] : undefined;
-  ;
 };
 const getQueryStringIntValue = (req, key, defaultValue = 0) => {
   const value = getQueryStringValue(req, key);
