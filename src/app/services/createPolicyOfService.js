@@ -36,6 +36,8 @@ const validateRequest = (req) => {
 
       if (!condition.value) {
         entryErrors.push('Conditions entries must have value');
+      } else if (!(condition.value instanceof Array)) {
+        model.errors.push('Conditions entries value must be an array');
       }
     });
     if (entryErrors) {
@@ -79,7 +81,9 @@ const createPolicyOfService = async (req, res) => {
     await addPolicy(policyId, model.name, model.applicationId, 1);
     for (let i = 0; i < model.conditions.length; i++) {
       const condition = model.conditions[i];
-      await addPolicyCondition(uuid(), policyId, condition.field, condition.operator, condition.value);
+      for (let j = 0; j < condition.value.length; j += 1) {
+        await addPolicyCondition(uuid(), policyId, condition.field, condition.operator, condition.value[j]);
+      }
     }
     for (let i = 0; i < model.roles.length; i++) {
       const role = model.roles[i];
