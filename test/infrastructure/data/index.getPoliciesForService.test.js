@@ -10,7 +10,7 @@ const policies = [
   mockPolicyEntity(),
   mockPolicyEntity({
     roles: [mockRoleEntity(), mockRoleEntity()],
-    conditions: [mockPolicyConditionEntity(), mockPolicyConditionEntity()],
+    conditions: [mockPolicyConditionEntity({ field: 'id' }), mockPolicyConditionEntity({ field: 'organisation.id' }), mockPolicyConditionEntity({ field: 'id' })],
   }),
 ];
 
@@ -71,12 +71,12 @@ describe('When getting policies for service from the repository', () => {
         {
           field: policies[1].conditions[0].field,
           operator: policies[1].conditions[0].operator,
-          value: policies[1].conditions[0].value,
+          value: [policies[1].conditions[0].value, policies[1].conditions[2].value],
         },
         {
           field: policies[1].conditions[1].field,
           operator: policies[1].conditions[1].operator,
-          value: policies[1].conditions[1].value,
+          value: [policies[1].conditions[1].value],
         },
       ],
       roles: [

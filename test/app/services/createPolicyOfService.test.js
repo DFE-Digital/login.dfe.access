@@ -39,7 +39,7 @@ describe('When listing policies of a service', () => {
           {
             field: 'id',
             operator: 'Is',
-            value: '123456',
+            value: ['123456'],
           },
         ],
         roles: [
@@ -190,6 +190,21 @@ describe('When listing policies of a service', () => {
     expect(res.send).toHaveBeenCalledWith({
       errors: [
         'Conditions entries must have value',
+      ],
+    });
+  });
+
+  it('then it should return 400 if conditions entry value is not an array', async () => {
+    req.body.conditions[0].value = 'just-a-value';
+
+    await createPolicyOfService(req, res);
+
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledTimes(1);
+    expect(res.send).toHaveBeenCalledWith({
+      errors: [
+        'Conditions entries value must be an array',
       ],
     });
   });

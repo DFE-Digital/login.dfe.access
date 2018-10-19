@@ -26,28 +26,47 @@ const mapUserServiceEntities = async (entities) => {
   return mapped;
 };
 
+const mapRoleEntity = async (entity) => {
+  if (!entity) {
+    return undefined;
+  }
+
+  return Promise.resolve({
+    id: entity.id,
+    name: entity.name,
+    status: {
+      id: entity.status,
+    },
+  });
+};
+const mapRoleEntities = async (entities) => {
+  const mapped = [];
+  for (let i = 0; i < entities.length; i++) {
+    mapped.push(await mapRoleEntity(entities[i]));
+  }
+  return mapped;
+};
+
 const mapPolicyEntity = async (entity) => {
   if (!entity) {
     return undefined;
   }
 
-  const conditions = entity.conditions.map((condition) => {
-    return {
-      field: condition.field,
-      operator: condition.operator,
-      value: condition.value,
-    };
-  });
-
-  const roles = entity.roles.map((role) => {
-    return {
-      id: role.id,
-      name: role.name,
-      status: {
-        id: role.status,
-      },
+  const conditions = [];
+  entity.conditions.forEach((conditionEntity) => {
+    const condition = conditions.find(c => c.field === conditionEntity.field);
+    if (condition) {
+      condition.value.push(conditionEntity.value);
+    } else {
+      conditions.push({
+        field: conditionEntity.field,
+        operator: conditionEntity.operator,
+        value: [conditionEntity.value],
+      });
     }
   });
+
+  const roles = await mapRoleEntities(entity.roles);
 
   return Promise.resolve({
     id: entity.id,
@@ -71,6 +90,8 @@ const mapPolicyEntities = async (entities) => {
 module.exports = {
   mapUserServiceEntity,
   mapUserServiceEntities,
+  mapRoleEntity,
+  mapRoleEntities,
   mapPolicyEntity,
   mapPolicyEntities,
 };
