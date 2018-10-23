@@ -41,6 +41,12 @@
                 "description": "The number of workers to assign to the app service within the app service plan"
             }
         },
+        "appServiceConfigPath": {
+            "type": "string",
+            "metadata": {
+                "description": "JSON string containing app config"
+            }
+        },
         "customHostName": {
             "type": "string",
             "defaultValue": ""
@@ -79,6 +85,9 @@
                     },
                     "numberOfWorkers": {
                         "value": "[parameters('numberOfWorkers')]"
+                    },
+                    "appServiceConfigPath": {
+                        "value": "[parameters('appServiceConfigPath')]"
                     },
                     "minTlsVersion": {
                         "value": "[parameters('minTlsVersion')]"
