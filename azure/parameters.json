@@ -28,6 +28,9 @@
         },
         "minTlsVersion": {
             "value": ""
+        },
+        "appServiceConfigPath": {
+            "value": ""
         }
     }
 }
