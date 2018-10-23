@@ -11,7 +11,7 @@
         "appServicePlanRG": {
             "value": ""
         },
-        "runtimeStack": {
+        "nodeVersion": {
             "value": ""
         },
         "customHostName": {
@@ -21,6 +21,12 @@
             "value": ""
         },
         "certificateName": {
+            "value": ""
+        },
+        "numberOfWorkers": {
+            "value": ""
+        },
+        "minTlsVersion": {
             "value": ""
         }
     }
