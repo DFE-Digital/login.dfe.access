@@ -166,6 +166,19 @@ const getUsersOfServicePaged = async (sid, filters, pageNumber, pageSize) => {
   };
 };
 
+const getPageOfUserServices = async (pageNumber, pageSize) => {
+  const resultset = await userServices.findAndCountAll({
+    limit: pageSize,
+    offset: (pageNumber - 1) * pageSize,
+    order: ['user_id', 'service_id', 'organisation_id'],
+  });
+  const services = await mapUserServiceEntities(resultset.rows);
+  return {
+    services,
+    numberOfPages: Math.ceil(resultset.count / pageSize),
+  };
+};
+
 
 const addInvitationService = async (iid, sid, oid) => {
   const existing = await invitationServices.find({
@@ -231,6 +244,19 @@ const getInvitationServices = async (iid) => {
     order: ['service_id', 'organisation_id'],
   });
   return mapUserServiceEntities(entities);
+};
+
+const getPageOfInvitationServices = async (pageNumber, pageSize) => {
+  const resultset = await invitationServices.findAndCountAll({
+    limit: pageSize,
+    offset: (pageNumber - 1) * pageSize,
+    order: ['invitation_id', 'service_id', 'organisation_id'],
+  });
+  const services = await mapUserServiceEntities(resultset.rows);
+  return {
+    services,
+    numberOfPages: Math.ceil(resultset.count / pageSize),
+  };
 };
 
 
@@ -339,10 +365,12 @@ module.exports = {
   removeAllUserServiceIdentifiers,
   removeUserService,
   getUsersOfServicePaged,
+  getPageOfUserServices,
   addInvitationService,
   addInvitationServiceIdentifier,
   removeAllInvitationServiceIdentifiers,
   getInvitationServices,
+  getPageOfInvitationServices,
   getPoliciesForService,
   getPolicy,
   addPolicy,
