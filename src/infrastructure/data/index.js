@@ -233,6 +233,19 @@ const getInvitationServices = async (iid) => {
   return mapUserServiceEntities(entities);
 };
 
+const getPageOfInvitationServices = async (pageNumber, pageSize) => {
+  const resultset = await invitationServices.findAndCountAll({
+    limit: pageSize,
+    offset: (pageNumber - 1) * pageSize,
+    order: ['invitation_id', 'service_id', 'organisation_id'],
+  });
+  const services = await mapUserServiceEntities(resultset.rows);
+  return {
+    services,
+    numberOfPages: Math.ceil(resultset.count / pageSize),
+  };
+};
+
 
 const getPoliciesForService = async (sid) => {
   const entities = await policies.findAll({
@@ -343,6 +356,7 @@ module.exports = {
   addInvitationServiceIdentifier,
   removeAllInvitationServiceIdentifiers,
   getInvitationServices,
+  getPageOfInvitationServices,
   getPoliciesForService,
   getPolicy,
   addPolicy,
