@@ -34,6 +34,7 @@ const mapRoleEntity = async (entity) => {
   return Promise.resolve({
     id: entity.id,
     name: entity.name,
+    code: entity.code,
     status: {
       id: entity.status,
     },
