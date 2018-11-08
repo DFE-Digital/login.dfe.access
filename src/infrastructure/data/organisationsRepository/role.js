@@ -11,6 +11,10 @@ const define = (db, schema) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    code: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
     applicationId: {
       type: Sequelize.UUID,
       allowNull: false,
