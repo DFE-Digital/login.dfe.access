@@ -28,6 +28,8 @@ describe('When adding service to user', () => {
       { id: 'role1' },
       { id: 'role3' },
     ]);
+    removeAllUserServiceRoles.mockReset();
+    addUserServiceRole.mockReset();
 
     req = mockRequest({
       params: {

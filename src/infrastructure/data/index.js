@@ -1,4 +1,4 @@
-const { connection, userServices, userServiceIdentifiers, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles, roles, userServiceRoles } = require('./organisationsRepository');
+const { connection, userServices, userServiceIdentifiers, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles, roles, userServiceRoles, invitationServiceRoles } = require('./organisationsRepository');
 const { Op, QueryTypes } = require('sequelize');
 const { mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities } = require('./mappers');
 const uuid = require('uuid/v4');
@@ -302,6 +302,32 @@ const getPageOfInvitationServices = async (pageNumber, pageSize) => {
   };
 };
 
+const removeAllInvitationServiceRoles = async (uid, sid, oid) => {
+  await invitationServiceRoles.destroy({
+    where: {
+      invitation_id: {
+        [Op.eq]: uid,
+      },
+      service_id: {
+        [Op.eq]: sid,
+      },
+      organisation_id: {
+        [Op.eq]: oid,
+      },
+    },
+  });
+};
+
+const addInvitationServiceRole = async (uid, sid, oid, rid) => {
+  await invitationServiceRoles.create({
+    id: uuid(),
+    invitation_id: uid,
+    organisation_id: oid,
+    service_id: sid,
+    role_id: rid,
+  });
+};
+
 
 const getPoliciesForService = async (sid) => {
   const entities = await policies.findAll({
@@ -417,6 +443,8 @@ module.exports = {
   removeAllInvitationServiceIdentifiers,
   getInvitationServices,
   getPageOfInvitationServices,
+  removeAllInvitationServiceRoles,
+  addInvitationServiceRole,
 
   getPoliciesForService,
   getPolicy,
