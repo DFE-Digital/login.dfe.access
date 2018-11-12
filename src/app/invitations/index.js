@@ -8,7 +8,7 @@ const listInvitationServices = require('./listInvitationServices');
 const addServiceToInvitation = require('./addServiceToInvitation');
 const migrateInvitationToUser = require('./migrateInvitationToUser');
 const getSingleInvitationService = require('./getSingleInvitationService');
-
+const removeServiceFromInvitation = require('./removeServiceFromInvitation');
 const router = express.Router();
 
 const buildArea = () => {
@@ -17,6 +17,7 @@ const buildArea = () => {
   router.get('/:iid/services/:sid/organisations/:oid', asyncWrapper(getSingleInvitationService));
   router.put('/:iid/services/:sid/organisations/:oid', asyncWrapper(addServiceToInvitation)); // Duplicate for /:iid/services/:sid when org becomes optional
   router.post('/:iid/migrate-to-user', asyncWrapper(migrateInvitationToUser));
+  router.delete('/:iid/services/:sid/organisations/:oid', asyncWrapper(removeServiceFromInvitation));
 
   return router;
 };
