@@ -45,16 +45,18 @@ const mockRepository = () => {
   };
 };
 
-const mockUserServiceEntity = (data, identifiers = undefined) => {
+const mockUserServiceEntity = (data, identifiers = undefined, roles = undefined) => {
   const defaultEntity = {
     service_id: uuid(),
     organisation_id: uuid(),
     createdAt: new Date(),
     getIdentifiers: jest.fn().mockReturnValue(identifiers),
+    getRoles: jest.fn().mockReturnValue(roles),
   };
   const entity = Object.assign({}, defaultEntity, data);
   entity.mockResetAll = function () {
     this.getIdentifiers.mockReset().mockReturnValue(identifiers);
+    this.getRoles.mockReset().mockReturnValue(roles);
   };
   return entity;
 };

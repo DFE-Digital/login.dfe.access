@@ -30,7 +30,8 @@ const define = (db, schema) => {
   });
 };
 
-const extend = () => {
+const extend = ({ inivitationServiceRoles }) => {
+  inivitationServiceRoles.belongsTo(roles, { as: 'role', foreignKey: 'role_id' });
 };
 
 module.exports = {

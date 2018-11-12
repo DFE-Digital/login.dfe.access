@@ -6,8 +6,7 @@ const mapUserServiceEntity = async (entity) => {
     key: x.identifier_key,
     value: x.identifier_value
   }));
-  const groups = identifiers.find(x => x.key === 'groups');
-  const roles = (groups ? groups.value : '').split(',').filter(x => x.length > 0);
+  const roles = await mapRoleEntities((await entity.getRoles() || []).map(x => x.role));
   return Promise.resolve({
     userId: entity.user_id || undefined,
     invitationId: entity.invitation_id || undefined,
