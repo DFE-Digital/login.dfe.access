@@ -1,5 +1,5 @@
 const logger = require('./../../infrastructure/logger');
-const { removeInvitationService, removeAllInvitationServiceIdentifiers } = require('./../../infrastructure/data');
+const { removeInvitationService, removeAllInvitationServiceIdentifiers, removeAllInvitationServiceRoles } = require('./../../infrastructure/data');
 
 const parseAndValidateRequest = (req) => {
   const model = {
@@ -28,6 +28,7 @@ const removeServiceFromInvitation = async (req, res) => {
     }
 
     await removeAllInvitationServiceIdentifiers(iid, sid, oid);
+    await removeAllInvitationServiceRoles(iid, sid, oid);
     await removeInvitationService(iid, sid, oid);
 
     return res.status(204).send();

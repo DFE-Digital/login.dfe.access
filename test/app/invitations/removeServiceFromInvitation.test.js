@@ -2,10 +2,11 @@ jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/data', () => ({
   removeInvitationService: jest.fn(),
   removeAllInvitationServiceIdentifiers: jest.fn(),
+  removeAllInvitationServiceRoles: jest.fn(),
 }));
 
 const { mockRequest, mockResponse } = require('./../../utils');
-const { removeInvitationService, removeAllInvitationServiceIdentifiers } = require('./../../../src/infrastructure/data');
+const { removeInvitationService, removeAllInvitationServiceIdentifiers, removeAllInvitationServiceRoles } = require('./../../../src/infrastructure/data');
 const removeServiceFromInvitation = require('./../../../src/app/invitations/removeServiceFromInvitation');
 
 const iid = 'inv-user1';
@@ -19,6 +20,7 @@ describe('When removing service from invitation', () => {
 
   beforeEach(() => {
     removeInvitationService.mockReset();
+    removeAllInvitationServiceIdentifiers.mockReset();
     removeAllInvitationServiceIdentifiers.mockReset();
 
     req = mockRequest({
@@ -36,6 +38,13 @@ describe('When removing service from invitation', () => {
 
     expect(removeAllInvitationServiceIdentifiers).toHaveBeenCalledTimes(1);
     expect(removeAllInvitationServiceIdentifiers).toHaveBeenCalledWith(iid, sid, oid);
+  });
+
+  it('then it should remove roles for invitation service', async () => {
+    await removeServiceFromInvitation(req, res);
+
+    expect(removeAllInvitationServiceRoles).toHaveBeenCalledTimes(1);
+    expect(removeAllInvitationServiceRoles).toHaveBeenCalledWith(iid, sid, oid);
   });
 
   it('then it should remove invitation service', async () => {
