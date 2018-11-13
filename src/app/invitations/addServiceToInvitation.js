@@ -1,5 +1,5 @@
 const logger = require('./../../infrastructure/logger');
-const { addInvitationService, addInvitationServiceIdentifier, removeAllInvitationServiceIdentifiers, getUserOfServiceIdentifier } = require('./../../infrastructure/data');
+const { addInvitationService, addInvitationServiceIdentifier, removeAllInvitationServiceIdentifiers, getUserOfServiceIdentifier, getServiceRoles, removeAllInvitationServiceRoles, addInvitationServiceRole } = require('./../../infrastructure/data');
 
 const parseAndValidateRequest = async (req) => {
   const model = {
@@ -7,6 +7,7 @@ const parseAndValidateRequest = async (req) => {
     sid: req.params.sid,
     oid: req.params.oid,
     identifiers: req.body.identifiers || [],
+    roles: req.body.roles || [],
     errors: [],
     errorStatus: 400,
   };
@@ -35,13 +36,25 @@ const parseAndValidateRequest = async (req) => {
     }
   }
 
+  if (!(model.roles instanceof Array)) {
+    model.errors.push('Roles must be an array');
+  } else {
+    const availableRolesForService = await getServiceRoles(model.sid);
+    model.roles.forEach((roleId) => {
+      const safeRoleId = (roleId || '').toLowerCase();
+      if (!availableRolesForService.find(x => x.id.toLowerCase() === safeRoleId.toLowerCase())) {
+        model.errors.push(`Role ${roleId} is not available for service ${model.sid}`);
+      }
+    });
+  }
+
   return model;
 };
 
 const addServiceToInvitation = async (req, res) => {
   const correlationId = req.correlationId;
   const model = await parseAndValidateRequest(req);
-  const { iid, oid, sid, identifiers } = model;
+  const { iid, oid, sid, identifiers, roles } = model;
 
   logger.info(`Adding service ${sid} with org ${oid} to invitation ${iid} (correlation id: ${correlationId})`, { correlationId });
   try {
@@ -50,10 +63,17 @@ const addServiceToInvitation = async (req, res) => {
     }
 
     await addInvitationService(iid, sid, oid);
+    await removeAllInvitationServiceIdentifiers(iid, sid, oid);
     if (identifiers.length > 0) {
-      await removeAllInvitationServiceIdentifiers(iid, sid, oid);
       for (let i = 0; i < identifiers.length; i += 1) {
         await addInvitationServiceIdentifier(iid, sid, oid, identifiers[i].key, identifiers[i].value);
+      }
+    }
+
+    await removeAllInvitationServiceRoles(iid, sid, oid);
+    if (roles.length > 0) {
+      for (let i = 0; i < roles.length; i += 1) {
+        await addInvitationServiceRole(iid, sid, oid, roles[i]);
       }
     }
 

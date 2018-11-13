@@ -1,5 +1,5 @@
 const logger = require('./../../infrastructure/logger');
-const { addUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers, getServiceRoles, removeAllUserServiceRoles, addUserServiceRole } = require('./../../infrastructure/data');
+const { getUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers, getServiceRoles, removeAllUserServiceRoles, addUserServiceRole } = require('./../../infrastructure/data');
 
 const parseAndValidateRequest = async (req) => {
   const model = {
@@ -45,27 +45,31 @@ const parseAndValidateRequest = async (req) => {
   return model;
 };
 
-const addServiceToUser = async (req, res) => {
+const updateUserService = async (req, res) => {
   const correlationId = req.correlationId;
   const model = await parseAndValidateRequest(req);
   const { uid, oid, sid, identifiers, roles } = model;
 
-  logger.info(`Adding service ${sid} with org ${oid} to user ${uid} (correlation id: ${correlationId})`, { correlationId });
+  logger.info(`Updating service ${sid} with org ${oid} for user ${uid} (correlation id: ${correlationId})`, { correlationId });
   try {
     if (model.errors.length > 0) {
       return res.status(400).send({ details: model.errors });
     }
 
-    await addUserService(uid, sid, oid);
-    await removeAllUserServiceIdentifiers(uid, sid, oid);
+    const userService = await getUserService(uid, sid, oid);
+    if (!userService) {
+      return res.status(404).send();
+    }
+
     if (identifiers.length > 0) {
+      await removeAllUserServiceIdentifiers(uid, sid, oid);
       for (let i = 0; i < identifiers.length; i += 1) {
         await addUserServiceIdentifier(uid, sid, oid, identifiers[i].key, identifiers[i].value);
       }
     }
 
-    await removeAllUserServiceRoles(uid, sid, oid);
     if (roles.length > 0) {
+      await removeAllUserServiceRoles(uid, sid, oid);
       for (let i = 0; i < roles.length; i += 1) {
         await addUserServiceRole(uid, sid, oid, roles[i]);
       }
@@ -81,4 +85,4 @@ const addServiceToUser = async (req, res) => {
   }
 };
 
-module.exports = addServiceToUser;
+module.exports = updateUserService;
