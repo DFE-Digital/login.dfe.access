@@ -9,7 +9,10 @@ const uid = 'user-1';
 const services = [
   mockUserServiceEntity({}),
   mockUserServiceEntity({}, [{ identifier_key: 'k2s-id', identifier_value: '123456' }]),
-  mockUserServiceEntity({}, [{ identifier_key: 'groups', identifier_value: 'g1,g2' }]),
+  mockUserServiceEntity({}, [{ identifier_key: 'groups', identifier_value: 'g1,g2' }], [
+    { role: { id: 'role1', code: 'R1', name: 'Role One', status: 1 } },
+    { role: { id: 'role2', code: 'R2', name: 'Role Two', status: 0 } },
+  ]),
 ];
 
 describe('When getting user services from the repository', () => {
@@ -66,7 +69,24 @@ describe('When getting user services from the repository', () => {
     expect(actual[2]).toEqual({
       serviceId: services[2].service_id,
       organisationId: services[2].organisation_id,
-      roles: ['g1', 'g2'],
+      roles: [
+        {
+          id: 'role1',
+          code: 'R1',
+          name: 'Role One',
+          status: {
+            id: 1
+          }
+        },
+        {
+          id: 'role2',
+          code: 'R2',
+          name: 'Role Two',
+          status: {
+            id: 0
+          }
+        },
+      ],
       identifiers: [{ key: 'groups', value: 'g1,g2' }],
       accessGrantedOn: services[2].createdAt,
     });

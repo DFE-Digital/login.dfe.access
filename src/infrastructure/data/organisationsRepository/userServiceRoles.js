@@ -1,40 +1,41 @@
 const { default: Sequelize, Op } = require('sequelize').default;
 
 const define = (db, schema) => {
-  return db.define('role', {
+  return db.define('user_service_roles', {
     id: {
       type: Sequelize.UUID,
       primaryKey: true,
       allowNull: false,
     },
-    name: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    code: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    applicationId: {
+    user_id: {
       type: Sequelize.UUID,
       allowNull: false,
     },
-    status: {
-      type: Sequelize.SMALLINT,
+    organisation_id: {
+      type: Sequelize.UUID,
+      allowNull: false,
+    },
+    service_id: {
+      type: Sequelize.UUID,
+      allowNull: false,
+    },
+    role_id: {
+      type: Sequelize.UUID,
       allowNull: false,
     },
   }, {
     timestamps: true,
-    tableName: 'role',
+    tableName: 'user_service_roles',
     schema,
   });
 };
 
-const extend = () => {
+const extend = ({ userServiceRoles, roles }) => {
+  userServiceRoles.belongsTo(roles, { as: 'role', foreignKey: 'role_id' });
 };
 
 module.exports = {
-  name: 'roles',
+  name: 'userServiceRoles',
   define,
   extend,
 };
