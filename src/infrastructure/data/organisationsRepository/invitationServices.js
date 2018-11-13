@@ -24,7 +24,7 @@ const define = (db, schema) => {
   return model;
 };
 
-const extend = ({ invitationServices, invitationServiceIdentifiers, invitationServiceRoles }) => {
+const extend = ({ invitationServices, invitationServiceIdentifiers, inivitationServiceRoles }) => {
   invitationServices.prototype.getIdentifiers = async function () {
     return invitationServiceIdentifiers.findAll({
       where: {
@@ -41,7 +41,7 @@ const extend = ({ invitationServices, invitationServiceIdentifiers, invitationSe
     });
   };
   invitationServices.prototype.getRoles = async function () {
-    return invitationServiceRoles.findAll({
+    return inivitationServiceRoles.findAll({
       where: {
         invitation_id: {
           [Op.eq]: this.invitation_id,
