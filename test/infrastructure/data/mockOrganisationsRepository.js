@@ -28,6 +28,8 @@ const mockRepository = () => {
     policies: mockTable(),
     policyRoles: mockTable(),
     policyConditions: mockTable(),
+    userServiceRoles: mockTable(),
+    invitationServiceRoles: mockTable(),
     mockResetAll: function () {
       this.userServices.mockResetAll();
       this.userServiceIdentifiers.mockResetAll();
@@ -37,20 +39,24 @@ const mockRepository = () => {
       this.policies.mockResetAll();
       this.policyRoles.mockResetAll();
       this.policyConditions.mockResetAll();
+      this.userServiceRoles.mockResetAll();
+      this.invitationServiceRoles.mockResetAll();
     },
   };
 };
 
-const mockUserServiceEntity = (data, identifiers = undefined) => {
+const mockUserServiceEntity = (data, identifiers = undefined, roles = undefined) => {
   const defaultEntity = {
     service_id: uuid(),
     organisation_id: uuid(),
     createdAt: new Date(),
     getIdentifiers: jest.fn().mockReturnValue(identifiers),
+    getRoles: jest.fn().mockReturnValue(roles),
   };
   const entity = Object.assign({}, defaultEntity, data);
   entity.mockResetAll = function () {
     this.getIdentifiers.mockReset().mockReturnValue(identifiers);
+    this.getRoles.mockReset().mockReturnValue(roles);
   };
   return entity;
 };
