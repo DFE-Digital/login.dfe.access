@@ -244,6 +244,22 @@ const addInvitationServiceIdentifier = async (iid, sid, oid, key, value) => {
   });
 };
 
+const removeInvitationService = async (iid, sid, oid) => {
+  await invitationServices.destroy({
+    where: {
+      invitation_id: {
+        [Op.eq]: iid,
+      },
+      service_id: {
+        [Op.eq]: sid,
+      },
+      organisation_id: {
+        [Op.eq]: oid,
+      },
+    },
+  });
+};
+
 const removeAllInvitationServiceIdentifiers = async (iid, sid, oid) => {
   await invitationServiceIdentifiers.destroy({
     where: {
@@ -456,4 +472,5 @@ module.exports = {
   deletePolicyRoles,
   getServiceRoles,
   getInvitationService,
+  removeInvitationService,
 };
