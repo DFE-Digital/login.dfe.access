@@ -117,13 +117,12 @@ describe('When updating service of user', () => {
     expect(addUserServiceRole).toHaveBeenCalledWith(uid, sid, oid, 'role3');
   });
 
-  it('then it should not attempt to remove or add roles if none specified', async () => {
+  it('then it should remove roles if none specified', async () => {
     req.body.roles = undefined;
 
     await updateUserService(req, res);
 
-    expect(removeAllUserServiceRoles).not.toHaveBeenCalled();
-    expect(addUserServiceRole).not.toHaveBeenCalled();
+    expect(removeAllUserServiceRoles).toHaveBeenCalled();
   });
 
   it('then it should return 202 response', async () => {

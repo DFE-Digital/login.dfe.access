@@ -119,13 +119,12 @@ describe('When updating service of invitation', () => {
     expect(addInvitationServiceRole).toHaveBeenCalledWith(iid, sid, oid, 'role3');
   });
 
-  it('then it should not attempt to remove or add roles if none specified', async () => {
+  it('then it should remove  roles if none specified', async () => {
     req.body.roles = undefined;
 
     await updateInvitationService(req, res);
 
-    expect(removeAllInvitationServiceRoles).not.toHaveBeenCalled();
-    expect(addInvitationServiceRole).not.toHaveBeenCalled();
+    expect(removeAllInvitationServiceRoles).toHaveBeenCalled();
   });
 
   it('then it should return 202 response', async () => {
