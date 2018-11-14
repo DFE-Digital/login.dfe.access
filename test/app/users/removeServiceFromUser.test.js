@@ -2,10 +2,11 @@ jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/data', () => ({
   removeUserService: jest.fn(),
   removeAllUserServiceIdentifiers: jest.fn(),
+  removeAllUserServiceRoles: jest.fn(),
 }));
 
 const { mockRequest, mockResponse } = require('./../../utils');
-const { removeUserService, removeAllUserServiceIdentifiers } = require('./../../../src/infrastructure/data');
+const { removeUserService, removeAllUserServiceIdentifiers, removeAllUserServiceRoles } = require('./../../../src/infrastructure/data');
 const removeServiceFromUser = require('./../../../src/app/users/removeServiceFromUser');
 
 const uid = 'user1';
@@ -13,12 +14,13 @@ const sid = 'service1';
 const oid = 'organisation1';
 const res = mockResponse();
 
-describe('When adding service to user', () => {
+describe('When removing service from user', () => {
   let req;
 
   beforeEach(() => {
     removeUserService.mockReset();
     removeAllUserServiceIdentifiers.mockReset();
+    removeAllUserServiceRoles.mockReset();
 
     req = mockRequest({
       params: {
@@ -35,6 +37,13 @@ describe('When adding service to user', () => {
 
     expect(removeAllUserServiceIdentifiers).toHaveBeenCalledTimes(1);
     expect(removeAllUserServiceIdentifiers).toHaveBeenCalledWith(uid, sid, oid);
+  });
+
+  it('then it should remove roles for user service', async () => {
+    await removeServiceFromUser(req, res);
+
+    expect(removeAllUserServiceRoles).toHaveBeenCalledTimes(1);
+    expect(removeAllUserServiceRoles).toHaveBeenCalledWith(uid, sid, oid);
   });
 
   it('then it should remove user service', async () => {
