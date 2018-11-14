@@ -18,18 +18,15 @@
     "applicationName": "Access API"
   },
   "database": {
-    "host" :"dev-signin-shd-sql.database.windows.net",
-    "username":"3Z4R66fCgTfaXbkukgpP",
-    "password":"m2LVLaL9hQu2iJGh8MJE",
-    "dialect":"mssql",
-    "name":"dev-signin-organisations-db",
-    "encrypt": true,
+    "host": "localhost",
+    "name": "your-database-name",
+    "username": "your-user",
+    "password": "your-password",
+    "dialect": "mssql",
     "schema": "dbo",
     "pool": {
-      "max": 100,
-      "min": 0,
-      "acquire": 30000,
-      "idle": 10000
+      "max": 5,
+      "min": 0
     }
   }
 }
