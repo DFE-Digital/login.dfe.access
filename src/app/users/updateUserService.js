@@ -68,6 +68,10 @@ const updateUserService = async (req, res) => {
       }
     }
 
+    if (roles.length === 0 || roles === undefined) {
+      await removeAllUserServiceRoles(uid, sid, oid);
+    }
+
     if (roles.length > 0) {
       await removeAllUserServiceRoles(uid, sid, oid);
       for (let i = 0; i < roles.length; i += 1) {

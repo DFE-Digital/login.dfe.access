@@ -75,6 +75,10 @@ const updateInvitationService = async (req, res) => {
       }
     }
 
+    if (roles.length === 0 || roles === undefined) {
+      await removeAllInvitationServiceRoles(iid, sid, oid);
+    }
+
     if (roles.length > 0) {
       await removeAllInvitationServiceRoles(iid, sid, oid);
       for (let i = 0; i < roles.length; i += 1) {
