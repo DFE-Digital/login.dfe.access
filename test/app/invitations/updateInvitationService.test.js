@@ -104,11 +104,27 @@ describe('When updating service of invitation', () => {
     expect(addInvitationServiceIdentifier).not.toHaveBeenCalled();
   });
 
+  it('then it should remove identifiers if empty array', async () => {
+    req.body.identifiers = [];
+
+    await updateInvitationService(req, res);
+
+    expect(removeAllInvitationServiceIdentifiers).toHaveBeenCalled();
+  });
+
   it('then it should remove existing roles if new roles specified', async () => {
     await updateInvitationService(req, res);
 
     expect(removeAllInvitationServiceRoles).toHaveBeenCalledTimes(1);
     expect(removeAllInvitationServiceRoles).toHaveBeenCalledWith(iid, sid, oid);
+  });
+
+  it('then it should not attempt to remove or add roles if none specified', async () => {
+    req.body.roles = undefined;
+
+    await updateInvitationService(req, res);
+    expect(removeAllInvitationServiceRoles).not.toHaveBeenCalled();
+    expect(addInvitationServiceRole).not.toHaveBeenCalled();
   });
 
   it('then it should add roles if specified', async () => {
@@ -119,13 +135,12 @@ describe('When updating service of invitation', () => {
     expect(addInvitationServiceRole).toHaveBeenCalledWith(iid, sid, oid, 'role3');
   });
 
-  it('then it should not attempt to remove or add roles if none specified', async () => {
-    req.body.roles = undefined;
+  it('then it should remove  roles if empty array', async () => {
+    req.body.roles = [];
 
     await updateInvitationService(req, res);
 
-    expect(removeAllInvitationServiceRoles).not.toHaveBeenCalled();
-    expect(addInvitationServiceRole).not.toHaveBeenCalled();
+    expect(removeAllInvitationServiceRoles).toHaveBeenCalled();
   });
 
   it('then it should return 202 response', async () => {
