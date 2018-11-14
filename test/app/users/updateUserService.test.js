@@ -102,6 +102,14 @@ describe('When updating service of user', () => {
     expect(addUserServiceIdentifier).not.toHaveBeenCalled();
   });
 
+  it('then it should remove identifiers if empty array', async () => {
+    req.body.identifiers = [];
+
+    await updateUserService(req, res);
+
+    expect(removeAllUserServiceIdentifiers).toHaveBeenCalled();
+  });
+
   it('then it should remove existing roles if new roles specified', async () => {
     await updateUserService(req, res);
 
@@ -117,8 +125,16 @@ describe('When updating service of user', () => {
     expect(addUserServiceRole).toHaveBeenCalledWith(uid, sid, oid, 'role3');
   });
 
-  it('then it should remove roles if none specified', async () => {
+  it('then it should not attempt to remove or add roles if none specified', async () => {
     req.body.roles = undefined;
+
+    await updateUserService(req, res);
+    expect(removeAllUserServiceRoles).not.toHaveBeenCalled();
+    expect(addUserServiceRole).not.toHaveBeenCalled();
+  });
+
+  it('then it should remove roles if empty array', async () => {
+    req.body.roles = [];
 
     await updateUserService(req, res);
 
@@ -147,6 +163,8 @@ describe('When updating service of user', () => {
       ],
     });
   });
+
+
 
   it('then it should return 400 if identifiers specified and items does not have key', async () => {
     req.body.identifiers = [{ value: 'thing' }];

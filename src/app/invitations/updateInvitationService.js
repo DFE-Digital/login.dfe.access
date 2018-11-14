@@ -7,8 +7,8 @@ const parseAndValidateRequest = async (req) => {
     iid: req.params.iid,
     sid: req.params.sid,
     oid: req.params.oid,
-    identifiers: req.body.identifiers || [],
-    roles: req.body.roles || [],
+    identifiers: req.body.identifiers,
+    roles: req.body.roles,
     errors: [],
     errorStatus: 400,
   };
@@ -17,36 +17,40 @@ const parseAndValidateRequest = async (req) => {
     model.errors.push('Must specify organisation');
   }
 
-  if (!(model.identifiers instanceof Array)) {
-    model.errors.push('Identifiers must be an array');
-  } else {
-    let allItemsOk = true;
-    for (let i = 0; i < model.identifiers.length; i += 1) {
-      const item = model.identifiers[i];
+  if(model.identifiers) {
+    if (!(model.identifiers instanceof Array)) {
+      model.errors.push('Identifiers must be an array');
+    } else {
+      let allItemsOk = true;
+      for (let i = 0; i < model.identifiers.length; i += 1) {
+        const item = model.identifiers[i];
 
-      const keys = Object.keys(item);
-      if (!keys.find(x => x === 'key') || !keys.find(x => x === 'value')) {
-        allItemsOk = false;
-      } else if (await getUserOfServiceIdentifier(model.sid, item.key, item.value)) {
-        model.errors.push(`Identifier ${item.key} already in use`);
-        model.errorStatus = 409;
+        const keys = Object.keys(item);
+        if (!keys.find(x => x === 'key') || !keys.find(x => x === 'value')) {
+          allItemsOk = false;
+        } else if (await getUserOfServiceIdentifier(model.sid, item.key, item.value)) {
+          model.errors.push(`Identifier ${item.key} already in use`);
+          model.errorStatus = 409;
+        }
       }
-    }
-    if (!allItemsOk) {
-      model.errors.push('Identifiers items must contain key and value');
+      if (!allItemsOk) {
+        model.errors.push('Identifiers items must contain key and value');
+      }
     }
   }
 
-  if (!(model.roles instanceof Array)) {
-    model.errors.push('Roles must be an array');
-  } else {
-    const availableRolesForService = await getServiceRoles(model.sid);
-    model.roles.forEach((roleId) => {
-      const safeRoleId = (roleId || '').toLowerCase();
-      if (!availableRolesForService.find(x => x.id.toLowerCase() === safeRoleId.toLowerCase())) {
-        model.errors.push(`Role ${roleId} is not available for service ${model.sid}`);
-      }
-    });
+  if(model.roles) {
+    if (!(model.roles instanceof Array)) {
+      model.errors.push('Roles must be an array');
+    } else {
+      const availableRolesForService = await getServiceRoles(model.sid);
+      model.roles.forEach((roleId) => {
+        const safeRoleId = (roleId || '').toLowerCase();
+        if (!availableRolesForService.find(x => x.id.toLowerCase() === safeRoleId.toLowerCase())) {
+          model.errors.push(`Role ${roleId} is not available for service ${model.sid}`);
+        }
+      });
+    }
   }
 
   return model;
@@ -68,21 +72,21 @@ const updateInvitationService = async (req, res) => {
       return res.status(404).send();
     }
 
-    if (identifiers.length > 0) {
+    if (identifiers) {
       await removeAllInvitationServiceIdentifiers(iid, sid, oid);
-      for (let i = 0; i < identifiers.length; i += 1) {
-        await addInvitationServiceIdentifier(iid, sid, oid, identifiers[i].key, identifiers[i].value);
+      if (identifiers.length > 0) {
+        for (let i = 0; i < identifiers.length; i += 1) {
+          await addInvitationServiceIdentifier(iid, sid, oid, identifiers[i].key, identifiers[i].value);
+        }
       }
     }
 
-    if (roles.length === 0 || roles === undefined) {
+    if (roles) {
       await removeAllInvitationServiceRoles(iid, sid, oid);
-    }
-
-    if (roles.length > 0) {
-      await removeAllInvitationServiceRoles(iid, sid, oid);
-      for (let i = 0; i < roles.length; i += 1) {
-        await addInvitationServiceRole(iid, sid, oid, roles[i]);
+      if (roles.length > 0) {
+        for (let i = 0; i < roles.length; i += 1) {
+          await addInvitationServiceRole(iid, sid, oid, roles[i]);
+        }
       }
     }
 
