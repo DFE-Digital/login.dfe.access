@@ -6,42 +6,44 @@ const parseAndValidateRequest = async (req) => {
     uid: req.params.uid,
     sid: req.params.sid,
     oid: req.params.oid,
-    identifiers: req.body.identifiers || [],
-    roles: req.body.roles || [],
+    identifiers: req.body.identifiers,
+    roles: req.body.roles,
     errors: [],
   };
 
   if (!model.oid) {
     model.errors.push('Must specify organisation');
   }
-
-  if (!(model.identifiers instanceof Array)) {
-    model.errors.push('Identifiers must be an array');
-  } else {
-    let allItemsOk = true;
-    model.identifiers.forEach((item) => {
-      const keys = Object.keys(item);
-      if (!keys.find(x => x === 'key') || !keys.find(x => x === 'value')) {
-        allItemsOk = false;
+  if (model.identifiers) {
+    if (!(model.identifiers instanceof Array)) {
+      model.errors.push('Identifiers must be an array');
+    } else {
+      let allItemsOk = true;
+      model.identifiers.forEach((item) => {
+        const keys = Object.keys(item);
+        if (!keys.find(x => x === 'key') || !keys.find(x => x === 'value')) {
+          allItemsOk = false;
+        }
+      });
+      if (!allItemsOk) {
+        model.errors.push('Identifiers items must contain key and value');
       }
-    });
-    if (!allItemsOk) {
-      model.errors.push('Identifiers items must contain key and value');
     }
   }
 
-  if (!(model.roles instanceof Array)) {
-    model.errors.push('Roles must be an array');
-  } else {
-    const availableRolesForService = await getServiceRoles(model.sid);
-    model.roles.forEach((roleId) => {
-      const safeRoleId = (roleId || '').toLowerCase();
-      if (!availableRolesForService.find(x => x.id.toLowerCase() === safeRoleId.toLowerCase())) {
-        model.errors.push(`Role ${roleId} is not available for service ${model.sid}`);
-      }
-    });
+  if(model.roles) {
+    if (!(model.roles instanceof Array)) {
+      model.errors.push('Roles must be an array');
+    } else {
+      const availableRolesForService = await getServiceRoles(model.sid);
+      model.roles.forEach((roleId) => {
+        const safeRoleId = (roleId || '').toLowerCase();
+        if (!availableRolesForService.find(x => x.id.toLowerCase() === safeRoleId.toLowerCase())) {
+          model.errors.push(`Role ${roleId} is not available for service ${model.sid}`);
+        }
+      });
+    }
   }
-
   return model;
 };
 
@@ -61,17 +63,21 @@ const updateUserService = async (req, res) => {
       return res.status(404).send();
     }
 
-    if (identifiers.length > 0) {
+    if (identifiers) {
       await removeAllUserServiceIdentifiers(uid, sid, oid);
-      for (let i = 0; i < identifiers.length; i += 1) {
-        await addUserServiceIdentifier(uid, sid, oid, identifiers[i].key, identifiers[i].value);
+      if (identifiers.length > 0) {
+        for (let i = 0; i < identifiers.length; i += 1) {
+          await addUserServiceIdentifier(uid, sid, oid, identifiers[i].key, identifiers[i].value);
+        }
       }
     }
 
-    if (roles.length > 0) {
+    if (roles) {
       await removeAllUserServiceRoles(uid, sid, oid);
-      for (let i = 0; i < roles.length; i += 1) {
-        await addUserServiceRole(uid, sid, oid, roles[i]);
+      if (roles.length > 0) {
+        for (let i = 0; i < roles.length; i += 1) {
+          await addUserServiceRole(uid, sid, oid, roles[i]);
+        }
       }
     }
 
