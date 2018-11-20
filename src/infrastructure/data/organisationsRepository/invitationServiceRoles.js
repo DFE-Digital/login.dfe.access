@@ -30,12 +30,12 @@ const define = (db, schema) => {
   });
 };
 
-const extend = ({ inivitationServiceRoles, roles }) => {
-  inivitationServiceRoles.belongsTo(roles, { as: 'role', foreignKey: 'role_id' });
+const extend = ({ invitationServiceRoles, roles }) => {
+  invitationServiceRoles.belongsTo(roles, { as: 'role', foreignKey: 'role_id' });
 };
 
 module.exports = {
-  name: 'inivitationServiceRoles',
+  name: 'invitationServiceRoles',
   define,
   extend,
 };
