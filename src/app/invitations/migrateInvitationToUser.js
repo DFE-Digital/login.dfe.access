@@ -1,5 +1,5 @@
 const logger = require('./../../infrastructure/logger');
-const { getInvitationServices, addUserService, addUserServiceIdentifier } = require('./../../infrastructure/data');
+const { getInvitationServices, addUserService, addUserServiceIdentifier, addUserServiceRole } = require('./../../infrastructure/data');
 
 const parseAndValidateRequest = (req) => {
   const model = {
@@ -19,6 +19,9 @@ const migrateServiceMapping = async (service, uid) => {
   for (let i = 0; i < service.identifiers.length; i++) {
     const { key, value } = service.identifiers[i];
     await addUserServiceIdentifier(uid, service.serviceId, service.organisationId, key, value);
+  }
+  for (let i = 0; i < service.roles.length; i++) {
+    await addUserServiceRole(uid, service.serviceId, service.organisationId, service.roles[i].id);
   }
 };
 
