@@ -34,6 +34,7 @@ const mapRoleEntity = async (entity) => {
     id: entity.id,
     name: entity.name,
     code: entity.code,
+    numericId: entity.numericId,
     status: {
       id: entity.status,
     },
