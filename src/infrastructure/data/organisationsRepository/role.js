@@ -23,6 +23,10 @@ const define = (db, schema) => {
       type: Sequelize.SMALLINT,
       allowNull: false,
     },
+    numericId: {
+      type: Sequelize.BIGINT,
+      allowNull: false,
+    },
   }, {
     timestamps: true,
     tableName: 'role',
