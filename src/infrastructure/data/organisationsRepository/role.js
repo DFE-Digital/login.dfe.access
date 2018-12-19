@@ -27,6 +27,10 @@ const define = (db, schema) => {
       type: Sequelize.BIGINT,
       allowNull: false,
     },
+    parentId: {
+      type: Sequelize.UUID,
+      allowNull: true,
+    },
   }, {
     timestamps: true,
     tableName: 'role',
@@ -34,7 +38,8 @@ const define = (db, schema) => {
   });
 };
 
-const extend = () => {
+const extend = ({ roles }) => {
+  roles.belongsTo(roles, { as: 'parent', foreignKey: 'parentId' });
 };
 
 module.exports = {
