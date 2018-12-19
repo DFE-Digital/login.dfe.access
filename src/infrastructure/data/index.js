@@ -433,6 +433,7 @@ const getServiceRoles = async (sid) => {
         [Op.eq]: sid
       },
     },
+    include:['parent'],
     order: ['name'],
   });
   if (!entities || entities.length === 0) {

@@ -30,7 +30,7 @@ const mapRoleEntity = async (entity) => {
     return undefined;
   }
 
-  return Promise.resolve({
+  const role = {
     id: entity.id,
     name: entity.name,
     code: entity.code,
@@ -38,7 +38,13 @@ const mapRoleEntity = async (entity) => {
     status: {
       id: entity.status,
     },
-  });
+  };
+
+  if (entity.parent) {
+    role.parent = await mapRoleEntity(entity.parent);
+  }
+
+  return Promise.resolve(role);
 };
 const mapRoleEntities = async (entities) => {
   const mapped = [];
