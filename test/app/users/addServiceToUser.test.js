@@ -1,4 +1,5 @@
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').mockLogger());
+jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').mockConfig());
 jest.mock('./../../../src/infrastructure/data', () => ({
   addUserService: jest.fn(),
   addUserServiceIdentifier: jest.fn(),
@@ -7,8 +8,10 @@ jest.mock('./../../../src/infrastructure/data', () => ({
   removeAllUserServiceRoles: jest.fn(),
   addUserServiceRole: jest.fn(),
 }));
+jest.mock('./../../../src/infrastructure/notifications');
 
 const { mockRequest, mockResponse } = require('./../../utils');
+const { notifyUserUpdated } = require('./../../../src/infrastructure/notifications');
 const { addUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers, getServiceRoles, removeAllUserServiceRoles, addUserServiceRole } = require('./../../../src/infrastructure/data');
 const addServiceToUser = require('./../../../src/app/users/addServiceToUser');
 
@@ -21,6 +24,8 @@ describe('When adding service to user', () => {
   let req;
 
   beforeEach(() => {
+    notifyUserUpdated.mockReset();
+
     addUserService.mockReset().mockReturnValue('mapping-id');
     addUserServiceIdentifier.mockReset();
     removeAllUserServiceIdentifiers.mockReset();
@@ -203,5 +208,12 @@ describe('When adding service to user', () => {
         'Role role2 is not available for service service1',
       ],
     });
+  });
+
+  it('then it should send notification of user update', async () => {
+    await addServiceToUser(req, res);
+
+    expect(notifyUserUpdated).toHaveBeenCalledTimes(1);
+    expect(notifyUserUpdated).toHaveBeenCalledWith(uid);
   });
 });

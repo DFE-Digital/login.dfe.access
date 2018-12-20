@@ -1,4 +1,5 @@
 const logger = require('./../../infrastructure/logger');
+const { notifyUserUpdated } = require('./../../infrastructure/notifications');
 const { addUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers, getServiceRoles, removeAllUserServiceRoles, addUserServiceRole } = require('./../../infrastructure/data');
 
 const parseAndValidateRequest = async (req) => {
@@ -70,6 +71,8 @@ const addServiceToUser = async (req, res) => {
         await addUserServiceRole(uid, sid, oid, roles[i]);
       }
     }
+
+    await notifyUserUpdated(uid);
 
     return res.status(202).send();
   } catch (e) {
