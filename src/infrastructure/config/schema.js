@@ -10,6 +10,7 @@ const notificationsSchema = new SimpleSchema({
 const schema = new SimpleSchema({
   loggerSettings: schemas.loggerSettings,
   hostingEnvironment: schemas.hostingEnvironment,
+  auth: schemas.apiServerAuth,
   database: schemas.sequelizeConnection,
   notifications: notificationsSchema,
 });
