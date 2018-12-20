@@ -1,11 +1,14 @@
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').mockLogger());
+jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').mockConfig());
 jest.mock('./../../../src/infrastructure/data', () => ({
   removeUserService: jest.fn(),
   removeAllUserServiceIdentifiers: jest.fn(),
   removeAllUserServiceRoles: jest.fn(),
 }));
+jest.mock('./../../../src/infrastructure/notifications');
 
 const { mockRequest, mockResponse } = require('./../../utils');
+const { notifyUserUpdated } = require('./../../../src/infrastructure/notifications');
 const { removeUserService, removeAllUserServiceIdentifiers, removeAllUserServiceRoles } = require('./../../../src/infrastructure/data');
 const removeServiceFromUser = require('./../../../src/app/users/removeServiceFromUser');
 
@@ -18,6 +21,8 @@ describe('When removing service from user', () => {
   let req;
 
   beforeEach(() => {
+    notifyUserUpdated.mockReset();
+
     removeUserService.mockReset();
     removeAllUserServiceIdentifiers.mockReset();
     removeAllUserServiceRoles.mockReset();
@@ -59,5 +64,12 @@ describe('When removing service from user', () => {
     expect(res.status).toHaveBeenCalledTimes(1);
     expect(res.status).toHaveBeenCalledWith(204);
     expect(res.send).toHaveBeenCalledTimes(1);
+  });
+
+  it('then it should send notification of user update', async () => {
+    await removeServiceFromUser(req, res);
+
+    expect(notifyUserUpdated).toHaveBeenCalledTimes(1);
+    expect(notifyUserUpdated).toHaveBeenCalledWith(uid);
   });
 });
