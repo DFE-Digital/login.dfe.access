@@ -28,5 +28,8 @@
       "max": 5,
       "min": 0
     }
+  },
+  "notifications": {
+    "connectionString": "redis://localhost:6379"
   }
 }

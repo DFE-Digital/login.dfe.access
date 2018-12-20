@@ -13,6 +13,9 @@ const mockLogger = () => {
 
 const mockConfig = (customConfig) => {
   return Object.assign({
+    notifications: {
+      connectionString: 'some-redis-connection-string',
+    },
   }, customConfig);
 };
 
