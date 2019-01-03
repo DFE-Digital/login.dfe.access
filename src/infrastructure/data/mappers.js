@@ -2,11 +2,14 @@ const mapUserServiceEntity = async (entity) => {
   if (!entity) {
     return undefined;
   }
-  const identifiers = (await entity.getIdentifiers() || []).map(x => ({
+
+  const identifiers = (entity.identifiers || await entity.getIdentifiers() || []).map(x => ({
     key: x.identifier_key,
     value: x.identifier_value
   }));
-  const roles = await mapRoleEntities((await entity.getRoles() || []).map(x => x.role));
+
+  const roles = await mapRoleEntities((entity.roles || await entity.getRoles() || []).map(x => x.role));
+
   return Promise.resolve({
     userId: entity.user_id || undefined,
     invitationId: entity.invitation_id || undefined,

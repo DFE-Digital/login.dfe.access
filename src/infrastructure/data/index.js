@@ -167,15 +167,91 @@ const getUsersOfServicePaged = async (sid, filters, pageNumber, pageSize) => {
 };
 
 const getPageOfUserServices = async (pageNumber, pageSize) => {
-  const resultset = await userServices.findAndCountAll({
-    limit: pageSize,
-    offset: (pageNumber - 1) * pageSize,
-    order: ['user_id', 'service_id', 'organisation_id'],
-  });
-  const services = await mapUserServiceEntities(resultset.rows);
+  const queryOpts = {
+    type: QueryTypes.SELECT,
+  };
+  const x = 'role.Id role_id,\n' +
+    '       role.Name role_name,\n' +
+    '       role.ApplicationId role_application_id,\n' +
+    '       role.Status role_status,\n' +
+    '       role.Code role_code,\n' +
+    '       role.ParentId role_parent_id,\n' +
+    '       role.NumericId role_numeric_id,'
+  const skip = (pageNumber - 1) * pageSize;
+  const count = (await connection.query('SELECT COUNT(1) count FROM user_services', queryOpts))[0].count;
+  const rows = await connection.query('SELECT\n' +
+    '       page.id user_service_id,\n' +
+    '       page.user_id,\n' +
+    '       page.service_id,\n' +
+    '       page.organisation_id,\n' +
+    '       page.CreatedAt,\n' +
+    '       role.Id role_id,\n' +
+    '       role.Name role_name,\n' +
+    '       role.ApplicationId role_application_id,\n' +
+    '       role.Status role_status,\n' +
+    '       role.Code role_code,\n' +
+    '       role.ParentId role_parent_id,\n' +
+    '       role.NumericId role_numeric_id,\n' +
+    '       usi.identifier_key,\n' +
+    '       usi.identifier_value\n' +
+    'FROM (SELECT *\n' +
+    '      FROM user_services\n' +
+    '      ORDER BY user_id, service_id, organisation_id\n' +
+    `      OFFSET ${skip} ROWS FETCH NEXT ${pageSize} ROWS ONLY) page\n` +
+    'LEFT JOIN user_service_roles usr\n' +
+    '    ON page.user_id = usr.user_id\n' +
+    '    AND page.service_id = usr.service_id\n' +
+    '    AND page.user_id = usr.user_id\n' +
+    'LEFT JOIN Role\n' +
+    '    ON usr.role_id = role.id\n' +
+    'LEFT JOIN user_service_identifiers usi\n' +
+    '    ON page.user_id = usi.user_id\n' +
+    '    AND page.service_id = usi.service_id\n' +
+    '    AND page.user_id = usi.user_id\n' +
+    'ORDER BY page.user_id, page.service_id, page.organisation_id, role.name, usi.identifier_key', queryOpts);
+  const entities = [];
+  let currentEntity;
+  for (let i = 0; i < rows.length; i += 1) {
+    const currentRow = rows[i];
+    if (!currentEntity || currentRow.user_service_id !== currentEntity.id) {
+      currentEntity = {
+        id: currentRow.user_service_id,
+        user_id: currentRow.user_id,
+        service_id: currentRow.service_id,
+        organisation_id: currentRow.organisation_id,
+        createdAt: currentRow.CreatedAt,
+        identifiers: [],
+        roles: [],
+      };
+      entities.push(currentEntity);
+    }
+
+    if (currentRow.identifier_key && !currentEntity.identifiers.find(x => x.identifier_key === currentRow.identifier_key)) {
+      currentEntity.identifiers.push({
+        identifier_key: currentRow.identifier_key,
+        identifier_value: currentRow.identifier_value,
+      });
+    }
+
+    if (currentRow.role_id && !currentEntity.roles.find(x => x.id === currentRow.role_id)) {
+      currentEntity.roles.push({
+        role: {
+          id: currentRow.role_id,
+          name: currentRow.role_name,
+          applicationId: currentRow.role_application_id,
+          status: currentRow.role_status,
+          code: currentRow.role_code,
+          parentId: currentRow.role_parent_id,
+          numericId: currentRow.role_numeric_id,
+        },
+      });
+    }
+  }
+  const services = await mapUserServiceEntities(entities);
+
   return {
     services,
-    numberOfPages: Math.ceil(resultset.count / pageSize),
+    numberOfPages: Math.ceil(count / pageSize),
   };
 };
 
@@ -433,7 +509,7 @@ const getServiceRoles = async (sid) => {
         [Op.eq]: sid
       },
     },
-    include:['parent'],
+    include: ['parent'],
     order: ['name'],
   });
   if (!entities || entities.length === 0) {
