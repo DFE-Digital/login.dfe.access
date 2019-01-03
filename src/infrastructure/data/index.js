@@ -170,13 +170,6 @@ const getPageOfUserServices = async (pageNumber, pageSize) => {
   const queryOpts = {
     type: QueryTypes.SELECT,
   };
-  const x = 'role.Id role_id,\n' +
-    '       role.Name role_name,\n' +
-    '       role.ApplicationId role_application_id,\n' +
-    '       role.Status role_status,\n' +
-    '       role.Code role_code,\n' +
-    '       role.ParentId role_parent_id,\n' +
-    '       role.NumericId role_numeric_id,'
   const skip = (pageNumber - 1) * pageSize;
   const count = (await connection.query('SELECT COUNT(1) count FROM user_services', queryOpts))[0].count;
   const rows = await connection.query('SELECT\n' +
