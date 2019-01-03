@@ -4,6 +4,10 @@ const leftPad = (value, length, paddingValue) => {
 };
 
 const formatDate = (date) => {
+  if (date === undefined) {
+    return undefined;
+  }
+
   const year = date.getUTCFullYear();
   const month = date.getUTCMonth() + 1;
   const day = date.getUTCDate();
