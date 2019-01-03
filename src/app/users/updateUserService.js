@@ -1,5 +1,5 @@
 const logger = require('./../../infrastructure/logger');
-const { getUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers, getServiceRoles, removeAllUserServiceRoles, addUserServiceRole } = require('./../../infrastructure/data');
+const { removeAllUserServiceGroupIdentifiers, getUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers, getServiceRoles, removeAllUserServiceRoles, addUserServiceRole } = require('./../../infrastructure/data');
 
 const parseAndValidateRequest = async (req) => {
   const model = {
@@ -74,6 +74,7 @@ const updateUserService = async (req, res) => {
 
     if (roles) {
       await removeAllUserServiceRoles(uid, sid, oid);
+      await removeAllUserServiceGroupIdentifiers(uid, sid, oid);
       if (roles.length > 0) {
         for (let i = 0; i < roles.length; i += 1) {
           await addUserServiceRole(uid, sid, oid, roles[i]);
