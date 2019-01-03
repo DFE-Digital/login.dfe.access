@@ -79,7 +79,7 @@ const updateUserService = async (req, res) => {
         for (let i = 0; i < roles.length; i += 1) {
           await addUserServiceRole(uid, sid, oid, roles[i]);
         }
-        const roleCodes = (await getServiceRoles(sid) || []).filter((g) => {roles.find((r) => r === g.id)}).map((g) => g.code);
+        const roleCodes = (await getServiceRoles(sid) || []).filter((g) => roles.find((r) => r === g.id)).map((g) => g.code);
         await addGroupsToUserServiceIdentifier(uid, sid, oid, roleCodes.join(','));
       }
     }
