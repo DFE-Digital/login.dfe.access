@@ -3,13 +3,14 @@ jest.mock('./../../../src/infrastructure/data', () => ({
   getUserService: jest.fn(),
   addUserServiceIdentifier: jest.fn(),
   removeAllUserServiceIdentifiers: jest.fn(),
+  removeAllUserServiceGroupIdentifiers: jest.fn(),
   getServiceRoles: jest.fn(),
   removeAllUserServiceRoles: jest.fn(),
   addUserServiceRole: jest.fn(),
 }));
 
 const { mockRequest, mockResponse } = require('./../../utils');
-const { getUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers, getServiceRoles, removeAllUserServiceRoles, addUserServiceRole } = require('./../../../src/infrastructure/data');
+const { removeAllUserServiceGroupIdentifiers, getUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers, getServiceRoles, removeAllUserServiceRoles, addUserServiceRole } = require('./../../../src/infrastructure/data');
 const updateUserService = require('./../../../src/app/users/updateUserService');
 
 const uid = 'user1';
@@ -34,6 +35,7 @@ describe('When updating service of user', () => {
     });
     addUserServiceIdentifier.mockReset();
     removeAllUserServiceIdentifiers.mockReset();
+    removeAllUserServiceGroupIdentifiers.mockReset();
     getServiceRoles.mockReset().mockReturnValue([
       { id: 'role1' },
       { id: 'role3' },
