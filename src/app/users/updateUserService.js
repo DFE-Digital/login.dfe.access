@@ -79,7 +79,8 @@ const updateUserService = async (req, res) => {
         for (let i = 0; i < roles.length; i += 1) {
           await addUserServiceRole(uid, sid, oid, roles[i]);
         }
-        await addUserServiceIdentifier(uid, sid, oid, 'groups', roles.join(','));
+        const roleCodes = (await getServiceRoles(sid) || []).map((g) => g.code);
+        await addUserServiceIdentifier(uid, sid, oid, 'groups', roleCodes.join(','));
       }
     }
 
