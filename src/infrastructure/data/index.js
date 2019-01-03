@@ -107,6 +107,37 @@ const removeAllUserServiceIdentifiers = async (uid, sid, oid) => {
   });
 };
 
+
+const removeAllUserServiceGroupIdentifiers = async (uid, sid, oid) => {
+  await userServiceIdentifiers.destroy({
+    where: {
+      user_id: {
+        [Op.eq]: uid,
+      },
+      service_id: {
+        [Op.eq]: sid,
+      },
+      organisation_id: {
+        [Op.eq]: oid,
+      },
+      identifier_key: {
+        [Op.eq]: 'groups'
+      }
+    },
+  });
+};
+
+const addGroupsToUserServiceIdentifier = async (uid, sid, oid, value) => {
+  await userServiceIdentifiers.upsert({
+    user_id: uid,
+    organisation_id: oid,
+    service_id: sid,
+    identifier_key: 'groups',
+    identifier_value: value,
+  });
+};
+
+
 const removeUserService = async (uid, sid, oid) => {
   await userServices.destroy({
     where: {
@@ -543,4 +574,7 @@ module.exports = {
   getServiceRoles,
   getInvitationService,
   removeInvitationService,
+
+  removeAllUserServiceGroupIdentifiers,
+  addGroupsToUserServiceIdentifier,
 };
