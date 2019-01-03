@@ -127,6 +127,16 @@ const removeAllUserServiceGroupIdentifiers = async (uid, sid, oid) => {
   });
 };
 
+const addGroupsToUserServiceIdentifier = async (uid, sid, oid, value) => {
+  await userServiceIdentifiers.upsert({
+    user_id: uid,
+    organisation_id: oid,
+    service_id: sid,
+    identifier_key: 'groups',
+    identifier_value: value,
+  });
+};
+
 
 const removeUserService = async (uid, sid, oid) => {
   await userServices.destroy({
@@ -566,4 +576,5 @@ module.exports = {
   removeInvitationService,
 
   removeAllUserServiceGroupIdentifiers,
+  addGroupsToUserServiceIdentifier,
 };
