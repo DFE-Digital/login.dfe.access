@@ -4,7 +4,10 @@ const ServiceNotificationsClient = require('login.dfe.service-notifications.jobs
 const serviceNotificationsClient = new ServiceNotificationsClient(config.notifications);
 
 const notifyUserUpdated = async (userId) => {
-  await serviceNotificationsClient.notifyUserUpdated({ sub: userId });
+  const notificationsEnabled = config.toggles && config.toggles.notificationsEnabled === true;
+  if (notificationsEnabled) {
+    await serviceNotificationsClient.notifyUserUpdated({ sub: userId });
+  }
 };
 
 module.exports = {
