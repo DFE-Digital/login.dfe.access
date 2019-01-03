@@ -38,11 +38,15 @@ describe('When updating service of user', () => {
     removeAllUserServiceIdentifiers.mockReset();
     removeAllUserServiceGroupIdentifiers.mockReset();
     getServiceRoles.mockReset().mockReturnValue([
-      { id: 'role1' },
+      { id: 'role1', },
       { id: 'role3' },
     ]);
     removeAllUserServiceRoles.mockReset();
     addUserServiceRole.mockReset();
+    getServiceRoles.mockReset().mockReturnValue([
+      { id: 'role1', code: 'role1'},
+      { id: 'role3', code: 'role2'},
+    ]);
 
     req = mockRequest({
       params: {
