@@ -170,13 +170,6 @@ const getPageOfUserServices = async (pageNumber, pageSize) => {
   const queryOpts = {
     type: QueryTypes.SELECT,
   };
-  const x = 'role.Id role_id,\n' +
-    '       role.Name role_name,\n' +
-    '       role.ApplicationId role_application_id,\n' +
-    '       role.Status role_status,\n' +
-    '       role.Code role_code,\n' +
-    '       role.ParentId role_parent_id,\n' +
-    '       role.NumericId role_numeric_id,'
   const skip = (pageNumber - 1) * pageSize;
   const count = (await connection.query('SELECT COUNT(1) count FROM user_services', queryOpts))[0].count;
   const rows = await connection.query('SELECT\n' +
@@ -201,13 +194,13 @@ const getPageOfUserServices = async (pageNumber, pageSize) => {
     'LEFT JOIN user_service_roles usr\n' +
     '    ON page.user_id = usr.user_id\n' +
     '    AND page.service_id = usr.service_id\n' +
-    '    AND page.user_id = usr.user_id\n' +
+    '    AND page.organisation_id = usr.organisation_id\n' +
     'LEFT JOIN Role\n' +
     '    ON usr.role_id = role.id\n' +
     'LEFT JOIN user_service_identifiers usi\n' +
     '    ON page.user_id = usi.user_id\n' +
     '    AND page.service_id = usi.service_id\n' +
-    '    AND page.user_id = usi.user_id\n' +
+    '    AND page.organisation_id = usi.organisation_id\n' +
     'ORDER BY page.user_id, page.service_id, page.organisation_id, role.name, usi.identifier_key', queryOpts);
   const entities = [];
   let currentEntity;
