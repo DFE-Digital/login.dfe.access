@@ -1,4 +1,5 @@
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').mockLogger());
+jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').mockConfig({toggles: {notificationsEnabled: true}}));
 jest.mock('./../../../src/infrastructure/data', () => ({
   getUserService: jest.fn(),
   addUserServiceIdentifier: jest.fn(),
