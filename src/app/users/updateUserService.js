@@ -1,5 +1,6 @@
 const logger = require('./../../infrastructure/logger');
 const { addGroupsToUserServiceIdentifier, removeAllUserServiceGroupIdentifiers, getUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers, getServiceRoles, removeAllUserServiceRoles, addUserServiceRole } = require('./../../infrastructure/data');
+const { notifyUserUpdated } = require('./../../infrastructure/notifications');
 
 const parseAndValidateRequest = async (req) => {
   const model = {
@@ -83,7 +84,7 @@ const updateUserService = async (req, res) => {
         await addGroupsToUserServiceIdentifier(uid, sid, oid, roleCodes.join(','));
       }
     }
-
+    notifyUserUpdated(uid);
     return res.status(202).send();
   } catch (e) {
     logger.error(`Error adding service ${sid} with org ${oid} to user ${uid} (correlation id: ${correlationId}) - ${e.message}`, {
