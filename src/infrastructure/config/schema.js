@@ -7,12 +7,17 @@ const notificationsSchema = new SimpleSchema({
   connectionString: patterns.redis,
 });
 
+const togglesSchema = new SimpleSchema({
+  notificationsEnabled: Boolean,
+});
+
 const schema = new SimpleSchema({
   loggerSettings: schemas.loggerSettings,
   hostingEnvironment: schemas.hostingEnvironment,
   auth: schemas.apiServerAuth,
   database: schemas.sequelizeConnection,
   notifications: notificationsSchema,
+  toggles: togglesSchema,
 });
 
 module.exports.validate = () => {
