@@ -155,13 +155,18 @@ const removeUserService = async (uid, sid, oid) => {
 };
 
 // TODO: re-enable tests once we can update model to support sequelize relationships
-const getUsersOfServicePaged = async (sid, filters, pageNumber, pageSize) => {
+const getUsersOfServicePaged = async (sid, oid, filters, pageNumber, pageSize) => {
   let queryFrom = 'FROM [dbo].[user_services] AS [user_services]';
   let queryWhere = 'WHERE [user_services].[service_id] = :sid';
   const queryOpts = {
     type: QueryTypes.SELECT,
     replacements: { sid },
   };
+
+  if (oid) {
+    queryOpts.replacements.oid = oid;
+    queryWhere += ' AND [user_services].[organisation_id] = :oid';
+  }
 
   if (filters) {
     let needsIdentifiersJoin = false;
