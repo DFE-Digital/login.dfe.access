@@ -61,8 +61,9 @@ describe('When listing services of a service', () => {
     await listUsersOfService(req, res);
 
     expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
-    expect(getUsersOfServicePaged.mock.calls[0][2]).toBe(page);
-    expect(getUsersOfServicePaged.mock.calls[0][3]).toBe(pageSize);
+    expect(getUsersOfServicePaged.mock.calls[0][1]).toBeUndefined();
+    expect(getUsersOfServicePaged.mock.calls[0][3]).toBe(page);
+    expect(getUsersOfServicePaged.mock.calls[0][4]).toBe(pageSize);
   });
 
   it('then it should query using defalult page size of 50 when param not provided', async () => {
@@ -71,8 +72,9 @@ describe('When listing services of a service', () => {
     await listUsersOfService(req, res);
 
     expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
-    expect(getUsersOfServicePaged.mock.calls[0][2]).toBe(page);
-    expect(getUsersOfServicePaged.mock.calls[0][3]).toBe(50);
+    expect(getUsersOfServicePaged.mock.calls[0][1]).toBeUndefined();
+    expect(getUsersOfServicePaged.mock.calls[0][3]).toBe(page);
+    expect(getUsersOfServicePaged.mock.calls[0][4]).toBe(50);
   });
 
   it('then it should query using defalult page of 1 when param not provided', async () => {
@@ -81,15 +83,16 @@ describe('When listing services of a service', () => {
     await listUsersOfService(req, res);
 
     expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
-    expect(getUsersOfServicePaged.mock.calls[0][2]).toBe(1);
-    expect(getUsersOfServicePaged.mock.calls[0][3]).toBe(pageSize);
+    expect(getUsersOfServicePaged.mock.calls[0][1]).toBeUndefined();
+    expect(getUsersOfServicePaged.mock.calls[0][3]).toBe(1);
+    expect(getUsersOfServicePaged.mock.calls[0][4]).toBe(pageSize);
   });
 
   it('then it should include filter idkey filter if present', async () => {
     await listUsersOfService(req, res);
 
     expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
-    expect(getUsersOfServicePaged.mock.calls[0][1]).toMatchObject({
+    expect(getUsersOfServicePaged.mock.calls[0][2]).toMatchObject({
       idkey: filteridkey,
     });
   });
@@ -98,7 +101,7 @@ describe('When listing services of a service', () => {
     await listUsersOfService(req, res);
 
     expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
-    expect(getUsersOfServicePaged.mock.calls[0][1]).toMatchObject({
+    expect(getUsersOfServicePaged.mock.calls[0][2]).toMatchObject({
       idvalue: filteridvalue,
     });
   });
@@ -110,6 +113,6 @@ describe('When listing services of a service', () => {
     await listUsersOfService(req, res);
 
     expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
-    expect(getUsersOfServicePaged.mock.calls[0][1]).toBeUndefined();
+    expect(getUsersOfServicePaged.mock.calls[0][2]).toBeUndefined();
   });
 });
