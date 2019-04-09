@@ -54,7 +54,7 @@ describe('When listing policies of a service', () => {
     await listPoliciesOfService(req, res);
 
     expect(getPoliciesForService).toHaveBeenCalledTimes(1);
-    expect(getPoliciesForService).toHaveBeenCalledWith(sid);
+    expect(getPoliciesForService).toHaveBeenCalledWith(sid, 1, 50);
   });
 
   it('then it should return json policies', async () => {
