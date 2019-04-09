@@ -449,18 +449,26 @@ const addInvitationServiceRole = async (uid, sid, oid, rid) => {
   });
 };
 
-
-const getPoliciesForService = async (sid) => {
-  const entities = await policies.findAll({
+const getPoliciesForService = async (sid, pageNumber, pageSize) => {
+  const offset = (pageNumber - 1) * pageSize;
+  const entities = await policies.findAndCountAll({
     where: {
       applicationId: {
         [Op.eq]: sid
       },
     },
+    distinct: true,
     include: ['conditions', 'roles'],
     order: ['name'],
+    limit: pageSize,
+    offset,
   });
-  return await mapPolicyEntities(entities);
+  return {
+    policies: await mapPolicyEntities(entities.rows),
+    page: pageNumber,
+    totalNumberOfPages: Math.ceil(entities.count / pageSize),
+    totalNumberOfRecords: entities.count,
+  };
 };
 
 const getPolicy = async (id) => {
