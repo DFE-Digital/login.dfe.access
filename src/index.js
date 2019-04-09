@@ -8,6 +8,9 @@ const healthCheck = require('login.dfe.healthcheck');
 const registerRoutes = require('./routes');
 const { getErrorHandler } = require('login.dfe.express-error-handling');
 const apiAuth = require('login.dfe.api.auth');
+const configSchema = require('./infrastructure/config/schema');
+
+configSchema.validate();
 
 const app = express();
 app.use(helmet({

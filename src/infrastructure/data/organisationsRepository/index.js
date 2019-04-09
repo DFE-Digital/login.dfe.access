@@ -11,6 +11,8 @@ const policies = require('./policy');
 const roles = require('./role');
 const policyRoles = require('./policyRole');
 const policyConditions = require('./policyCondition');
+const userServiceRoles = require('./userServiceRoles');
+const invitationServiceRoles = require('./invitationServiceRoles');
 
 const db = makeConnection();
 
@@ -40,6 +42,8 @@ buildDataModel(dataModel, db, [
   roles,
   policyRoles,
   policyConditions,
+  userServiceRoles,
+  invitationServiceRoles,
 ]);
 dataModel.connection = db;
 
