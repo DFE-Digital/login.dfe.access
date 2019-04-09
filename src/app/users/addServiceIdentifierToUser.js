@@ -1,5 +1,6 @@
 const logger = require('./../../infrastructure/logger');
-const { addUserServiceIdentifier } = require('./../../infrastructure/data');
+const { notifyUserUpdated } = require('./../../infrastructure/notifications');
+const { addUserServiceIdentifier, getUserOfServiceIdentifier } = require('./../../infrastructure/data');
 
 const parseAndValidateRequest = (req) => {
   const model = {
@@ -29,7 +30,17 @@ const addServiceIdentifierToUser = async (req, res) => {
       return res.status(400).send({ details: model.errors });
     }
 
+    if (await getUserOfServiceIdentifier(sid, key, value)) {
+      return res.status(409).send({
+        details: [
+          'Identifier already in use'
+        ],
+      });
+    }
+
     await addUserServiceIdentifier(uid, sid, oid, key, value);
+
+    await notifyUserUpdated(uid);
 
     return res.status(202).send();
   } catch (e) {

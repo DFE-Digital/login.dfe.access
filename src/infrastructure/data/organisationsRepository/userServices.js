@@ -30,7 +30,7 @@ const define = (db, schema) => {
   });
 };
 
-const extend = ({ userServices, userServiceIdentifiers }) => {
+const extend = ({ userServices, userServiceIdentifiers, userServiceRoles }) => {
   userServices.prototype.getIdentifiers = async function () {
     return userServiceIdentifiers.findAll({
       where: {
@@ -44,6 +44,22 @@ const extend = ({ userServices, userServiceIdentifiers }) => {
           [Op.eq]: this.service_id,
         },
       },
+    });
+  };
+  userServices.prototype.getRoles = async function () {
+    return userServiceRoles.findAll({
+      where: {
+        user_id: {
+          [Op.eq]: this.user_id,
+        },
+        organisation_id: {
+          [Op.eq]: this.organisation_id,
+        },
+        service_id: {
+          [Op.eq]: this.service_id,
+        },
+      },
+      include: ['role'],
     });
   };
 };

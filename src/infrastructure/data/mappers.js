@@ -2,12 +2,14 @@ const mapUserServiceEntity = async (entity) => {
   if (!entity) {
     return undefined;
   }
-  const identifiers = (await entity.getIdentifiers() || []).map(x => ({
+
+  const identifiers = (entity.identifiers || await entity.getIdentifiers() || []).map(x => ({
     key: x.identifier_key,
     value: x.identifier_value
   }));
-  const groups = identifiers.find(x => x.key === 'groups');
-  const roles = (groups ? groups.value : '').split(',').filter(x => x.length > 0);
+
+  const roles = await mapRoleEntities((entity.roles || await entity.getRoles() || []).map(x => x.role));
+
   return Promise.resolve({
     userId: entity.user_id || undefined,
     invitationId: entity.invitation_id || undefined,
@@ -26,28 +28,55 @@ const mapUserServiceEntities = async (entities) => {
   return mapped;
 };
 
+const mapRoleEntity = async (entity) => {
+  if (!entity) {
+    return undefined;
+  }
+
+  const role = {
+    id: entity.id,
+    name: entity.name,
+    code: entity.code,
+    numericId: entity.numericId,
+    status: {
+      id: entity.status,
+    },
+  };
+
+  if (entity.parent) {
+    role.parent = await mapRoleEntity(entity.parent);
+  }
+
+  return Promise.resolve(role);
+};
+const mapRoleEntities = async (entities) => {
+  const mapped = [];
+  for (let i = 0; i < entities.length; i++) {
+    mapped.push(await mapRoleEntity(entities[i]));
+  }
+  return mapped;
+};
+
 const mapPolicyEntity = async (entity) => {
   if (!entity) {
     return undefined;
   }
 
-  const conditions = entity.conditions.map((condition) => {
-    return {
-      field: condition.field,
-      operator: condition.operator,
-      value: condition.value,
-    };
-  });
-
-  const roles = entity.roles.map((role) => {
-    return {
-      id: role.id,
-      name: role.name,
-      status: {
-        id: role.status,
-      },
+  const conditions = [];
+  entity.conditions.forEach((conditionEntity) => {
+    const condition = conditions.find(c => c.field === conditionEntity.field);
+    if (condition) {
+      condition.value.push(conditionEntity.value);
+    } else {
+      conditions.push({
+        field: conditionEntity.field,
+        operator: conditionEntity.operator,
+        value: [conditionEntity.value],
+      });
     }
   });
+
+  const roles = await mapRoleEntities(entity.roles);
 
   return Promise.resolve({
     id: entity.id,
@@ -71,6 +100,8 @@ const mapPolicyEntities = async (entities) => {
 module.exports = {
   mapUserServiceEntity,
   mapUserServiceEntities,
+  mapRoleEntity,
+  mapRoleEntities,
   mapPolicyEntity,
   mapPolicyEntities,
 };

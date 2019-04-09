@@ -11,6 +11,9 @@ const oid = 'organisation-1';
 const service = mockUserServiceEntity({}, [
   { identifier_key: 'k2s-id', identifier_value: '123456' },
   { identifier_key: 'groups', identifier_value: 'g1,g2' },
+], [
+  { role: { id: 'role1', code: 'R1', name: 'Role One', status: 1 } },
+  { role: { id: 'role2', code: 'R2', name: 'Role Two', status: 0 } },
 ]);
 
 describe('When getting user service from the repository', () => {
@@ -47,7 +50,24 @@ describe('When getting user service from the repository', () => {
     expect(actual).toEqual({
       serviceId: service.service_id,
       organisationId: service.organisation_id,
-      roles: ['g1', 'g2'],
+      roles: [
+        {
+          id: 'role1',
+          code: 'R1',
+          name: 'Role One',
+          status: {
+            id: 1
+          }
+        },
+        {
+          id: 'role2',
+          code: 'R2',
+          name: 'Role Two',
+          status: {
+            id: 0
+          }
+        },
+      ],
       identifiers: [
         { key: 'k2s-id', value: '123456' },
         { key: 'groups', value: 'g1,g2' },

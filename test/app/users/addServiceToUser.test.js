@@ -1,12 +1,18 @@
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').mockLogger());
+jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').mockConfig());
 jest.mock('./../../../src/infrastructure/data', () => ({
   addUserService: jest.fn(),
   addUserServiceIdentifier: jest.fn(),
   removeAllUserServiceIdentifiers: jest.fn(),
+  getServiceRoles: jest.fn(),
+  removeAllUserServiceRoles: jest.fn(),
+  addUserServiceRole: jest.fn(),
 }));
+jest.mock('./../../../src/infrastructure/notifications');
 
 const { mockRequest, mockResponse } = require('./../../utils');
-const { addUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers } = require('./../../../src/infrastructure/data');
+const { notifyUserUpdated } = require('./../../../src/infrastructure/notifications');
+const { addUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers, getServiceRoles, removeAllUserServiceRoles, addUserServiceRole } = require('./../../../src/infrastructure/data');
 const addServiceToUser = require('./../../../src/app/users/addServiceToUser');
 
 const uid = 'user1';
@@ -18,9 +24,17 @@ describe('When adding service to user', () => {
   let req;
 
   beforeEach(() => {
+    notifyUserUpdated.mockReset();
+
     addUserService.mockReset().mockReturnValue('mapping-id');
     addUserServiceIdentifier.mockReset();
     removeAllUserServiceIdentifiers.mockReset();
+    getServiceRoles.mockReset().mockReturnValue([
+      { id: 'role1' },
+      { id: 'role3' },
+    ]);
+    removeAllUserServiceRoles.mockReset();
+    addUserServiceRole.mockReset();
 
     req = mockRequest({
       params: {
@@ -32,6 +46,10 @@ describe('When adding service to user', () => {
         identifiers: [
           { key: 'some', value: 'thing' },
           { key: 'something', value: 'else' },
+        ],
+        roles: [
+          'role1',
+          'role3',
         ],
       },
     });
@@ -45,7 +63,16 @@ describe('When adding service to user', () => {
     expect(addUserService).toHaveBeenCalledWith(uid, sid, oid);
   });
 
-  it('then it should remove existing identifiers if specified', async () => {
+  it('then it should remove existing identifiers if new identifiers specified', async () => {
+    await addServiceToUser(req, res);
+
+    expect(removeAllUserServiceIdentifiers).toHaveBeenCalledTimes(1);
+    expect(removeAllUserServiceIdentifiers).toHaveBeenCalledWith(uid, sid, oid);
+  });
+
+  it('then it should remove existing identifiers if new identifiers not specified', async () => {
+    req.body.identifiers = undefined;
+
     await addServiceToUser(req, res);
 
     expect(removeAllUserServiceIdentifiers).toHaveBeenCalledTimes(1);
@@ -60,13 +87,44 @@ describe('When adding service to user', () => {
     expect(addUserServiceIdentifier).toHaveBeenCalledWith(uid, sid, oid, 'something', 'else');
   });
 
-  it('then it should not attempt to add or remove identifiers if none specified', async () => {
+  it('then it should not attempt to add identifiers if none specified', async () => {
     req.body.identifiers = undefined;
 
     await addServiceToUser(req, res);
 
-    expect(removeAllUserServiceIdentifiers).not.toHaveBeenCalled();
     expect(addUserServiceIdentifier).not.toHaveBeenCalled();
+  });
+
+  it('then it should remove existing roles if new roles specified', async () => {
+    await addServiceToUser(req, res);
+
+    expect(removeAllUserServiceRoles).toHaveBeenCalledTimes(1);
+    expect(removeAllUserServiceRoles).toHaveBeenCalledWith(uid, sid, oid);
+  });
+
+  it('then it should remove existing roles if new roles not specified', async () => {
+    req.body.roles = undefined;
+
+    await addServiceToUser(req, res);
+
+    expect(removeAllUserServiceRoles).toHaveBeenCalledTimes(1);
+    expect(removeAllUserServiceRoles).toHaveBeenCalledWith(uid, sid, oid);
+  });
+
+  it('then it should add roles if specified', async () => {
+    await addServiceToUser(req, res);
+
+    expect(addUserServiceRole).toHaveBeenCalledTimes(2);
+    expect(addUserServiceRole).toHaveBeenCalledWith(uid, sid, oid, 'role1');
+    expect(addUserServiceRole).toHaveBeenCalledWith(uid, sid, oid, 'role3');
+  });
+
+  it('then it should not attempt to add roles if none specified', async () => {
+    req.body.roles = undefined;
+
+    await addServiceToUser(req, res);
+
+    expect(addUserServiceRole).not.toHaveBeenCalled();
   });
 
   it('then it should return 202 response', async () => {
@@ -120,5 +178,42 @@ describe('When adding service to user', () => {
         'Identifiers items must contain key and value',
       ],
     });
+  });
+
+  it('then it should return 400 if roles specified but not array', async () => {
+    req.body.roles = 'not-an-array';
+
+    await addServiceToUser(req, res);
+
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledTimes(1);
+    expect(res.send.mock.calls[0][0]).toEqual({
+      details: [
+        'Roles must be an array',
+      ],
+    });
+  });
+
+  it('then it should return 400 if role not valid for service', async () => {
+    req.body.roles = ['role2'];
+
+    await addServiceToUser(req, res);
+
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledTimes(1);
+    expect(res.send.mock.calls[0][0]).toEqual({
+      details: [
+        'Role role2 is not available for service service1',
+      ],
+    });
+  });
+
+  it('then it should send notification of user update', async () => {
+    await addServiceToUser(req, res);
+
+    expect(notifyUserUpdated).toHaveBeenCalledTimes(1);
+    expect(notifyUserUpdated).toHaveBeenCalledWith(uid);
   });
 });
