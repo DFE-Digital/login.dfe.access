@@ -20,7 +20,7 @@ const getQueryStringIntValue = (req, key, defaultValue = 0) => {
 
 const listPoliciesOfService = async (req, res) => {
   const page = getQueryStringIntValue(req, 'page', 1);
-  const pageSize = getQueryStringIntValue(req, 'pageSize', 50);
+  const pageSize = getQueryStringIntValue(req, 'pageSize', 100000);
 
   const correlationId = req.correlationId;
   const { sid } = req.params;
