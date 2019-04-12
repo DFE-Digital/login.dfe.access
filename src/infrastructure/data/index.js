@@ -463,6 +463,28 @@ const getPoliciesForService = async (sid) => {
   return await mapPolicyEntities(entities);
 };
 
+const getPageOfPolicies = async (sid, pageNumber, pageSize) => {
+  const offset = (pageNumber - 1) * pageSize;
+  const entities = await policies.findAndCountAll({
+    where: {
+      applicationId: {
+        [Op.eq]: sid
+      },
+    },
+    distinct: true,
+    include: ['conditions', 'roles'],
+    order: ['name'],
+    limit: pageSize,
+    offset,
+  });
+  return {
+    policies: await mapPolicyEntities(entities.rows),
+    page: pageNumber,
+    totalNumberOfPages: Math.ceil(entities.count / pageSize),
+    totalNumberOfRecords: entities.count,
+  };
+};
+
 const getPolicy = async (id) => {
   const entity = await policies.find({
     where: {
@@ -582,4 +604,5 @@ module.exports = {
 
   removeAllUserServiceGroupIdentifiers,
   addGroupsToUserServiceIdentifier,
+  getPageOfPolicies,
 };
