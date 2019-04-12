@@ -11,6 +11,7 @@ const createPolicyOfService = require('./createPolicyOfService');
 const getPolicyOfService = require('./getPolicyOfService');
 const updatePolicyOfService = require('./updatePolicyOfService');
 const deletePolicyOfService = require('./deletePolicyOfService');
+const pageOfPoliciesForService = require('./pageOfPoliciesForService');
 
 const router = express.Router();
 
@@ -21,6 +22,7 @@ const buildArea = () => {
   router.get('/:sid/roles', asyncWrapper(listRolesOfService));
 
   router.get('/:sid/policies', asyncWrapper(listPoliciesOfService));
+  router.get('/v2/:sid/policies', asyncWrapper(pageOfPoliciesForService));
   router.post('/:sid/policies', asyncWrapper(createPolicyOfService));
   router.get('/:sid/policies/:pid', asyncWrapper(getPolicyOfService));
   router.patch('/:sid/policies/:pid', asyncWrapper(updatePolicyOfService));
