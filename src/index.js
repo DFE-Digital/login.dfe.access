@@ -25,6 +25,13 @@ if (config.hostingEnvironment.env !== 'dev') {
 
 }
 
+if (config.hostingEnvironment.env === 'dev') {
+  app.use((req, res, next) => {
+    req.url = req.url.replace(/[/]+/g, '/');
+    next();
+  });
+}
+
 
 app.use(bodyParser.json());
 app.use((req, res, next) => {
@@ -46,7 +53,6 @@ app.use(getErrorHandler({
 }));
 
 if (config.hostingEnvironment.env === 'dev') {
-  app.use( (req,res,next)  => { req.url = req.url.replace(/[/]+/g, '/'); next(); });
   app.proxy = true;
 
   const options = {
