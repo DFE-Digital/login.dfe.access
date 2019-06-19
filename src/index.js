@@ -22,7 +22,9 @@ app.use(helmet({
 
 if (config.hostingEnvironment.env !== 'dev') {
   app.set('trust proxy', 1);
+  app.use( (req,res,next)  => { req.url = req.url.replace(/[/]+/g, '/'); next(); });
 }
+
 
 app.use(bodyParser.json());
 app.use((req, res, next) => {
