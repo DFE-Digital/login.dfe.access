@@ -1,6 +1,6 @@
 const { connection, userServices, userServiceIdentifiers, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles, roles, userServiceRoles, invitationServiceRoles } = require('./organisationsRepository');
 const { Op, QueryTypes } = require('sequelize');
-const { mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities } = require('./mappers');
+const { mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities, mapUserServiceRoles } = require('./mappers');
 const uuid = require('uuid/v4');
 
 const getUserServices = async (uid) => {
@@ -196,6 +196,35 @@ const getUsersOfServicePaged = async (sid, oid, filters, pageNumber, pageSize) =
     Object.assign({ model: userServices }, queryOpts));
   return {
     services: await mapUserServiceEntities(rows),
+    page: pageNumber,
+    totalNumberOfPages: Math.ceil(count / pageSize),
+    totalNumberOfRecords: count,
+  };
+};
+
+const getUsersOfServicePagedV2 = async (sid, oid, roleIds, pageNumber, pageSize) => {
+
+  const result =  await userServiceRoles.findAndCount({
+          where: {
+            organisation_id: {
+              [Op.eq]: oid,
+            },
+            service_id: {
+              [Op.eq]: sid,
+            },
+            role_id: {
+              [Op.in]: roleIds
+            }
+          },
+          include: ['role'],
+          limit: pageSize,
+          offset: (pageNumber - 1) * pageSize,
+        });
+
+  const services = await mapUserServiceRoles(result.rows);
+  const count = result.count;
+  return {
+    services,
     page: pageNumber,
     totalNumberOfPages: Math.ceil(count / pageSize),
     totalNumberOfRecords: count,
@@ -601,7 +630,7 @@ module.exports = {
   getServiceRoles,
   getInvitationService,
   removeInvitationService,
-
+  getUsersOfServicePagedV2,
   removeAllUserServiceGroupIdentifiers,
   addGroupsToUserServiceIdentifier,
   getPageOfPolicies,

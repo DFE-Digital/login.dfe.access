@@ -4,7 +4,7 @@ const express = require('express');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
 const listUsersOfService = require('./listUsersOfService');
-const listUsersOfServiceAtOrganisation = require('./listUsersOfServiceAtOrganisation');
+const {listUsersOfServiceAtOrganisation, listUsersOfServiceWithRoles} = require('./listUsersOfServiceAtOrganisation');
 const listRolesOfService = require('./listRolesOfService');
 const listPoliciesOfService = require('./listPoliciesOfService');
 const createPolicyOfService = require('./createPolicyOfService');
@@ -13,12 +13,13 @@ const updatePolicyOfService = require('./updatePolicyOfService');
 const deletePolicyOfService = require('./deletePolicyOfService');
 const pageOfPoliciesForService = require('./pageOfPoliciesForService');
 
+
 const router = express.Router();
 
 const buildArea = () => {
   router.get('/:sid/users', asyncWrapper(listUsersOfService));
   router.get('/:sid/organisations/:oid/users', asyncWrapper(listUsersOfServiceAtOrganisation));
-
+  router.get('/v2/:sid/organisations/:oid/users', asyncWrapper(listUsersOfServiceWithRoles));
   router.get('/:sid/roles', asyncWrapper(listRolesOfService));
 
   router.get('/:sid/policies', asyncWrapper(listPoliciesOfService));

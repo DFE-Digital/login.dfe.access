@@ -1,4 +1,4 @@
-const { getUsersOfServicePaged } = require('./../../infrastructure/data');
+const { getUsersOfServicePaged, getUsersOfServicePagedV2 } = require('./../../infrastructure/data');
 
 const getPageNumber = (req) => {
   const pageValue = req.query.page;
@@ -44,4 +44,23 @@ const listUsersOfServiceAtOrganisation = async (req, res) => {
   const pageOfUserServices = await getUsersOfServicePaged(sid, oid, undefined, pageNumber, pageSize);
   return res.json(pageOfUserServices);
 };
-module.exports = listUsersOfServiceAtOrganisation;
+
+const listUsersOfServiceWithRoles = async (req, res) => {
+  const { sid, oid } = req.params;
+  const { roleIds } = req.query;
+  let pageNumber;
+  let pageSize;
+
+  try {
+    pageNumber = getPageNumber(req);
+    pageSize = getPageSize(req);
+  } catch (e) {
+    return res.status(400).json({
+      reasons: [e.message],
+    });
+  }
+
+  const pageOfUserServices = await getUsersOfServicePagedV2(sid, oid, roleIds?roleIds.split(','):null, pageNumber, pageSize);
+  return res.json(pageOfUserServices);
+};
+module.exports = {listUsersOfServiceAtOrganisation, listUsersOfServiceWithRoles}
