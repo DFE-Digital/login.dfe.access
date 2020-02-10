@@ -97,6 +97,29 @@ const mapPolicyEntities = async (entities) => {
   return mapped;
 };
 
+const mapUserServiceRole = async (entity) => {
+  if (!entity) {
+    return undefined;
+  }
+  return {
+    userId: entity.user_id || undefined,
+    serviceId: entity.service_id,
+    organisationId: entity.organisation_id || undefined,
+    roles: entity.role,
+    accessGrantedOn: entity.createdAt,
+  }
+};
+
+const mapUserServiceRoles = async (entities) => {
+  if (!entities) {
+    return undefined;
+  }
+  const mappedResult = []
+  for (let i = 0; i < entities.length; i++) {
+    mappedResult.push(await mapUserServiceRole(entities[i]));
+  }
+  return mappedResult;
+}
 module.exports = {
   mapUserServiceEntity,
   mapUserServiceEntities,
@@ -104,4 +127,5 @@ module.exports = {
   mapRoleEntities,
   mapPolicyEntity,
   mapPolicyEntities,
+  mapUserServiceRoles,
 };
