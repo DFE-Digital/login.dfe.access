@@ -17,12 +17,21 @@ const pageOfPoliciesForService = require('./pageOfPoliciesForService');
 
 const router = express.Router();
 
+const routeUserService = async (req,res,next) => {
+  switch((req.query && req.query.version)? req.query.version:null) {
+    case 'v2':
+      await listUsersOfServiceWithRoles(req,res,next);
+      break;
+    case 'v1':
+    default:
+      next();
+      break;
+  }
+}
 const buildArea = () => {
   router.get('/:sid/users', asyncWrapper(listUsersOfService));
-  router.get('/:sid/organisations/:oid/users', asyncWrapper(listUsersOfServiceAtOrganisation));
-  router.get('/v2/:sid/organisations/:oid/users', asyncWrapper(listUsersOfServiceWithRoles));
+  router.get('/:sid/organisations/:oid/users', routeUserService, asyncWrapper(listUsersOfServiceAtOrganisation));
   router.get('/:sid/roles', asyncWrapper(listRolesOfService));
-
   router.get('/:sid/policies', asyncWrapper(listPoliciesOfService));
   router.get('/v2/:sid/policies', asyncWrapper(pageOfPoliciesForService));
   router.post('/:sid/policies', asyncWrapper(createPolicyOfService));
