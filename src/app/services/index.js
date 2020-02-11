@@ -4,7 +4,8 @@ const express = require('express');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
 const listUsersOfService = require('./listUsersOfService');
-const {listUsersOfServiceAtOrganisation, listUsersOfServiceWithRoles} = require('./listUsersOfServiceAtOrganisation');
+const listUsersOfServiceAtOrganisation  = require('./listUsersOfServiceAtOrganisation');
+const listUsersOfServiceWithRoles = require('./listUsersOfServiceWithRoles');
 const listRolesOfService = require('./listRolesOfService');
 const listPoliciesOfService = require('./listPoliciesOfService');
 const createPolicyOfService = require('./createPolicyOfService');
