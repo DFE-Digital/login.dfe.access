@@ -25,7 +25,6 @@ const routeUserService = async (req,res,next) => {
     case 'v1':
     default:
       next();
-      break;
   }
 }
 const buildArea = () => {
