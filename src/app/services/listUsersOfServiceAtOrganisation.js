@@ -44,4 +44,7 @@ const listUsersOfServiceAtOrganisation = async (req, res) => {
   const pageOfUserServices = await getUsersOfServicePaged(sid, oid, undefined, pageNumber, pageSize);
   return res.json(pageOfUserServices);
 };
-module.exports = listUsersOfServiceAtOrganisation;
+
+
+module.exports =  listUsersOfServiceAtOrganisation
+
