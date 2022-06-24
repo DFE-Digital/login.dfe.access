@@ -46,7 +46,6 @@ buildDataModel(dataModel, db, [
   userServiceRoles,
   invitationServiceRoles,
 ]);
-console.log("HERE",dataModel.userServices);
 dataModel.connection = db;
 
 
