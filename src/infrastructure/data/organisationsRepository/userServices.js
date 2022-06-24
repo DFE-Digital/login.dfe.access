@@ -1,4 +1,4 @@
-const { default: Sequelize, Op } = require('sequelize').default;
+const Sequelize = require('sequelize');
 
 const define = (db, schema) => {
   return db.define('user_services', {
