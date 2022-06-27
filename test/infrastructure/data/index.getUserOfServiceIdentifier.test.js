@@ -13,7 +13,7 @@ describe('When adding an identifier to a user service in repository', () => {
   beforeEach(() => {
     repository.mockResetAll();
 
-    repository.userServiceIdentifiers.find.mockReturnValue({
+    repository.userServiceIdentifiers.findOne.mockReturnValue({
       user_id: 'user-1',
     });
   });
@@ -21,8 +21,8 @@ describe('When adding an identifier to a user service in repository', () => {
   it('then it should upsert the record', async () => {
     await getUserOfServiceIdentifier(sid, key, value);
 
-    expect(repository.userServiceIdentifiers.find).toHaveBeenCalledTimes(1);
-    expect(repository.userServiceIdentifiers.find.mock.calls[0][0]).toMatchObject({
+    expect(repository.userServiceIdentifiers.findOne).toHaveBeenCalledTimes(1);
+    expect(repository.userServiceIdentifiers.findOne.mock.calls[0][0]).toMatchObject({
       where: {
         service_id: {
           [Op.eq]: sid,
@@ -44,7 +44,7 @@ describe('When adding an identifier to a user service in repository', () => {
   });
 
   it('then it should return undefined if no result found', async () => {
-    repository.userServiceIdentifiers.find.mockReturnValue(undefined);
+    repository.userServiceIdentifiers.findOne.mockReturnValue(undefined);
 
     const actual = await getUserOfServiceIdentifier(sid, key, value);
 
