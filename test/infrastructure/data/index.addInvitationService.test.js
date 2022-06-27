@@ -1,6 +1,5 @@
 jest.mock('./../../../src/infrastructure/data/organisationsRepository', () => require('./mockOrganisationsRepository').mockRepository());
 jest.mock('uuid/v4');
-
 const uuid = require('uuid/v4');
 const repository = require('./../../../src/infrastructure/data/organisationsRepository');
 const { addInvitationService } = require('./../../../src/infrastructure/data');
@@ -18,13 +17,13 @@ describe('When adding invitation to service in repository', () => {
   });
 
   it('and record exists then it should return existing id and not create new record', async () => {
-    repository.invitationServices.find.mockReturnValue({ id: '123456' });
+    repository.invitationServices.findOne.mockReturnValue({ id: '123456' });
 
     const actual = await addInvitationService(iid, sid, oid);
 
     expect(actual).toEqual('123456');
-    expect(repository.invitationServices.find).toHaveBeenCalledTimes(1);
-    expect(repository.invitationServices.find.mock.calls[0][0]).toMatchObject({
+    expect(repository.invitationServices.findOne).toHaveBeenCalledTimes(1);
+    expect(repository.invitationServices.findOne.mock.calls[0][0]).toMatchObject({
       where: {
         invitation_id: {
           [Op.eq]: iid,
@@ -40,7 +39,7 @@ describe('When adding invitation to service in repository', () => {
   });
 
   it('and record does not exist then it should create new record and return its id', async () => {
-    repository.invitationServices.find.mockReturnValue(undefined);
+    repository.invitationServices.findOne.mockReturnValue(undefined);
 
     const actual = await addInvitationService(iid, sid, oid);
 

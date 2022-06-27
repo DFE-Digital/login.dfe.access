@@ -20,7 +20,7 @@ describe('When getting user service from the repository', () => {
   beforeEach(() => {
     repository.mockResetAll();
 
-    repository.userServices.find.mockReturnValue(service);
+    repository.userServices.findOne.mockReturnValue(service);
 
     service.mockResetAll();
   });
@@ -28,8 +28,8 @@ describe('When getting user service from the repository', () => {
   it('then it should find for user_id, service_id, organisation_id', async () => {
     await getUserService(uid, sid, oid);
 
-    expect(repository.userServices.find).toHaveBeenCalledTimes(1);
-    expect(repository.userServices.find.mock.calls[0][0]).toMatchObject({
+    expect(repository.userServices.findOne).toHaveBeenCalledTimes(1);
+    expect(repository.userServices.findOne.mock.calls[0][0]).toMatchObject({
       where: {
         user_id: {
           [Op.eq]: uid,
@@ -77,7 +77,7 @@ describe('When getting user service from the repository', () => {
   });
 
   it('then it should return undefined if no record found', async () => {
-    repository.userServices.find.mockReturnValue(undefined);
+    repository.userServices.findOne.mockReturnValue(undefined);
 
     const actual = await getUserService(uid, sid, oid);
 
