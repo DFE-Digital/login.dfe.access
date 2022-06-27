@@ -15,7 +15,7 @@ describe('When getting policy from the repository', () => {
   beforeEach(() => {
     repository.mockResetAll();
 
-    repository.policies.find.mockReturnValue(policy);
+    repository.policies.findOne.mockReturnValue(policy);
 
     policy.mockResetAll();
   });
@@ -23,8 +23,8 @@ describe('When getting policy from the repository', () => {
   it('then it should find for id', async () => {
     await getPolicy(id);
 
-    expect(repository.policies.find).toHaveBeenCalledTimes(1);
-    expect(repository.policies.find.mock.calls[0][0]).toMatchObject({
+    expect(repository.policies.findOne).toHaveBeenCalledTimes(1);
+    expect(repository.policies.findOne.mock.calls[0][0]).toMatchObject({
       where: {
         id: {
           [Op.eq]: id,
@@ -75,7 +75,7 @@ describe('When getting policy from the repository', () => {
   });
 
   it('then it should return undefined if no record found', async () => {
-    repository.policies.find.mockReturnValue(undefined);
+    repository.policies.findOne.mockReturnValue(undefined);
 
     const actual = await getPolicy(id);
 

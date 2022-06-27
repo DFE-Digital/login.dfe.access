@@ -3,6 +3,7 @@ jest.mock('uuid/v4');
 
 const uuid = require('uuid/v4');
 const repository = require('./../../../src/infrastructure/data/organisationsRepository');
+
 const { addUserService } = require('./../../../src/infrastructure/data');
 const { Op } = require('sequelize');
 
@@ -13,18 +14,17 @@ const oid = 'organisation-1';
 describe('When adding user to service in repository', () => {
   beforeEach(() => {
     repository.mockResetAll();
-
     uuid.mockReset().mockReturnValue('new-uuid');
   });
 
   it('and record exists then it should return existing id and not create new record', async () => {
-    repository.userServices.find.mockReturnValue({ id: '123456' });
+    repository.userServices.findOne.mockReturnValue({ id: '123456' });
 
     const actual = await addUserService(uid, sid, oid);
 
     expect(actual).toEqual('123456');
-    expect(repository.userServices.find).toHaveBeenCalledTimes(1);
-    expect(repository.userServices.find.mock.calls[0][0]).toMatchObject({
+    expect(repository.userServices.findOne).toHaveBeenCalledTimes(1);
+    expect(repository.userServices.findOne.mock.calls[0][0]).toMatchObject({
       where: {
         user_id: {
           [Op.eq]: uid,
@@ -40,7 +40,7 @@ describe('When adding user to service in repository', () => {
   });
 
   it('and record does not exist then it should create new record and return its id', async () => {
-    repository.userServices.find.mockReturnValue(undefined);
+    repository.userServices.findOne.mockReturnValue(undefined);
 
     const actual = await addUserService(uid, sid, oid);
 
