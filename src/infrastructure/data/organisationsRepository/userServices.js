@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 const define = (db, schema) => {
   return db.define('user_services', {
