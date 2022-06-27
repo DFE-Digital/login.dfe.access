@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize').default;
+const Sequelize = require('sequelize');
 
 const define = (db, schema) => {
   const model = db.define('user_service_identifiers', {

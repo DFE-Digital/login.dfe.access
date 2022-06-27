@@ -18,6 +18,7 @@ const db = makeConnection();
 
 const defineStatic = (model) => {
 };
+
 const buildDataModel = (model, connection, entityModels) => {
   const dbSchema = config.database.schema || 'services';
 

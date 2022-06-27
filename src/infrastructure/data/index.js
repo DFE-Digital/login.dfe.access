@@ -16,7 +16,7 @@ const getUserServices = async (uid) => {
 };
 
 const getUserService = async (uid, sid, oid) => {
-  const entities = await userServices.find({
+  const entities = await userServices.findOne({
     where: {
       user_id: {
         [Op.eq]: uid,
@@ -33,7 +33,7 @@ const getUserService = async (uid, sid, oid) => {
 };
 
 const addUserService = async (uid, sid, oid) => {
-  const existing = await userServices.find({
+  const existing = await userServices.findOne({
     where: {
       user_id: {
         [Op.eq]: uid,
@@ -72,7 +72,7 @@ const addUserServiceIdentifier = async (uid, sid, oid, key, value) => {
 };
 
 const getUserOfServiceIdentifier = async (sid, key, value) => {
-  const entity = await userServiceIdentifiers.find({
+  const entity = await userServiceIdentifiers.findOne({
     where: {
       service_id: {
         [Op.eq]: sid,
@@ -204,7 +204,7 @@ const getUsersOfServicePaged = async (sid, oid, filters, pageNumber, pageSize) =
 
 const getUsersOfServicePagedV2 = async (sid, oid, roleIds, pageNumber, pageSize) => {
 
-  const result =  await userServiceRoles.findAndCount({
+  const result =  await userServiceRoles.findAndCountAll({
           where: {
             organisation_id: {
               [Op.eq]: oid,
@@ -341,7 +341,7 @@ const addUserServiceRole = async (uid, sid, oid, rid) => {
 
 
 const addInvitationService = async (iid, sid, oid) => {
-  const existing = await invitationServices.find({
+  const existing = await invitationServices.findOne({
     where: {
       invitation_id: {
         [Op.eq]: iid,
@@ -423,7 +423,7 @@ const getInvitationServices = async (iid) => {
 };
 
 const getInvitationService = async (iid, sid, oid) => {
-  const entities = await invitationServices.find({
+  const entities = await invitationServices.findOne({
     where: {
       invitation_id: {
         [Op.eq]: iid,
@@ -515,7 +515,7 @@ const getPageOfPolicies = async (sid, pageNumber, pageSize) => {
 };
 
 const getPolicy = async (id) => {
-  const entity = await policies.find({
+  const entity = await policies.findOne({
     where: {
       id: {
         [Op.eq]: id,
