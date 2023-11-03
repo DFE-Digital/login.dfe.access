@@ -1,6 +1,6 @@
 jest.mock('./../../../src/infrastructure/data/organisationsRepository', () => require('./mockOrganisationsRepository').mockRepository());
-jest.mock('uuid/v4');
-const uuid = require('uuid/v4');
+jest.mock('uuid');
+const uuid = require('uuid');
 const repository = require('./../../../src/infrastructure/data/organisationsRepository');
 const { addInvitationService } = require('./../../../src/infrastructure/data');
 const { Op } = require('sequelize');
@@ -13,7 +13,7 @@ describe('When adding invitation to service in repository', () => {
   beforeEach(() => {
     repository.mockResetAll();
 
-    uuid.mockReset().mockReturnValue('new-uuid');
+    uuid.v4.mockReset().mockReturnValue('new-uuid');
   });
 
   it('and record exists then it should return existing id and not create new record', async () => {

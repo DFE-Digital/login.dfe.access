@@ -7,11 +7,11 @@ jest.mock('./../../../src/infrastructure/data', () => ({
   deletePolicyConditions: jest.fn(),
   deletePolicyRoles: jest.fn(),
 }));
-jest.mock('uuid/v4');
+jest.mock('uuid');
 
 const { mockRequest, mockResponse } = require('./../../utils');
 const { getPolicy, addPolicy, addPolicyCondition, addPolicyRole, deletePolicyConditions, deletePolicyRoles } = require('./../../../src/infrastructure/data');
-const uuid = require('uuid/v4');
+const uuid = require('uuid');
 const updatePolicyOfService = require('./../../../src/app/services/updatePolicyOfService');
 
 const policy = {
@@ -55,7 +55,7 @@ describe('When patching a policy of a service', () => {
     deletePolicyRoles.mockReset();
 
     uuidCounter = 0;
-    uuid.mockReset().mockImplementation(() => {
+    uuid.v4.mockReset().mockImplementation(() => {
       uuidCounter++;
       return `new-uuid-${uuidCounter}`;
     });

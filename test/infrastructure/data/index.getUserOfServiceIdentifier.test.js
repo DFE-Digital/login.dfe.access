@@ -1,5 +1,5 @@
 jest.mock('./../../../src/infrastructure/data/organisationsRepository', () => require('./mockOrganisationsRepository').mockRepository());
-jest.mock('uuid/v4');
+jest.mock('uuid');
 
 const repository = require('./../../../src/infrastructure/data/organisationsRepository');
 const { getUserOfServiceIdentifier } = require('./../../../src/infrastructure/data');
