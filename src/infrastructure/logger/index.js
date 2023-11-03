@@ -1,14 +1,16 @@
 'use strict';
 
+/* eslint-disable no-unused-expressions */
+
 const winston = require('winston');
-const config = require('./../config');
-const WinstonSequelizeTransport = require('login.dfe.audit.winston-sequelize-transport');
+const config = require('../config');
 const appInsights = require('applicationinsights');
+const AuditTransporter = require('login.dfe.audit.transporter');
 const AppInsightsTransport = require('login.dfe.winston-appinsights');
 
 const logLevel = (config && config.loggerSettings && config.loggerSettings.logLevel) ? config.loggerSettings.logLevel : 'info';
 
-const loggerConfig = {
+const customLevels = {
   levels: {
     audit: 0,
     error: 1,
@@ -18,15 +20,26 @@ const loggerConfig = {
     debug: 5,
     silly: 6,
   },
-  colors: (config && config.loggerSettings && config.loggerSettings.colors) ? config.loggerSettings.colors : null,
+  colors: {
+    info: 'yellow',
+    ok: 'green',
+    error: 'red',
+    audit: 'magenta',
+  },
+};
+
+const loggerConfig = {
+  levels: customLevels.levels,
   transports: [],
 };
 
-loggerConfig.transports.push(new (winston.transports.Console)({level: logLevel, colorize: true}));
+loggerConfig.transports.push(new (winston.transports.Console)({ level: logLevel, colorize: true }));
 
-const sequelizeTransport = WinstonSequelizeTransport(config);
-if (sequelizeTransport) {
-  loggerConfig.transports.push(sequelizeTransport);
+const opts = { application: config.loggerSettings.applicationName, level: 'audit' };
+const auditTransport = AuditTransporter(opts);
+
+if (auditTransport) {
+  loggerConfig.transports.push(auditTransport);
 }
 
 if (config.hostingEnvironment.applicationInsights) {
@@ -42,7 +55,7 @@ if (config.hostingEnvironment.applicationInsights) {
   }));
 }
 
-const logger = new (winston.Logger)(loggerConfig);
+const logger = winston.createLogger(loggerConfig);
 
 process.on('unhandledRejection', (reason, p) => {
   logger.error('Unhandled Rejection at:', p, 'reason:', reason);
