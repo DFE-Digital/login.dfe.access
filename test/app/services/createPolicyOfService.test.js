@@ -4,11 +4,11 @@ jest.mock('./../../../src/infrastructure/data', () => ({
   addPolicyCondition: jest.fn(),
   addPolicyRole: jest.fn(),
 }));
-jest.mock('uuid/v4');
+jest.mock('uuid');
 
 const { mockRequest, mockResponse } = require('./../../utils');
 const { addPolicy, addPolicyCondition, addPolicyRole } = require('./../../../src/infrastructure/data');
-const uuid = require('uuid/v4');
+const uuid = require('uuid');
 const createPolicyOfService = require('./../../../src/app/services/createPolicyOfService');
 
 const sid = 'service1';
@@ -24,7 +24,7 @@ describe('When listing policies of a service', () => {
     addPolicyRole.mockReset();
 
     uuidCounter = 0;
-    uuid.mockReset().mockImplementation(() => {
+    uuid.v4.mockReset().mockImplementation(() => {
       uuidCounter++;
       return `new-uuid-${uuidCounter}`;
     });

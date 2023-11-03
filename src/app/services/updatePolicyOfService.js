@@ -1,7 +1,7 @@
 const logger = require('./../../infrastructure/logger');
 const uniq = require('lodash/uniq');
 const { getPolicy, addPolicy, addPolicyCondition, addPolicyRole, deletePolicyConditions, deletePolicyRoles } = require('./../../infrastructure/data');
-const uuid = require('uuid/v4');
+const uuid = require('uuid');
 
 const validateRequest = (req) => {
   const model = {
@@ -75,7 +75,7 @@ const updateConditions = async (model, existingPolicy) => {
     for (let i = 0; i < model.conditions.length; i++) {
       const condition = model.conditions[i];
       for (let j = 0; j < condition.value.length; j += 1) {
-        await addPolicyCondition(uuid(), model.id, condition.field, condition.operator, condition.value[j]);
+        await addPolicyCondition(uuid.v4(), model.id, condition.field, condition.operator, condition.value[j]);
       }
     }
   }

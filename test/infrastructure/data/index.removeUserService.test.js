@@ -1,7 +1,7 @@
 jest.mock('./../../../src/infrastructure/data/organisationsRepository', () => require('./mockOrganisationsRepository').mockRepository());
-jest.mock('uuid/v4');
+jest.mock('uuid');
 
-const uuid = require('uuid/v4');
+const uuid = require('uuid');
 const repository = require('./../../../src/infrastructure/data/organisationsRepository');
 const { removeUserService } = require('./../../../src/infrastructure/data');
 const { Op } = require('sequelize');
@@ -14,7 +14,7 @@ describe('When removing a user service in repository', () => {
   beforeEach(() => {
     repository.mockResetAll();
 
-    uuid.mockReset().mockReturnValue('new-uuid');
+    uuid.v4.mockReset().mockReturnValue('new-uuid');
   });
 
   it('then it should upsert the record', async () => {

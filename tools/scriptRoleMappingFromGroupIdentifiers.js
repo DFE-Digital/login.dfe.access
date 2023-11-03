@@ -1,7 +1,7 @@
 const { getPageOfUserServices, getPageOfInvitationServices, getServiceRoles } = require('./../src/infrastructure/data');
 const path = require('path');
 const fs = require('fs');
-const uuid = require('uuid/v4');
+const uuid = require('uuid');
 
 const serviceRoleCache = [];
 
@@ -97,7 +97,7 @@ const writeScript = async (roles, tableName, identifierColumnName, saveToPath) =
       batch += `INSERT INTO ${tableName}\n`;
       batch += `(id, ${identifierColumnName}, service_id, organisation_id, role_id, createdAt, updatedAt)\n`;
       batch += 'VALUES\n';
-      batch += `('${uuid()}', '${entityRoles.userId ? entityRoles.userId : entityRoles.invitationId}', '${entityRoles.serviceId}', '${entityRoles.organisationId}', '${role.id}', GETDATE(), GETDATE())\n\n`;
+      batch += `('${uuid.v4()}', '${entityRoles.userId ? entityRoles.userId : entityRoles.invitationId}', '${entityRoles.serviceId}', '${entityRoles.organisationId}', '${role.id}', GETDATE(), GETDATE())\n\n`;
     });
     return batch;
   }).join('\n');
