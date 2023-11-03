@@ -1,7 +1,7 @@
 jest.mock('./../../../src/infrastructure/data/organisationsRepository', () => require('./mockOrganisationsRepository').mockRepository());
-jest.mock('uuid/v4');
+jest.mock('uuid');
 
-const uuid = require('uuid/v4');
+const uuid = require('uuid');
 const repository = require('./../../../src/infrastructure/data/organisationsRepository');
 
 const { addUserService } = require('./../../../src/infrastructure/data');
@@ -14,7 +14,7 @@ const oid = 'organisation-1';
 describe('When adding user to service in repository', () => {
   beforeEach(() => {
     repository.mockResetAll();
-    uuid.mockReset().mockReturnValue('new-uuid');
+    uuid.v4.mockReset().mockReturnValue('new-uuid');
   });
 
   it('and record exists then it should return existing id and not create new record', async () => {

@@ -1,4 +1,4 @@
-const uuid = require('uuid/v4');
+const uuid = require('uuid');
 
 const mockTable = () => {
   return {
@@ -47,8 +47,8 @@ const mockRepository = () => {
 
 const mockUserServiceEntity = (data, identifiers = undefined, roles = undefined) => {
   const defaultEntity = {
-    service_id: uuid(),
-    organisation_id: uuid(),
+    service_id: uuid.v4(),
+    organisation_id: uuid.v4(),
     createdAt: new Date(),
     getIdentifiers: jest.fn().mockReturnValue(identifiers),
     getRoles: jest.fn().mockReturnValue(roles),
@@ -63,9 +63,9 @@ const mockUserServiceEntity = (data, identifiers = undefined, roles = undefined)
 
 const mockPolicyEntity = (data) => {
   const defaultEntity = {
-    id: uuid(),
-    name: uuid(),
-    applicationId: uuid(),
+    id: uuid.v4(),
+    name: uuid.v4(),
+    applicationId: uuid.v4(),
     status: 1,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -79,9 +79,9 @@ const mockPolicyEntity = (data) => {
 };
 const mockRoleEntity = (data) => {
   const defaultEntity = {
-    id: uuid(),
-    name: uuid(),
-    applicationId: uuid(),
+    id: uuid.v4(),
+    name: uuid.v4(),
+    applicationId: uuid.v4(),
     status: 1,
     status: 1,
     createdAt: new Date(),
@@ -94,11 +94,11 @@ const mockRoleEntity = (data) => {
 };
 const mockPolicyConditionEntity = (data) => {
   const defaultEntity = {
-    id: uuid(),
-    policyId: uuid(),
+    id: uuid.v4(),
+    policyId: uuid.v4(),
     field: 'id',
     operator: 'Is',
-    value: uuid(),
+    value: uuid.v4(),
     createdAt: new Date(),
     updatedAt: new Date(),
   };
