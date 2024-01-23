@@ -1,4 +1,3 @@
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').mockConfig());
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').mockLogger());
 jest.mock('./../../../src/infrastructure/data', () => ({
   getPolicy: jest.fn(),
