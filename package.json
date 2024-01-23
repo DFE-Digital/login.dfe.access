@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "settings='./config/login.dfe.access.dev.json' node src/index.js",
     "dev:container": "nodemon src/index.js",
-    "test": "jest --coverage",
+    "test": "./node_modules/.bin/jest --coverage",
     "test:watch": "./node_modules/.bin/jest --watch"
   },
   "engines": {
