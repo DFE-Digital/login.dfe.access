@@ -1,5 +1,6 @@
-jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').mockLogger());
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').mockConfig({toggles: {notificationsEnabled: true}}));
+/* eslint-disable global-require */
+jest.mock('./../../../src/infrastructure/logger', () => require('../../utils').mockLogger());
+jest.mock('./../../../src/infrastructure/config', () => require('../../utils').mockConfig({ toggles: { notificationsEnabled: true } }));
 jest.mock('./../../../src/infrastructure/data', () => ({
   getUserService: jest.fn(),
   addUserServiceIdentifier: jest.fn(),
@@ -10,10 +11,13 @@ jest.mock('./../../../src/infrastructure/data', () => ({
   removeAllUserServiceRoles: jest.fn(),
   addUserServiceRole: jest.fn(),
 }));
+jest.mock('login.dfe.service-notifications.jobs.client');
 
-const { mockRequest, mockResponse } = require('./../../utils');
-const { removeAllUserServiceGroupIdentifiers, getUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers, getServiceRoles, removeAllUserServiceRoles, addUserServiceRole } = require('./../../../src/infrastructure/data');
-const updateUserService = require('./../../../src/app/users/updateUserService');
+const { mockRequest, mockResponse } = require('../../utils');
+const {
+  removeAllUserServiceGroupIdentifiers, getUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers, getServiceRoles, removeAllUserServiceRoles, addUserServiceRole,
+} = require('../../../src/infrastructure/data');
+const updateUserService = require('../../../src/app/users/updateUserService');
 
 const uid = 'user1';
 const sid = 'service1';
@@ -39,14 +43,14 @@ describe('When updating service of user', () => {
     removeAllUserServiceIdentifiers.mockReset();
     removeAllUserServiceGroupIdentifiers.mockReset();
     getServiceRoles.mockReset().mockReturnValue([
-      { id: 'role1', },
+      { id: 'role1' },
       { id: 'role3' },
     ]);
     removeAllUserServiceRoles.mockReset();
     addUserServiceRole.mockReset();
     getServiceRoles.mockReset().mockReturnValue([
-      { id: 'role1', code: 'role1'},
-      { id: 'role3', code: 'role2'},
+      { id: 'role1', code: 'role1' },
+      { id: 'role3', code: 'role2' },
     ]);
 
     req = mockRequest({
@@ -171,8 +175,6 @@ describe('When updating service of user', () => {
       ],
     });
   });
-
-
 
   it('then it should return 400 if identifiers specified and items does not have key', async () => {
     req.body.identifiers = [{ value: 'thing' }];
