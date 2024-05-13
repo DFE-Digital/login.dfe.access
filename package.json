@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/DFE-Digital/login.dfe.access#readme",
   "dependencies": {
-    "applicationinsights": "^3.0.1",
+    "applicationinsights": "^2.9.0",
     "express": "^4.19.2",
     "helmet": "^7.0.0",
     "lodash": "^4.17.15",
@@ -34,7 +34,7 @@
     "login.dfe.service-notifications.jobs.client": "git+https://github.com/DFE-Digital/login.dfe.service-notifications.jobs.client.git#v2.0.1",
     "login.dfe.winston-appinsights": "git+https://github.com/DFE-Digital/login.dfe.winston-appinsights.git#v5.0.0",
     "sequelize": "^6.3.3",
-    "tedious": "^18.2.0",
+    "tedious": "^16.6.0",
     "uuid": "^9.0.1",
     "winston": "^3.11.0"
   },
