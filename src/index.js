@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const logger = require('./infrastructure/logger');
 const https = require('https');
 const config = require('./infrastructure/config');
@@ -63,8 +62,8 @@ if (config.hostingEnvironment.env === 'dev') {
   });
 }
 
-
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true}));
 app.use((req, res, next) => {
   req.correlationId = req.get('x-correlation-id') || `accci-${Date.now()}`;
   next();
