@@ -34,7 +34,7 @@
     "login.dfe.service-notifications.jobs.client": "github:DFE-Digital/login.dfe.service-notifications.jobs.client#v2.0.1",
     "login.dfe.winston-appinsights": "github:DFE-Digital/login.dfe.winston-appinsights#v5.0.1",
     "sequelize": "^6.3.3",
-    "tedious": "^16.6.0",
+    "tedious": "^18.2.1",
     "uuid": "^9.0.1",
     "winston": "^3.11.0"
   },
