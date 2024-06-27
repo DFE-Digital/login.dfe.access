@@ -1,6 +1,6 @@
 const logger = require('./../../infrastructure/logger');
 const { notifyUserUpdated } = require('./../../infrastructure/notifications');
-const { removeUserService, removeAllUserServiceIdentifiers, removeAllUserServiceRoles } = require('./../../infrastructure/data');
+const { removeUserService, removeAllUserServiceIdentifiers, removeAllUserServiceRoles, removeAllUserServiceRequests, } = require('./../../infrastructure/data');
 
 const parseAndValidateRequest = (req) => {
   const model = {
@@ -28,6 +28,7 @@ const removeServiceFromUser = async (req, res) => {
       return res.status(400).send({ details: model.errors });
     }
 
+    await removeAllUserServiceRequests(uid, sid, oid);
     await removeAllUserServiceRoles(uid, sid, oid);
     await removeAllUserServiceIdentifiers(uid, sid, oid);
     await removeUserService(uid, sid, oid);

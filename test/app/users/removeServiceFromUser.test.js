@@ -9,7 +9,7 @@ jest.mock('./../../../src/infrastructure/notifications');
 
 const { mockRequest, mockResponse } = require('./../../utils');
 const { notifyUserUpdated } = require('./../../../src/infrastructure/notifications');
-const { removeUserService, removeAllUserServiceIdentifiers, removeAllUserServiceRoles } = require('./../../../src/infrastructure/data');
+const { removeUserService, removeAllUserServiceIdentifiers, removeAllUserServiceRequests, removeAllUserServiceRoles  } = require('./../../../src/infrastructure/data');
 const removeServiceFromUser = require('./../../../src/app/users/removeServiceFromUser');
 
 const uid = 'user1';
@@ -25,6 +25,7 @@ describe('When removing service from user', () => {
 
     removeUserService.mockReset();
     removeAllUserServiceIdentifiers.mockReset();
+    removeAllUserServiceRequests.mockReset();
     removeAllUserServiceRoles.mockReset();
 
     req = mockRequest({
