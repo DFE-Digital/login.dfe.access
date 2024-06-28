@@ -46,6 +46,13 @@ describe('When removing service from user', () => {
     expect(removeAllUserServiceIdentifiers).toHaveBeenCalledWith(uid, sid, oid);
   });
 
+  it('then it should remove service access requests for user service', async () => {
+    await removeServiceFromUser(req, res);
+
+    expect(removeAllUserServiceRequests).toHaveBeenCalledTimes(1);
+    expect(removeAllUserServiceRequests).toHaveBeenCalledWith(uid, sid, oid);
+  });
+
   it('then it should remove roles for user service', async () => {
     await removeServiceFromUser(req, res);
 
