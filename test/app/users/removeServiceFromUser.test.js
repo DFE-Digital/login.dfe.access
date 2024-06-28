@@ -3,13 +3,14 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/data', () => ({
   removeUserService: jest.fn(),
   removeAllUserServiceIdentifiers: jest.fn(),
+  removeAllUserServiceRequests: jest.fn(),
   removeAllUserServiceRoles: jest.fn(),
 }));
 jest.mock('./../../../src/infrastructure/notifications');
 
 const { mockRequest, mockResponse } = require('./../../utils');
 const { notifyUserUpdated } = require('./../../../src/infrastructure/notifications');
-const { removeUserService, removeAllUserServiceIdentifiers, removeAllUserServiceRequests, removeAllUserServiceRoles  } = require('./../../../src/infrastructure/data');
+const { removeUserService, removeAllUserServiceIdentifiers, removeAllUserServiceRequests, removeAllUserServiceRoles } = require('./../../../src/infrastructure/data');
 const removeServiceFromUser = require('./../../../src/app/users/removeServiceFromUser');
 
 const uid = 'user1';
