@@ -57,9 +57,8 @@ const define = (db, schema) => {
   });
 };
 
-const extend = ({ userServiceRequests, organisations, services }) => {
+const extend = ({ userServiceRequests, organisations }) => {
   userServiceRequests.belongsTo(organisations, { as: 'Organisation', foreignKey: 'organisation_id' });
-  userServiceRequests.belongsTo(services, { as: 'Service', foreignKey: 'service_id' });
 };
 
 module.exports = {
