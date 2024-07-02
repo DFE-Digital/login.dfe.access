@@ -29,6 +29,7 @@ const mockRepository = () => {
     policyRoles: mockTable(),
     policyConditions: mockTable(),
     userServiceRoles: mockTable(),
+    userServiceRequests: mockTable(),
     invitationServiceRoles: mockTable(),
     mockResetAll: function () {
       this.userServices.mockResetAll();
@@ -40,6 +41,7 @@ const mockRepository = () => {
       this.policyRoles.mockResetAll();
       this.policyConditions.mockResetAll();
       this.userServiceRoles.mockResetAll();
+      this.userServiceRequests.mockResetAll();
       this.invitationServiceRoles.mockResetAll();
     },
   };
