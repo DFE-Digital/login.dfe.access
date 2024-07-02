@@ -1,7 +1,7 @@
 {
   "name": "login.dfe.access",
-  "version": "1.2.0",
-  "description": "",
+  "version": "1.2.1",
+  "description": "Provides resource access functionality to platform components.",
   "scripts": {
     "dev": "settings='./config/login.dfe.access.dev.json' node src/index.js",
     "dev:container": "nodemon src/index.js",

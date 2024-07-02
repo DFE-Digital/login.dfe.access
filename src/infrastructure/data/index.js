@@ -1,10 +1,10 @@
 const { Op, QueryTypes } = require('sequelize');
 const uuid = require('uuid');
 const {
-  connection, userServices, userServiceIdentifiers, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles, roles, userServiceRoles, invitationServiceRoles,
+  connection, userServices, userServiceIdentifiers, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles, roles, userServiceRequests, userServiceRoles, invitationServiceRoles,
 } = require('./organisationsRepository');
 const {
-  mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities, mapUserServiceRoles,
+  mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities, mapUserServiceRequests, mapUserServiceRoles, 
 } = require('./mappers');
 
 const getUserServices = async (uid) => {
@@ -315,6 +315,22 @@ const getPageOfUserServices = async (pageNumber, pageSize) => {
   };
 };
 
+const removeAllUserServiceRequests = async (uid, sid, oid) => {
+  await userServiceRequests.destroy({
+    where: {
+      user_id: {
+        [Op.eq]: uid,
+      },
+      service_id: {
+        [Op.eq]: sid,
+      },
+      organisation_id: {
+        [Op.eq]: oid,
+      },
+    },
+  });
+};
+
 const removeAllUserServiceRoles = async (uid, sid, oid) => {
   await userServiceRoles.destroy({
     where: {
@@ -607,6 +623,7 @@ module.exports = {
   removeUserService,
   getUsersOfServicePaged,
   getPageOfUserServices,
+  removeAllUserServiceRequests,
   removeAllUserServiceRoles,
   addUserServiceRole,
 

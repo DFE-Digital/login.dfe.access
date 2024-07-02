@@ -3,13 +3,14 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/data', () => ({
   removeUserService: jest.fn(),
   removeAllUserServiceIdentifiers: jest.fn(),
+  removeAllUserServiceRequests: jest.fn(),
   removeAllUserServiceRoles: jest.fn(),
 }));
 jest.mock('./../../../src/infrastructure/notifications');
 
 const { mockRequest, mockResponse } = require('./../../utils');
 const { notifyUserUpdated } = require('./../../../src/infrastructure/notifications');
-const { removeUserService, removeAllUserServiceIdentifiers, removeAllUserServiceRoles } = require('./../../../src/infrastructure/data');
+const { removeUserService, removeAllUserServiceIdentifiers, removeAllUserServiceRequests, removeAllUserServiceRoles } = require('./../../../src/infrastructure/data');
 const removeServiceFromUser = require('./../../../src/app/users/removeServiceFromUser');
 
 const uid = 'user1';
@@ -25,6 +26,7 @@ describe('When removing service from user', () => {
 
     removeUserService.mockReset();
     removeAllUserServiceIdentifiers.mockReset();
+    removeAllUserServiceRequests.mockReset();
     removeAllUserServiceRoles.mockReset();
 
     req = mockRequest({
@@ -42,6 +44,13 @@ describe('When removing service from user', () => {
 
     expect(removeAllUserServiceIdentifiers).toHaveBeenCalledTimes(1);
     expect(removeAllUserServiceIdentifiers).toHaveBeenCalledWith(uid, sid, oid);
+  });
+
+  it('then it should remove service access requests for user service', async () => {
+    await removeServiceFromUser(req, res);
+
+    expect(removeAllUserServiceRequests).toHaveBeenCalledTimes(1);
+    expect(removeAllUserServiceRequests).toHaveBeenCalledWith(uid, sid, oid);
   });
 
   it('then it should remove roles for user service', async () => {
