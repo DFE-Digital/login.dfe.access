@@ -24,11 +24,6 @@ const define = (db, schema) => {
       type: UUID,
       allowNull: false
     },
-    request_type: {
-      type: STRING,
-      allowNull: false,
-      defaultValue: 'service'
-    },
     status: {
       type: SMALLINT,
       allowNull: false,
@@ -49,6 +44,11 @@ const define = (db, schema) => {
     actioned_at: {
       type: DATE,
       allowNull: true
+    },
+    request_type: {
+      type: STRING,
+      allowNull: false,
+      defaultValue: 'service'
     }
   }, {
     timestamps: true,
