@@ -18,7 +18,7 @@ describe('When removing a user service in repository', () => {
   });
 
   it('then it should upsert the record', async () => {
-     await removeUserService(uid, sid, oid);
+    await removeUserService(uid, sid, oid);
 
     expect(repository.userServices.destroy).toHaveBeenCalledTimes(1);
     expect(repository.userServices.destroy.mock.calls[0][0]).toMatchObject({

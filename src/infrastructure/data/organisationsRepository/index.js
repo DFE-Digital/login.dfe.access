@@ -52,5 +52,4 @@ buildDataModel(dataModel, db, [
 ]);
 dataModel.connection = db;
 
-
 module.exports = dataModel;

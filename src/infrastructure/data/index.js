@@ -1,10 +1,12 @@
 const { Op, QueryTypes } = require('sequelize');
 const uuid = require('uuid');
+
 const {
   connection, userServices, userServiceIdentifiers, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles, roles, userServiceRequests, userServiceRoles, invitationServiceRoles,
 } = require('./organisationsRepository');
+
 const {
-  mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities, mapUserServiceRequests, mapUserServiceRoles, 
+  mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities, mapUserServiceRoles, 
 } = require('./mappers');
 
 const getUserServices = async (uid) => {
@@ -137,6 +139,23 @@ const addGroupsToUserServiceIdentifier = async (uid, sid, oid, value) => {
     identifier_key: 'groups',
     identifier_value: value,
   });
+};
+
+const removeUserServiceAndAssociations = async (uid, sid, oid) => {
+  const tran = await sequelize.transaction();
+  try {
+    // remove all service related mappings/associations
+    await removeAllUserServiceRequests(uid, sid, oid);
+    await removeAllUserServiceRoles(uid, sid, oid);
+    await removeAllUserServiceIdentifiers(uid, sid, oid);
+    await removeUserService(uid, sid, oid);
+
+    // commit batch operation
+    await tran.commit();
+    
+  } catch (e) {
+    await tran.rollback();
+  }
 };
 
 const removeUserService = async (uid, sid, oid) => {
@@ -614,27 +633,36 @@ const getServiceRoles = async (sid) => {
 };
 
 module.exports = {
+  // User services
   getUserServices,
   getUserService,
-  addUserService,
-  addUserServiceIdentifier,
-  getUserOfServiceIdentifier,
-  removeAllUserServiceIdentifiers,
-  removeUserService,
   getUsersOfServicePaged,
   getPageOfUserServices,
+  getUserOfServiceIdentifier,
+  getUsersOfServicePagedV2,
+  addUserService,
+  addUserServiceIdentifier,
+  addUserServiceRole,
+  removeUserServiceAndAssociations,
+  removeAllUserServiceIdentifiers,
+  removeUserService,
   removeAllUserServiceRequests,
   removeAllUserServiceRoles,
-  addUserServiceRole,
+  removeAllUserServiceGroupIdentifiers,
+  addGroupsToUserServiceIdentifier,
 
-  addInvitationService,
-  addInvitationServiceIdentifier,
-  removeAllInvitationServiceIdentifiers,
+  // Invitation services
   getInvitationServices,
   getPageOfInvitationServices,
-  removeAllInvitationServiceRoles,
+  addInvitationService,
+  addInvitationServiceIdentifier,
   addInvitationServiceRole,
+  getInvitationService,
+  removeInvitationService,
+  removeAllInvitationServiceIdentifiers,
+  removeAllInvitationServiceRoles,
 
+  // Policies
   getPoliciesForService,
   getPolicy,
   addPolicy,
@@ -643,11 +671,8 @@ module.exports = {
   deletePolicy,
   deletePolicyConditions,
   deletePolicyRoles,
-  getServiceRoles,
-  getInvitationService,
-  removeInvitationService,
-  getUsersOfServicePagedV2,
-  removeAllUserServiceGroupIdentifiers,
-  addGroupsToUserServiceIdentifier,
   getPageOfPolicies,
+
+  // Service roles
+  getServiceRoles,
 };
