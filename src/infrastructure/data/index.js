@@ -140,7 +140,7 @@ const executeWithTransaction = async (action, uid, sid, oid, batchTransaction) =
   }
 };
 
-const removeUserServiceRequests = async (uid, sid, oid, batchTransaction) => {
+const removeAllUserServiceRequests = async (uid, sid, oid, batchTransaction) => {
   const transaction = batchTransaction ?? await sequelize.transaction();
   await userServiceRequests.destroy({
     where: {
@@ -151,7 +151,7 @@ const removeUserServiceRequests = async (uid, sid, oid, batchTransaction) => {
   }, { transaction });
 };
 
-const removeUserServiceRoles = async (uid, sid, oid, batchTransaction) => {
+const removeAllUserServiceRoles = async (uid, sid, oid, batchTransaction) => {
   const transaction = batchTransaction ?? await sequelize.transaction();
   await userServiceRoles.destroy({
     where: {
@@ -162,7 +162,7 @@ const removeUserServiceRoles = async (uid, sid, oid, batchTransaction) => {
   }, { transaction });
 };
 
-const removeUserServiceIdentifiers = async (uid, sid, oid, batchTransaction) => {
+const removeAllUserServiceIdentifiers = async (uid, sid, oid, batchTransaction) => {
   const transaction = batchTransaction ?? await sequelize.transaction();
   await userServiceIdentifiers.destroy({
     where: {
@@ -188,9 +188,9 @@ const removeUserServiceAndAssociations = async (uid, sid, oid) => {
   const logger = require('./../logger');
   try {
     await sequelize.transaction(async t => {
-      await executeWithTransaction(removeUserServiceRequests, uid, sid, oid, t);
-      await executeWithTransaction(removeUserServiceRoles, uid, sid, oid, t);
-      await executeWithTransaction(removeUserServiceIdentifiers, uid, sid, oid, t);
+      await executeWithTransaction(removeAllUserServiceRequests, uid, sid, oid, t);
+      await executeWithTransaction(removeAllUserServiceRoles, uid, sid, oid, t);
+      await executeWithTransaction(removeAllUserServiceIdentifiers, uid, sid, oid, t);
       await executeWithTransaction(removeUserService, uid, sid, oid, t);
     });
   } catch (e) {
@@ -641,9 +641,9 @@ module.exports = {
   addUserServiceRole,
   removeUserServiceAndAssociations,
   removeAllUserServiceIdentifiers,
-  removeUserService,
   removeAllUserServiceRequests,
   removeAllUserServiceRoles,
+  removeUserService,
   removeAllUserServiceGroupIdentifiers,
   addGroupsToUserServiceIdentifier,
 

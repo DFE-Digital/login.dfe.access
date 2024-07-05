@@ -1,6 +1,6 @@
 const { removeAllUserServiceRequests } = require('./../../../src/infrastructure/data');
-const sequelize = require('./__mocks__/sequelize');
-const { userServiceRequests } = require('./__mocks__/sequelize');
+const sequelize = require('./__mocks__/sequelizeMock');
+const { userServiceRequests } = require('./__mocks__/sequelizeMock');
 
 jest.mock('sequelize');
 
