@@ -1,6 +1,6 @@
 {
   "name": "login.dfe.access",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Provides resource access functionality to platform components.",
   "scripts": {
     "dev": "settings='./config/login.dfe.access.dev.json' node src/index.js",
@@ -34,6 +34,7 @@
     "login.dfe.service-notifications.jobs.client": "github:DFE-Digital/login.dfe.service-notifications.jobs.client#v2.0.1",
     "login.dfe.winston-appinsights": "github:DFE-Digital/login.dfe.winston-appinsights#v5.0.1",
     "sequelize": "^6.3.3",
+    "sequelize-mock": "^0.10.2",
     "tedious": "^18.2.1",
     "uuid": "^9.0.1",
     "winston": "^3.11.0"

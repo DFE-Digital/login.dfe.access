@@ -96,22 +96,6 @@ const getUserOfServiceIdentifier = async (sid, key, value) => {
   return undefined;
 };
 
-const removeAllUserServiceIdentifiers = async (uid, sid, oid) => {
-  await userServiceIdentifiers.destroy({
-    where: {
-      user_id: {
-        [Op.eq]: uid,
-      },
-      service_id: {
-        [Op.eq]: sid,
-      },
-      organisation_id: {
-        [Op.eq]: oid,
-      },
-    },
-  });
-};
-
 const removeAllUserServiceGroupIdentifiers = async (uid, sid, oid) => {
   await userServiceIdentifiers.destroy({
     where: {
@@ -141,37 +125,80 @@ const addGroupsToUserServiceIdentifier = async (uid, sid, oid, value) => {
   });
 };
 
-const removeUserServiceAndAssociations = async (uid, sid, oid) => {
-  const tran = await sequelize.transaction();
+const executeWithTransaction = async (action, uid, sid, oid, batchTransaction) => {
+  const transaction = batchTransaction ?? await sequelize.transaction();
   try {
-    // remove all service related mappings/associations
-    await removeAllUserServiceRequests(uid, sid, oid);
-    await removeAllUserServiceRoles(uid, sid, oid);
-    await removeAllUserServiceIdentifiers(uid, sid, oid);
-    await removeUserService(uid, sid, oid);
-
-    // commit batch operation
-    await tran.commit();
-    
-  } catch (e) {
-    await tran.rollback();
+    await action(uid, sid, oid, transaction);
+    if (!batchTran) {
+      await transaction.commit();
+    }
+  } catch (error) {
+    if (!batchTran) {
+      await transaction.rollback();
+    }
+    throw error;
   }
 };
 
-const removeUserService = async (uid, sid, oid) => {
+const removeUserServiceRequests = async (uid, sid, oid, batchTransaction) => {
+  const transaction = batchTransaction ?? await sequelize.transaction();
+  await userServiceRequests.destroy({
+    where: {
+      user_id: uid,
+      service_id: sid,
+      organisation_id: oid,
+    },
+  }, { transaction });
+};
+
+const removeUserServiceRoles = async (uid, sid, oid, batchTransaction) => {
+  const transaction = batchTransaction ?? await sequelize.transaction();
+  await userServiceRoles.destroy({
+    where: {
+      user_id: uid,
+      service_id: sid,
+      organisation_id: oid,
+    },
+  }, { transaction });
+};
+
+const removeUserServiceIdentifiers = async (uid, sid, oid, batchTransaction) => {
+  const transaction = batchTransaction ?? await sequelize.transaction();
+  await userServiceIdentifiers.destroy({
+    where: {
+      user_id: uid,
+      service_id: sid,
+      organisation_id: oid,
+    },
+  }, { transaction });
+};
+
+const removeUserService = async (uid, sid, oid, batchTransaction) => {
+  const transaction = batchTransaction ?? await sequelize.transaction();
   await userServices.destroy({
     where: {
-      user_id: {
-        [Op.eq]: uid,
-      },
-      service_id: {
-        [Op.eq]: sid,
-      },
-      organisation_id: {
-        [Op.eq]: oid,
-      },
+      user_id: uid,
+      service_id: sid,
+      organisation_id: oid,
     },
-  });
+  }, { transaction });
+};
+
+const removeUserServiceAndAssociations = async (uid, sid, oid) => {
+  const logger = require('./../logger');
+  try {
+    await sequelize.transaction(async t => {
+      await executeWithTransaction(removeUserServiceRequests, uid, sid, oid, t);
+      await executeWithTransaction(removeUserServiceRoles, uid, sid, oid, t);
+      await executeWithTransaction(removeUserServiceIdentifiers, uid, sid, oid, t);
+      await executeWithTransaction(removeUserService, uid, sid, oid, t);
+    });
+  } catch (e) {
+    logger.error(`Error removing service: ${sid} with org: ${oid} from user: ${uid} - ${e.message}`, {
+      stack: e.stack
+    });
+    throw e;
+  }
 };
 
 // TODO: re-enable tests once we can update model to support sequelize relationships
@@ -334,38 +361,6 @@ const getPageOfUserServices = async (pageNumber, pageSize) => {
   };
 };
 
-const removeAllUserServiceRequests = async (uid, sid, oid) => {
-  await userServiceRequests.destroy({
-    where: {
-      user_id: {
-        [Op.eq]: uid,
-      },
-      service_id: {
-        [Op.eq]: sid,
-      },
-      organisation_id: {
-        [Op.eq]: oid,
-      },
-    },
-  });
-};
-
-const removeAllUserServiceRoles = async (uid, sid, oid) => {
-  await userServiceRoles.destroy({
-    where: {
-      user_id: {
-        [Op.eq]: uid,
-      },
-      service_id: {
-        [Op.eq]: sid,
-      },
-      organisation_id: {
-        [Op.eq]: oid,
-      },
-    },
-  });
-};
-
 const addUserServiceRole = async (uid, sid, oid, rid) => {
   await userServiceRoles.create({
     id: uuid.v4(),
@@ -429,7 +424,7 @@ const removeInvitationService = async (iid, sid, oid) => {
   });
 };
 
-const removeAllInvitationServiceIdentifiers = async (iid, sid, oid) => {
+const removeAllInvitationServiceIdentifiers = async (iid, sid, oid, t = undefined) => {
   await invitationServiceIdentifiers.destroy({
     where: {
       invitation_id: {
@@ -442,7 +437,8 @@ const removeAllInvitationServiceIdentifiers = async (iid, sid, oid) => {
         [Op.eq]: oid,
       },
     },
-  });
+  },
+  { transaction: t });
 };
 
 const getInvitationServices = async (iid) => {
