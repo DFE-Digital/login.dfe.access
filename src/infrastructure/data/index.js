@@ -1,10 +1,12 @@
 const { Op, QueryTypes } = require('sequelize');
 const uuid = require('uuid');
+
 const {
-  connection, userServices, userServiceIdentifiers, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles, roles, userServiceRoles, invitationServiceRoles,
+  connection, userServices, userServiceIdentifiers, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles, roles, userServiceRequests, userServiceRoles, invitationServiceRoles,
 } = require('./organisationsRepository');
+
 const {
-  mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities, mapUserServiceRoles,
+  mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities, mapUserServiceRoles, 
 } = require('./mappers');
 
 const getUserServices = async (uid) => {
@@ -94,22 +96,6 @@ const getUserOfServiceIdentifier = async (sid, key, value) => {
   return undefined;
 };
 
-const removeAllUserServiceIdentifiers = async (uid, sid, oid) => {
-  await userServiceIdentifiers.destroy({
-    where: {
-      user_id: {
-        [Op.eq]: uid,
-      },
-      service_id: {
-        [Op.eq]: sid,
-      },
-      organisation_id: {
-        [Op.eq]: oid,
-      },
-    },
-  });
-};
-
 const removeAllUserServiceGroupIdentifiers = async (uid, sid, oid) => {
   await userServiceIdentifiers.destroy({
     where: {
@@ -139,20 +125,80 @@ const addGroupsToUserServiceIdentifier = async (uid, sid, oid, value) => {
   });
 };
 
-const removeUserService = async (uid, sid, oid) => {
+const executeWithTransaction = async (action, uid, sid, oid, batchTransaction) => {
+  const transaction = batchTransaction ?? await sequelize.transaction();
+  try {
+    await action(uid, sid, oid, transaction);
+    if (!batchTran) {
+      await transaction.commit();
+    }
+  } catch (error) {
+    if (!batchTran) {
+      await transaction.rollback();
+    }
+    throw error;
+  }
+};
+
+const removeAllUserServiceRequests = async (uid, sid, oid, batchTransaction) => {
+  const transaction = batchTransaction ?? await sequelize.transaction();
+  await userServiceRequests.destroy({
+    where: {
+      user_id: uid,
+      service_id: sid,
+      organisation_id: oid,
+    },
+  }, { transaction });
+};
+
+const removeAllUserServiceRoles = async (uid, sid, oid, batchTransaction) => {
+  const transaction = batchTransaction ?? await sequelize.transaction();
+  await userServiceRoles.destroy({
+    where: {
+      user_id: uid,
+      service_id: sid,
+      organisation_id: oid,
+    },
+  }, { transaction });
+};
+
+const removeAllUserServiceIdentifiers = async (uid, sid, oid, batchTransaction) => {
+  const transaction = batchTransaction ?? await sequelize.transaction();
+  await userServiceIdentifiers.destroy({
+    where: {
+      user_id: uid,
+      service_id: sid,
+      organisation_id: oid,
+    },
+  }, { transaction });
+};
+
+const removeUserService = async (uid, sid, oid, batchTransaction) => {
+  const transaction = batchTransaction ?? await sequelize.transaction();
   await userServices.destroy({
     where: {
-      user_id: {
-        [Op.eq]: uid,
-      },
-      service_id: {
-        [Op.eq]: sid,
-      },
-      organisation_id: {
-        [Op.eq]: oid,
-      },
+      user_id: uid,
+      service_id: sid,
+      organisation_id: oid,
     },
-  });
+  }, { transaction });
+};
+
+const removeUserServiceAndAssociations = async (uid, sid, oid) => {
+  const logger = require('./../logger');
+  try {
+    await sequelize.transaction(async t => {
+      await executeWithTransaction(removeAllUserServiceRequests, uid, sid, oid, t);
+      await executeWithTransaction(removeAllUserServiceRoles, uid, sid, oid, t);
+      await executeWithTransaction(removeAllUserServiceIdentifiers, uid, sid, oid, t);
+      await executeWithTransaction(removeUserService, uid, sid, oid, t);
+    });
+  } catch (e) {
+    logger.error(`Error removing service: ${sid} with org: ${oid} from user: ${uid} - ${e.message}`, {
+      stack: e.stack
+    });
+    throw e;
+  }
 };
 
 // TODO: re-enable tests once we can update model to support sequelize relationships
@@ -315,22 +361,6 @@ const getPageOfUserServices = async (pageNumber, pageSize) => {
   };
 };
 
-const removeAllUserServiceRoles = async (uid, sid, oid) => {
-  await userServiceRoles.destroy({
-    where: {
-      user_id: {
-        [Op.eq]: uid,
-      },
-      service_id: {
-        [Op.eq]: sid,
-      },
-      organisation_id: {
-        [Op.eq]: oid,
-      },
-    },
-  });
-};
-
 const addUserServiceRole = async (uid, sid, oid, rid) => {
   await userServiceRoles.create({
     id: uuid.v4(),
@@ -394,7 +424,7 @@ const removeInvitationService = async (iid, sid, oid) => {
   });
 };
 
-const removeAllInvitationServiceIdentifiers = async (iid, sid, oid) => {
+const removeAllInvitationServiceIdentifiers = async (iid, sid, oid, t = undefined) => {
   await invitationServiceIdentifiers.destroy({
     where: {
       invitation_id: {
@@ -407,7 +437,8 @@ const removeAllInvitationServiceIdentifiers = async (iid, sid, oid) => {
         [Op.eq]: oid,
       },
     },
-  });
+  },
+  { transaction: t });
 };
 
 const getInvitationServices = async (iid) => {
@@ -598,26 +629,36 @@ const getServiceRoles = async (sid) => {
 };
 
 module.exports = {
+  // User services
   getUserServices,
   getUserService,
-  addUserService,
-  addUserServiceIdentifier,
-  getUserOfServiceIdentifier,
-  removeAllUserServiceIdentifiers,
-  removeUserService,
   getUsersOfServicePaged,
   getPageOfUserServices,
-  removeAllUserServiceRoles,
+  getUserOfServiceIdentifier,
+  getUsersOfServicePagedV2,
+  addUserService,
+  addUserServiceIdentifier,
   addUserServiceRole,
+  removeUserServiceAndAssociations,
+  removeAllUserServiceIdentifiers,
+  removeAllUserServiceRequests,
+  removeAllUserServiceRoles,
+  removeUserService,
+  removeAllUserServiceGroupIdentifiers,
+  addGroupsToUserServiceIdentifier,
 
-  addInvitationService,
-  addInvitationServiceIdentifier,
-  removeAllInvitationServiceIdentifiers,
+  // Invitation services
   getInvitationServices,
   getPageOfInvitationServices,
-  removeAllInvitationServiceRoles,
+  addInvitationService,
+  addInvitationServiceIdentifier,
   addInvitationServiceRole,
+  getInvitationService,
+  removeInvitationService,
+  removeAllInvitationServiceIdentifiers,
+  removeAllInvitationServiceRoles,
 
+  // Policies
   getPoliciesForService,
   getPolicy,
   addPolicy,
@@ -626,11 +667,8 @@ module.exports = {
   deletePolicy,
   deletePolicyConditions,
   deletePolicyRoles,
-  getServiceRoles,
-  getInvitationService,
-  removeInvitationService,
-  getUsersOfServicePagedV2,
-  removeAllUserServiceGroupIdentifiers,
-  addGroupsToUserServiceIdentifier,
   getPageOfPolicies,
+
+  // Service roles
+  getServiceRoles,
 };

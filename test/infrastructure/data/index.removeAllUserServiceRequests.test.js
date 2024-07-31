@@ -1,23 +1,23 @@
-const { removeAllUserServiceRoles } = require('./../../../src/infrastructure/data');
+const { removeAllUserServiceRequests } = require('./../../../src/infrastructure/data');
 const sequelize = require('./__mocks__/sequelizeMock');
-const { userServiceRoles } = require('./__mocks__/sequelizeMock');
+const { userServiceRequests } = require('./__mocks__/sequelizeMock');
 
 jest.mock('sequelize');
 
-describe('When removing all service roles for a given user, service and organisation', () => {
+describe('When removing all service requets for a given user, service and organisation', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should remove all user service roles with a new transaction', async () => {
+  it('should remove all user service requests with a new transaction', async () => {
     const uid = '123';
     const sid = '456';
     const oid = '789';
 
-    await removeAllUserServiceRoles(uid, sid, oid);
+    await removeAllUserServiceRequests(uid, sid, oid);
 
     expect(sequelize.transaction).toHaveBeenCalledTimes(1);
-    expect(userServiceRoles.destroy).toHaveBeenCalledWith(
+    expect(userServiceRequests.destroy).toHaveBeenCalledWith(
       {
         where: {
           user_id: uid,
@@ -29,16 +29,16 @@ describe('When removing all service roles for a given user, service and organisa
     );
   });
 
-  it('should remove all user service roles with an existing transaction', async () => {
+  it('should remove all user service requests with an existing transaction', async () => {
     const uid = '123';
     const sid = '456';
     const oid = '789';
     const existingTransaction = { commit: jest.fn(), rollback: jest.fn() };
 
-    await removeAllUserServiceRoles(uid, sid, oid, existingTransaction);
+    await removeAllUserServiceRequests(uid, sid, oid, existingTransaction);
 
     expect(sequelize.transaction).not.toHaveBeenCalled();
-    expect(userServiceRoles.destroy).toHaveBeenCalledWith(
+    expect(userServiceRequests.destroy).toHaveBeenCalledWith(
       {
         where: {
           user_id: uid,
@@ -55,13 +55,13 @@ describe('When removing all service roles for a given user, service and organisa
     const sid = '456';
     const oid = '789';
 
-    userServiceRoles.destroy.mockImplementationOnce(() => {
+    userServiceRequests.destroy.mockImplementationOnce(() => {
       throw new Error('Test error');
     });
 
     const transaction = await sequelize.transaction();
 
-    await expect(removeAllUserServiceRoles(uid, sid, oid, transaction)).rejects.toThrow('Test error');
+    await expect(removeAllUserServiceRequests(uid, sid, oid, transaction)).rejects.toThrow('Test error');
     expect(transaction.rollback).toHaveBeenCalled();
   });
 });
@@ -73,14 +73,14 @@ describe('When removing all service roles for a given user, service and organisa
 
 // const uuid = require('uuid');
 // const repository = require('./../../../src/infrastructure/data/organisationsRepository');
-// const { removeAllUserServiceRoles } = require('./../../../src/infrastructure/data');
+// const { removeAllUserServiceRequests } = require('./../../../src/infrastructure/data');
 // const { Op } = require('sequelize');
 
 // const uid = 'user-1';
 // const sid = 'service-1';
 // const oid = 'organisation-1';
 
-// describe('When removing roles from a user service in repository', () => {
+// describe('When removing service requests from a user for a given service in the repository', () => {
 //   beforeEach(() => {
 //     repository.mockResetAll();
 
@@ -88,10 +88,10 @@ describe('When removing all service roles for a given user, service and organisa
 //   });
 
 //   it('then it should destroy all records for user/service/org', async () => {
-//     await removeAllUserServiceRoles(uid, sid, oid);
+//     await removeAllUserServiceRequests(uid, sid, oid);
 
-//     expect(repository.userServiceRoles.destroy).toHaveBeenCalledTimes(1);
-//     expect(repository.userServiceRoles.destroy.mock.calls[0][0]).toMatchObject({
+//     expect(repository.userServiceRequests.destroy).toHaveBeenCalledTimes(1);
+//     expect(repository.userServiceRequests.destroy.mock.calls[0][0]).toMatchObject({
 //       where: {
 //         user_id: {
 //           [Op.eq]: uid,
