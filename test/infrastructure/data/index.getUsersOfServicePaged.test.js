@@ -3,7 +3,6 @@ jest.mock('./../../../src/infrastructure/data/organisationsRepository', () => re
 const { mockUserServiceEntity } = require('./mockOrganisationsRepository');
 const repository = require('./../../../src/infrastructure/data/organisationsRepository');
 const { getUsersOfServicePaged } = require('./../../../src/infrastructure/data');
-const { Op } = require('sequelize');
 
 const sid = 'service-1';
 const oid = 'an-oid';
@@ -16,77 +15,74 @@ const services = [
   mockUserServiceEntity({}, [{ identifier_key: 'groups', identifier_value: 'g1,g2' }]),
 ];
 
-describe('When getting a page of users with access to service from repository', () => {
+describe('When getting a page of users with access to service from repository - getUsersOfServicePaged', () => {
   beforeEach(() => {
     repository.mockResetAll();
-
-    repository.userServices.findAndCountAll.mockReturnValue({
-      rows: services,
-      count: 52,
-    });
 
     services[0].mockResetAll();
     services[1].mockResetAll();
     services[2].mockResetAll();
   });
 
-  it('then it should query by service id', async () => {
-    repository.connection.query.mockReturnValueOnce([1]).mockReturnValue([services[1]]);
-    //repository.connection.query.mockReturnValue([services[1]]);
+  it('should correctly return services and page data on success', async () => {
+    repository.connection.query.mockReturnValueOnce([{'count': 3}]).mockReturnValue([services[0], services[1], services[2]]);
     const output = await getUsersOfServicePaged(sid, oid, filters, pageNumber, pageSize);
 
-    expect(output).toHaveProperty('services', 'page','totalNumberOfPages', 'totalNumberOfRecords');
-    expect(output['services'][0]['identifiers'][0]).toEqual({"key": "k2s-id", "value": "123456"});
-
-    console.log(repository.connection.query.mock.calls);
     expect(repository.connection.query).toHaveBeenCalledTimes(2);
-  });
-
-  it.skip('then it should query with pagination', async () => {
-    await getUsersOfServicePaged(sid, oid, filters, pageNumber, pageSize);
-
-    expect(repository.userServices.findAndCountAll).toHaveBeenCalledTimes(1);
-    expect(repository.userServices.findAndCountAll.mock.calls[0][0]).toMatchObject({
-      offset: 25,
-      limit: pageSize,
-    });
-  });
-
-  it.skip('then it should return services mapped to model', async () => {
-    const actual = await getUsersOfServicePaged(sid, oid, filters, pageNumber, pageSize);
-
-    expect(actual.services.length).toBe(3);
-    expect(actual.services[0]).toEqual({
+    expect(output).toHaveProperty('services', 'page','totalNumberOfPages', 'totalNumberOfRecords');
+    expect(output.services.length).toBe(3);
+    expect(output.services[0]).toEqual({
+      userId: undefined,
+      invitationId: undefined,
       serviceId: services[0].service_id,
       organisationId: services[0].organisation_id,
       roles: [],
       identifiers: [],
       accessGrantedOn: services[0].createdAt,
     });
-    expect(actual.services[1]).toEqual({
+    expect(output.services[1]).toEqual({
+      userId: undefined,
+      invitationId: undefined,
       serviceId: services[1].service_id,
       organisationId: services[1].organisation_id,
       roles: [],
       identifiers: [{ key: 'k2s-id', value: '123456' }],
       accessGrantedOn: services[1].createdAt,
     });
-    expect(actual.services[2]).toEqual({
+    expect(output.services[2]).toEqual({
+      userId: undefined,
+      invitationId: undefined,
       serviceId: services[2].service_id,
       organisationId: services[2].organisation_id,
-      roles: ['g1', 'g2'],
+      roles: [],
       identifiers: [{ key: 'groups', value: 'g1,g2' }],
       accessGrantedOn: services[2].createdAt,
     });
+    expect(output.page).toBe(pageNumber);
+    expect(output.totalNumberOfPages).toBe(1);
+    expect(output.totalNumberOfRecords).toBe(3);
   });
 
-  it('then it should return pagination information', async () => {
-    repository.connection.query.mockReturnValueOnce(['10']).mockReturnValue([services[1]]);
-    const actual = await getUsersOfServicePaged(sid, oid, filters, pageNumber, pageSize);
+  it('should calculate correct number of pages when returning multiple records', async () => {
+    // 5 records and a pageSize of 2 should have 3 pages
+    repository.connection.query.mockReturnValueOnce([{'count': 5}]).mockReturnValue([services[0], services[1], services[2], services[2], services[1]]);
+    let output = await getUsersOfServicePaged(sid, oid, filters, pageNumber, 2);
 
-    console.log(actual)
-    expect(actual.page).toBe(pageNumber);
-    // Need to fix first db mock to get a sensible count
-    //expect(actual.totalNumberOfPages).toBe(3); NaN
-    //expect(actual.totalNumberOfRecords).toBe(1); undefined
+    expect(repository.connection.query).toHaveBeenCalledTimes(2);
+    expect(output.services.length).toBe(5);
+    expect(output.page).toBe(pageNumber);
+    expect(output.totalNumberOfPages).toBe(3);
+    expect(output.totalNumberOfRecords).toBe(5);
+
+    // 5 records and a pageSize of 3 should have 2 pages
+    repository.connection.query.mockReset();
+    repository.connection.query.mockReturnValueOnce([{'count': 5}]).mockReturnValue([services[0], services[1], services[2], services[2], services[1]]);
+    output = await getUsersOfServicePaged(sid, oid, filters, pageNumber, 3);
+
+    expect(repository.connection.query).toHaveBeenCalledTimes(2);
+    expect(output.services.length).toBe(5);
+    expect(output.page).toBe(pageNumber);
+    expect(output.totalNumberOfPages).toBe(2);
+    expect(output.totalNumberOfRecords).toBe(5);
   });
 });

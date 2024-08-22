@@ -32,6 +32,7 @@ const mockRepository = () => {
     userServiceRoles: mockTable(),
     invitationServiceRoles: mockTable(),
     mockResetAll: function () {
+      this.connection.query.mockReset();
       this.userServices.mockResetAll();
       this.userServiceIdentifiers.mockResetAll();
       this.invitationServices.mockResetAll();
