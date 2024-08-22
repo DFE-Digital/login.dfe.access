@@ -20,6 +20,7 @@ const mockTable = () => {
 };
 const mockRepository = () => {
   return {
+    connection: { query: jest.fn() },
     userServices: mockTable(),
     userServiceIdentifiers: mockTable(),
     invitationServices: mockTable(),

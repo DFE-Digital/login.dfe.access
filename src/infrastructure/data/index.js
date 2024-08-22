@@ -197,6 +197,9 @@ const getUsersOfServicePaged = async (sid, oid, filters, pageNumber, pageSize) =
     `SELECT DISTINCT [user_services].* ${queryFrom} ${queryWhere} ORDER BY [user_services].user_id, [user_services].organisation_id`,
     { model: userServices, ...queryOpts },
   );
+
+  console.log(count);
+  console.log(rows);
   return {
     services: await mapUserServiceEntities(rows),
     page: pageNumber,
