@@ -155,7 +155,7 @@ const removeUserService = async (uid, sid, oid) => {
   });
 };
 
-// TODO: re-enable tests once we can update model to support sequelize relationships
+// TODO: update model to support sequelize relationships
 const getUsersOfServicePaged = async (sid, oid, filters, pageNumber, pageSize) => {
   let queryFrom = 'FROM [dbo].[user_services] AS [user_services]';
   let queryWhere = 'WHERE [user_services].[service_id] = :sid';
@@ -197,6 +197,7 @@ const getUsersOfServicePaged = async (sid, oid, filters, pageNumber, pageSize) =
     `SELECT DISTINCT [user_services].* ${queryFrom} ${queryWhere} ORDER BY [user_services].user_id, [user_services].organisation_id`,
     { model: userServices, ...queryOpts },
   );
+
   return {
     services: await mapUserServiceEntities(rows),
     page: pageNumber,

@@ -20,6 +20,7 @@ const mockTable = () => {
 };
 const mockRepository = () => {
   return {
+    connection: { query: jest.fn() },
     userServices: mockTable(),
     userServiceIdentifiers: mockTable(),
     invitationServices: mockTable(),
@@ -31,6 +32,7 @@ const mockRepository = () => {
     userServiceRoles: mockTable(),
     invitationServiceRoles: mockTable(),
     mockResetAll: function () {
+      this.connection.query.mockReset();
       this.userServices.mockResetAll();
       this.userServiceIdentifiers.mockResetAll();
       this.invitationServices.mockResetAll();
