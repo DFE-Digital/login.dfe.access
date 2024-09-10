@@ -43,16 +43,18 @@ app.use(helmet.contentSecurityPolicy({
 
 logger.info('Set helmet filters');
 
+app.use(helmet.hsts({
+  maxAge: config.hostingEnvironment.hstsMaxAge,
+  includeSubDomains: true,
+}));
 app.use(helmet.xssFilter());
 app.use(helmet.frameguard('false'));
 app.use(helmet.ieNoOpen());
 
 logger.info('helmet setup complete');
 
-
 if (config.hostingEnvironment.env !== 'dev') {
   app.set('trust proxy', 1);
-
 }
 
 if (config.hostingEnvironment.env === 'dev') {
