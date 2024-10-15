@@ -1,10 +1,10 @@
 const { Op, QueryTypes } = require('sequelize');
 const uuid = require('uuid');
 const {
-  connection, userServices, userServiceIdentifiers, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles, roles, userServiceRoles, invitationServiceRoles,
+  connection, userServices, userServiceIdentifiers, userServiceRequests, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles, roles, userServiceRoles, invitationServiceRoles,
 } = require('./organisationsRepository');
 const {
-  mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities, mapUserServiceRoles,
+  mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities, mapUserServiceRoles, mapUserServiceRequests,
 } = require('./mappers');
 
 const getUserServices = async (uid) => {
@@ -598,6 +598,18 @@ const getServiceRoles = async (sid) => {
   return await mapRoleEntities(entities);
 };
 
+const getUserServiceRequests = async (uid) => {
+  const entities = await userServiceRequests.findAll({
+    where: {
+      user_id: {
+        [Op.eq]: uid,
+      },
+    },
+    order: ['service_id', 'organisation_id'],
+  });
+  return mapUserServiceRequests(entities);
+};
+
 module.exports = {
   getUserServices,
   getUserService,
@@ -610,6 +622,8 @@ module.exports = {
   getPageOfUserServices,
   removeAllUserServiceRoles,
   addUserServiceRole,
+
+  getUserServiceRequests,
 
   addInvitationService,
   addInvitationServiceIdentifier,

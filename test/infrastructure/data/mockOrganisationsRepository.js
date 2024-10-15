@@ -31,6 +31,9 @@ const mockRepository = () => {
     policyConditions: mockTable(),
     userServiceRoles: mockTable(),
     invitationServiceRoles: mockTable(),
+    userServiceRequests: mockTable(),
+    organisations: mockTable(),
+
     mockResetAll: function () {
       this.connection.query.mockReset();
       this.userServices.mockResetAll();
@@ -43,6 +46,8 @@ const mockRepository = () => {
       this.policyConditions.mockResetAll();
       this.userServiceRoles.mockResetAll();
       this.invitationServiceRoles.mockResetAll();
+      this.userServiceRequests.mockResetAll();
+      this.organisations.mockResetAll();
     },
   };
 };
@@ -59,6 +64,29 @@ const mockUserServiceEntity = (data, identifiers = undefined, roles = undefined)
   entity.mockResetAll = function () {
     this.getIdentifiers.mockReset().mockReturnValue(identifiers);
     this.getRoles.mockReset().mockReturnValue(roles);
+  };
+  return entity;
+};
+
+
+const mockUserServiceRequestEntity = (data, status) => {
+  const defaultEntity = {
+    user_id: uuid.v4(),
+    service_id: uuid.v4(),
+    role_ids: uuid.v4(),
+    organisation_id: uuid.v4(),
+    status: status,
+    reason: 'test reason',
+    actioned_by:  uuid.v4(),
+    actioned_id: uuid.v4(),
+    actioned_reason: 'test reason',
+    actioned_at: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    request_type: 'test type',
+  };
+  const entity = Object.assign({}, defaultEntity, data);
+  entity.mockResetAll = function () {
   };
   return entity;
 };
@@ -116,4 +144,5 @@ module.exports = {
   mockPolicyEntity,
   mockRoleEntity,
   mockPolicyConditionEntity,
+  mockUserServiceRequestEntity,
 };
