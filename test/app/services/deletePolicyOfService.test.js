@@ -105,4 +105,12 @@ describe('When deleting a policy of a service', () => {
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.send).toHaveBeenCalledTimes(1);
   });
+
+  it('should raise an exception if an exception is raised in getPolicy', async () => {
+    getPolicy.mockImplementation(() => {
+      throw new Error('bad times');
+    });
+
+    await expect(deletePolicyOfService(req, res)).rejects.toThrow('bad times');
+  });
 });

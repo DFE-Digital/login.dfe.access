@@ -92,4 +92,12 @@ describe('When adding service to user', () => {
     expect(notifyUserUpdated).toHaveBeenCalledTimes(1);
     expect(notifyUserUpdated).toHaveBeenCalledWith(uid);
   });
+
+  it('should raise an exception if an exception is raised when calling getUserOfServiceIdentifier', async () => {
+    getUserOfServiceIdentifier.mockImplementation(() => {
+      throw new Error('bad times');
+    });
+
+    await expect(addServiceIdentifierToUser(req, res)).rejects.toThrow('bad times');
+  });
 });

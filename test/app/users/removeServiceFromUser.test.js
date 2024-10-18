@@ -72,4 +72,12 @@ describe('When removing service from user', () => {
     expect(notifyUserUpdated).toHaveBeenCalledTimes(1);
     expect(notifyUserUpdated).toHaveBeenCalledWith(uid);
   });
+
+  it('should raise an exception if an exception is raised in removeUserService', async () => {
+    removeUserService.mockImplementation(() => {
+      throw new Error('bad times');
+    });
+
+    await expect(removeServiceFromUser(req, res)).rejects.toThrow('bad times');
+  });
 });
