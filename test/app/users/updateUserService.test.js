@@ -235,4 +235,12 @@ describe('When updating service of user', () => {
       ],
     });
   });
+
+  it('should raise an exception if an exception is raised in getUserService', async () => {
+    getUserService.mockImplementation(() => {
+      throw new Error('bad times');
+    });
+
+    await expect(updateUserService(req, res)).rejects.toThrow('bad times');
+  });
 });
