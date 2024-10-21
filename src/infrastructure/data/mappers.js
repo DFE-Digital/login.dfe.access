@@ -97,6 +97,37 @@ const mapPolicyEntities = async (entities) => {
   return mapped;
 };
 
+const mapUserServiceRequest = async (entity) => {
+  if (!entity) {
+    return undefined;
+  }
+  return {
+    userId: entity.user_id || undefined,
+    serviceId: entity.service_id,
+    roles: entity.role_ids || undefined,
+    organisationId: entity.organisation_id || undefined,
+    status: entity.status || 999999,
+    reason: entity.reason || undefined,
+    actionedBy: entity.actioned_by || undefined,
+    actionedReason: entity.actioned_reason || undefined,
+    actionedAt: entity.actioned_at || undefined,
+    createdAt: entity.createdAt,
+    updatedAt: entity.updatedAt,
+    requestType: entity.request_type,
+  }
+};
+
+const mapUserServiceRequests = async (entities) => {
+  if (!entities) {
+    return undefined;
+  }
+  const mappedResult = [];
+  for (let i = 0; i < entities.length; i++) {
+    mappedResult.push(await mapUserServiceRequest(entities[i]));
+  }
+  return mappedResult;
+};
+
 const mapUserServiceRole = async (entity) => {
   if (!entity) {
     return undefined;
@@ -114,7 +145,7 @@ const mapUserServiceRoles = async (entities) => {
   if (!entities) {
     return undefined;
   }
-  const mappedResult = []
+  const mappedResult = [];
   for (let i = 0; i < entities.length; i++) {
     mappedResult.push(await mapUserServiceRole(entities[i]));
   }
@@ -128,4 +159,5 @@ module.exports = {
   mapPolicyEntity,
   mapPolicyEntities,
   mapUserServiceRoles,
+  mapUserServiceRequests,
 };
