@@ -13,6 +13,7 @@ const getPolicyOfService = require('./getPolicyOfService');
 const updatePolicyOfService = require('./updatePolicyOfService');
 const deletePolicyOfService = require('./deletePolicyOfService');
 const pageOfPoliciesForService = require('./pageOfPoliciesForService');
+const updateServiceRequest = require('./updateServiceRequest');
 
 
 const router = express.Router();
@@ -37,6 +38,8 @@ const buildArea = () => {
   router.get('/:sid/policies/:pid', asyncWrapper(getPolicyOfService));
   router.patch('/:sid/policies/:pid', asyncWrapper(updatePolicyOfService));
   router.delete('/:sid/policies/:pid', asyncWrapper(deletePolicyOfService));
+
+  router.patch('requests/:id', asyncWrapper(updateServiceRequest));
 
   return router;
 };

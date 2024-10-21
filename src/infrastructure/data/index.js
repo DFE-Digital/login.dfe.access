@@ -598,6 +598,17 @@ const getServiceRoles = async (sid) => {
   return await mapRoleEntities(entities);
 };
 
+const getUserServiceRequest = async (id) => {
+  const entity = await userServiceRequests.findOne({
+    where: {
+      id: {
+        [Op.eq]: id,
+      },
+    },
+  });
+  return mapUserServiceRequest(entity);
+};
+
 const getUserServiceRequests = async (uid) => {
   const entities = await userServiceRequests.findAll({
     where: {
@@ -608,6 +619,16 @@ const getUserServiceRequests = async (uid) => {
     order: ['service_id', 'organisation_id'],
   });
   return mapUserServiceRequests(entities);
+};
+
+const addUserServiceRequest = async (id, status, reason, actionedBy, actionedReason) => {
+  await userServiceRequests.upsert({
+    id,
+    status,
+    reason,
+    actionedBy,
+    actionedReason,
+  });
 };
 
 module.exports = {
@@ -623,7 +644,9 @@ module.exports = {
   removeAllUserServiceRoles,
   addUserServiceRole,
 
+  getUserServiceRequest,
   getUserServiceRequests,
+  addUserServiceRequest,
 
   addInvitationService,
   addInvitationServiceIdentifier,

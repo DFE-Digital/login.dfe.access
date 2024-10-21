@@ -159,5 +159,6 @@ module.exports = {
   mapPolicyEntity,
   mapPolicyEntities,
   mapUserServiceRoles,
+  mapUserServiceEntity,
   mapUserServiceRequests,
 };
