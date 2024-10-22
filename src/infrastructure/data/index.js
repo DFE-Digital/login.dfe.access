@@ -1,10 +1,10 @@
-const { Op, QueryTypes } = require('sequelize');
+const { Op, QueryTypes, Model } = require('sequelize');
 const uuid = require('uuid');
 const {
   connection, userServices, userServiceIdentifiers, userServiceRequests, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles, roles, userServiceRoles, invitationServiceRoles,
 } = require('./organisationsRepository');
 const {
-  mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities, mapUserServiceRoles, mapUserServiceRequests,
+  mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities, mapUserServiceRoles, mapUserServiceRequests, mapUserServiceRequest
 } = require('./mappers');
 
 const getUserServices = async (uid) => {
@@ -598,6 +598,17 @@ const getServiceRoles = async (sid) => {
   return await mapRoleEntities(entities);
 };
 
+const getUserServiceRequestEntity = async (id) => {
+  const entity = await userServiceRequests.findOne({
+    where: {
+      id: {
+        [Op.eq]: id,
+      },
+    },
+  });
+  return entity;
+};
+
 const getUserServiceRequests = async (uid) => {
   const entities = await userServiceRequests.findAll({
     where: {
@@ -608,6 +619,25 @@ const getUserServiceRequests = async (uid) => {
     order: ['service_id', 'organisation_id'],
   });
   return mapUserServiceRequests(entities);
+};
+
+/**
+ * Updates a user service request.  The requestBody can only contain the following keys
+ * ('status', 'actioned_by', 'actioned_reason', 'actioned_at').
+ *
+ * @param {Model} existingRequest A database entity representing an existing service request
+ * (e.g., the output from getUserServiceRequestEntity)
+ * @param {*} request A dictionary containing new values.
+ */
+
+const updateUserServiceRequest = async (existingRequest, request) => {
+  const updatedRequest = Object.assign(existingRequest, request);
+  await existingRequest.update({
+    status: updatedRequest.status,
+    actioned_by: updatedRequest.actioned_by,
+    actioned_reason: updatedRequest.actioned_reason,
+    actioned_at: updatedRequest.actioned_at
+  });
 };
 
 module.exports = {
@@ -623,7 +653,9 @@ module.exports = {
   removeAllUserServiceRoles,
   addUserServiceRole,
 
+  getUserServiceRequestEntity,
   getUserServiceRequests,
+  updateUserServiceRequest,
 
   addInvitationService,
   addInvitationServiceIdentifier,

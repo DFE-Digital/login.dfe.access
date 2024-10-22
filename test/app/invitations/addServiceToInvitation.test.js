@@ -224,4 +224,12 @@ describe('When adding service to invitation', () => {
       ],
     });
   });
+
+  it('should raise an exception if an exception is raised in addInvitationService', async () => {
+    addInvitationService.mockImplementation(() => {
+      throw new Error('bad times');
+    });
+
+    await expect(addServiceToInvitation(req, res)).rejects.toThrow('bad times');
+  });
 });
