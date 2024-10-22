@@ -1,90 +1,48 @@
 const logger = require('../../infrastructure/logger');
 const uniq = require('lodash/uniq');
-const { getUserServiceRequest, addUserServiceRequest } = require('../../infrastructure/data');
+const { getUserServiceRequest, updateUserServiceRequest } = require('../../infrastructure/data');
 const uuid = require('uuid');
 
-const validateRequest = (req) => {
-  const model = {
-    id: req.params.id,
-    userId: req.body.user_id,
-    serviceId: req.body.service_id,
-    roles: req.body.role_ids,
-    organisationId: req.body.organisation_id,
-    status: req.body.status,
-    reason: req.body.reason,
-    actionedBy: req.body.actioned_by,
-    actionedReason: req.body.actioned_reason,
-    actionedAt: req.body.actioned_at,
-    createdAt: req.body.createdAt,
-    updatedAt: req.body.updatedAt,
-    requestType: req.body.request_type,
-    errors: [],
-  };
 
-  // TODO need to figure out validation
-  // if (model.conditions && !(model.conditions instanceof Array)) {
-  //   model.errors.push('Conditions must be an array');
-  // } else if (model.conditions && model.conditions.length === 0) {
-  //   model.errors.push('Conditions must have at least one entry');
-  // } else if (model.conditions) {
-  //   const entryErrors = [];
-  //   model.conditions.forEach((condition) => {
-  //     if (!condition.field) {
-  //       entryErrors.push('Conditions entries must have field');
-  //     }
+const patchableProperties = ['status', 'actioned_by', 'actioned_reason', 'actioned_at'];
 
-  //     if (!condition.operator) {
-  //       entryErrors.push('Conditions entries must have operator');
-  //     }
-
-  //     if (!condition.value) {
-  //       entryErrors.push('Conditions entries must have value');
-  //     } else if (!(condition.value instanceof Array)) {
-  //       model.errors.push('Conditions entries value must be an array');
-  //     }
-  //   });
-  //   if (entryErrors) {
-  //     model.errors.push(...uniq(entryErrors));
-  //   }
-  // }
-
-  return model;
-};
-
-const updateRequest = async (model, existingRequest) => {
-  const updatedRequest = Object.assign({}, existingRequest, {
-    id: existingRequest.id,
-    status: model.status || existingRequest.status,
-    reason:  model.reason || existingRequest.reason,
-    actionedBy:  model.actioned_by || existingRequest.actioned_by,
-    actionedReason:  model.actioned_reason || existingRequest.actioned_reason,
+const validate = (req) => {
+  //TODO add rule if setting to rejected then the reasons must be added
+  const keys = Object.keys(req.body);
+  if (keys.length === 0) {
+    return `Must specify at least one property. Patchable properties ${patchableProperties}`;
+  }
+  const errorMessages = keys.map((key) => {
+    if (!patchableProperties.find(x => x === key)) {
+      return `Unpatchable property ${key}. Allowed properties ${patchableProperties}`;
+    }
+    return null;
   });
-  await addUserServiceRequest(updatedRequest.id, updatedRequest.status, updatedRequest.reason, updatedRequest.actionedBy, updatedRequest.actionedReason);
+  return errorMessages.find(x => x !== null);
 };
 
 const updateServiceRequest = async (req, res) => {
   const correlationId = req.correlationId;
-  const model = validateRequest(req);
 
-  logger.info(`Patching request ${model.id} for service ${model.applicationId} (correlation id: ${correlationId})`, { correlationId });
+  logger.info(`Patching request ${req.params.id} for service (correlation id: ${correlationId})`, { correlationId });
+
   try {
-    if (model.errors.length > 0) {
-      return res.status(400).send({
-        errors: model.errors,
-      });
+    const validationErrorMessage = validate(req);
+    if (validationErrorMessage) {
+      return res.status(400).send(validationErrorMessage);
     }
 
-    const existingServiceRequest = await getUserServiceRequest(model.id);
-    if (!existingServiceRequest || existingServiceRequest.applicationId.toLowerCase() !== model.applicationId.toLowerCase()) {
+    const existingServiceRequest = await getUserServiceRequest(req.params.id);
+    if (!existingServiceRequest) {
       return res.status(404).send();
     }
 
-    await updateRequest(model, existingServiceRequest);
+    await updateUserServiceRequest(req.params.id, req.body);
 
     // TODO why is it 202? Once we're here it's already been updated so why not 200?
     return res.status(202).send();
   } catch (e) {
-    logger.error(`Error patching request ${model.id} for service ${model.applicationId} (correlation id: ${correlationId}) - ${e.message}`, {
+    logger.error(`Error patching request ${req.params.id} for service (correlation id: ${correlationId}) - ${e.message}`, {
       correlationId,
       stack: e.stack
     });

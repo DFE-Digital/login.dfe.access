@@ -39,7 +39,7 @@ const buildArea = () => {
   router.patch('/:sid/policies/:pid', asyncWrapper(updatePolicyOfService));
   router.delete('/:sid/policies/:pid', asyncWrapper(deletePolicyOfService));
 
-  router.patch('requests/:id', asyncWrapper(updateServiceRequest));
+  router.patch('/requests/:id', asyncWrapper(updateServiceRequest));
 
   return router;
 };

@@ -4,7 +4,7 @@ const {
   connection, userServices, userServiceIdentifiers, userServiceRequests, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles, roles, userServiceRoles, invitationServiceRoles,
 } = require('./organisationsRepository');
 const {
-  mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities, mapUserServiceRoles, mapUserServiceRequests,
+  mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities, mapUserServiceRoles, mapUserServiceRequests, mapUserServiceRequest
 } = require('./mappers');
 
 const getUserServices = async (uid) => {
@@ -621,13 +621,25 @@ const getUserServiceRequests = async (uid) => {
   return mapUserServiceRequests(entities);
 };
 
-const addUserServiceRequest = async (id, status, reason, actionedBy, actionedReason) => {
-  await userServiceRequests.upsert({
-    id,
-    status,
-    reason,
-    actionedBy,
-    actionedReason,
+const updateUserServiceRequest = async (id, request) => {
+  const existingRequest = await userServiceRequests.findOne({
+    where: {
+      id: {
+        [Op.eq]: id
+      }
+    }
+  });
+
+  if (!existingRequest) {
+    return null;
+  }
+  const updatedRequest = Object.assign(existingRequest, request);
+
+  await existingRequest.update({
+    status: updatedRequest.status,
+    actioned_by: updatedRequest.actioned_by,
+    actioned_reason: updatedRequest.actioned_reason,
+    actioned_at: updatedRequest.actioned_at
   });
 };
 
@@ -646,7 +658,7 @@ module.exports = {
 
   getUserServiceRequest,
   getUserServiceRequests,
-  addUserServiceRequest,
+  updateUserServiceRequest,
 
   addInvitationService,
   addInvitationServiceIdentifier,
