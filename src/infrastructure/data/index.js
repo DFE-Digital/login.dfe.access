@@ -1,4 +1,4 @@
-const { Op, QueryTypes } = require('sequelize');
+const { Op, QueryTypes, Model } = require('sequelize');
 const uuid = require('uuid');
 const {
   connection, userServices, userServiceIdentifiers, userServiceRequests, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles, roles, userServiceRoles, invitationServiceRoles,
@@ -598,7 +598,7 @@ const getServiceRoles = async (sid) => {
   return await mapRoleEntities(entities);
 };
 
-const getUserServiceRequest = async (id) => {
+const getUserServiceRequestEntity = async (id) => {
   const entity = await userServiceRequests.findOne({
     where: {
       id: {
@@ -606,7 +606,7 @@ const getUserServiceRequest = async (id) => {
       },
     },
   });
-  return mapUserServiceRequest(entity);
+  return entity;
 };
 
 const getUserServiceRequests = async (uid) => {
@@ -621,20 +621,17 @@ const getUserServiceRequests = async (uid) => {
   return mapUserServiceRequests(entities);
 };
 
-const updateUserServiceRequest = async (id, request) => {
-  const existingRequest = await userServiceRequests.findOne({
-    where: {
-      id: {
-        [Op.eq]: id
-      }
-    }
-  });
+/**
+ * Updates a user service request.  The requestBody can only contain the following keys
+ * ('status', 'actioned_by', 'actioned_reason', 'actioned_at').
+ *
+ * @param {Model} existingRequest A database entity representing an existing service request
+ * (e.g., the output from getUserServiceRequestEntity)
+ * @param {*} request A dictionary containing new values.
+ */
 
-  if (!existingRequest) {
-    return null;
-  }
+const updateUserServiceRequest = async (existingRequest, request) => {
   const updatedRequest = Object.assign(existingRequest, request);
-
   await existingRequest.update({
     status: updatedRequest.status,
     actioned_by: updatedRequest.actioned_by,
@@ -656,7 +653,7 @@ module.exports = {
   removeAllUserServiceRoles,
   addUserServiceRole,
 
-  getUserServiceRequest,
+  getUserServiceRequestEntity,
   getUserServiceRequests,
   updateUserServiceRequest,
 
