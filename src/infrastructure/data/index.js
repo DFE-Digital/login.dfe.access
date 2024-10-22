@@ -632,7 +632,6 @@ const getUserServiceRequests = async (uid) => {
 
 const updateUserServiceRequest = async (existingRequest, request) => {
   const updatedRequest = Object.assign(existingRequest, request);
-  console.log(existingRequest);
   await existingRequest.update({
     status: updatedRequest.status,
     actioned_by: updatedRequest.actioned_by,

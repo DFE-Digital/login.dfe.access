@@ -30,7 +30,6 @@ describe('When updating a user service request in the repository', () => {
 
   it('then it should update the record', async () => {
      await updateUserServiceRequest(existingRequest, request);
-     console.log(existingRequest.update.mock.calls[0][0]);
      expect(existingRequest.update).toHaveBeenCalledTimes(1);
      expect(existingRequest.update.mock.calls[0][0]).toEqual({
       status: 1,
