@@ -24,6 +24,7 @@
   "dependencies": {
     "applicationinsights": "^2.9.6",
     "express": "^4.21.1",
+    "express-validator": "7.2.0",
     "helmet": "^7.2.0",
     "lodash": "^4.17.21",
     "login.dfe.api.auth": "github:DFE-Digital/login.dfe.api.auth#v2.3.2",

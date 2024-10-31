@@ -1,4 +1,5 @@
 const logger = require('../../infrastructure/logger');
+const { validationResult } = require('express-validator');
 const { getUserServiceRequestEntity, updateUserServiceRequest } = require('../../infrastructure/data');
 
 const validate = (req) => {
@@ -22,6 +23,13 @@ const updateServiceRequest = async (req, res) => {
   logger.info(`Patching request ${req.params.id} (correlation id: ${correlationId})`, { correlationId });
 
   try {
+    // Validation rules using express-validation rules are written against the route
+    const validationErrors = validationResult(req);
+    console.log(validationErrors);
+    if (!validationErrors.isEmpty()) {
+      return res.status(400).send({details: validationErrors});
+    }
+
     const validationErrorMessage = validate(req);
     if (validationErrorMessage) {
       return res.status(400).send({details: validationErrorMessage});
