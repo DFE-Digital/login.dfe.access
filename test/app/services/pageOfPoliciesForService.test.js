@@ -69,4 +69,12 @@ describe('When getting page of policies for service', () => {
     expect(res.json).toHaveBeenCalledTimes(1);
     expect(res.json).toHaveBeenCalledWith(policies);
   });
+
+  it('should raise an exception if an exception is raised in pageOfPoliciesForService', async () => {
+    getPageOfPolicies.mockImplementation(() => {
+      throw new Error('bad times');
+    });
+
+    await expect(pageOfPoliciesForService(req, res)).rejects.toThrow('bad times');
+  });
 });

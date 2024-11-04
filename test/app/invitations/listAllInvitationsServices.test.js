@@ -96,4 +96,12 @@ describe('When listing invitation services', () => {
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.send).toHaveBeenCalledTimes(1);
   });
+
+  it('should raise an exception if an exception is raised in getPageOfInvitationServices', async () => {
+    getPageOfInvitationServices.mockImplementation(() => {
+      throw new Error('bad times');
+    });
+
+    await expect(listAllInvitationsServices(req, res)).rejects.toThrow('bad times');
+  });
 });
