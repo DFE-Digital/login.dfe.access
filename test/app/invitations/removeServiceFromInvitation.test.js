@@ -61,4 +61,12 @@ describe('When removing service from invitation', () => {
     expect(res.status).toHaveBeenCalledWith(204);
     expect(res.send).toHaveBeenCalledTimes(1);
   });
+
+  it('should raise an exception if an exception is raised in removeAllInvitationServiceIdentifiers', async () => {
+    removeAllInvitationServiceIdentifiers.mockImplementation(() => {
+      throw new Error('bad times');
+    });
+
+    await expect(removeServiceFromInvitation(req, res)).rejects.toThrow('bad times');
+  });
 });

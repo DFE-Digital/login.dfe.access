@@ -13,13 +13,13 @@ npm run test
 
 Once the service is running, to test the API locally:
 ```bash
-curl https://localhost:4440/users'
+curl https://localhost:4440/users
 ```
 
 When deployed to an environment, a bearer token is required.  The token can be generated with https://github.com/DFE-Digital/login.dfe.jwt-strategies. Once you have the token you can append it to the curl command in the following way:
 
 ```bash
-curl https://<host>/users' --header 'Authorization: Bearer <bearer token here>'
+curl https://<host>/users --header 'Authorization: Bearer <bearer token here>'
 ```
 
 ## Prerequisite

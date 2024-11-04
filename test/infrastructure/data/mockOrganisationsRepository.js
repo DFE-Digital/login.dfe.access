@@ -7,6 +7,7 @@ const mockTable = () => {
     findOne: jest.fn(),
     create: jest.fn(),
     upsert: jest.fn(),
+    update: jest.fn(),
     destroy: jest.fn(),
     mockResetAll: function () {
       this.findAll.mockReset().mockReturnValue([]);
@@ -14,6 +15,7 @@ const mockTable = () => {
       this.findAll.mockReset();
       this.create.mockReset();
       this.upsert.mockReset();
+      this.update.mockReset();
       this.destroy.mockReset();
     },
   };

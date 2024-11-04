@@ -225,4 +225,12 @@ describe('When updating service of invitation', () => {
       ],
     });
   });
+
+  it('should raise an exception if an exception is raised in getInvitationService', async () => {
+    getInvitationService.mockImplementation(() => {
+      throw new Error('bad times');
+    });
+
+    await expect(updateInvitationService(req, res)).rejects.toThrow('bad times');
+  });
 });

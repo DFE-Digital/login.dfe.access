@@ -62,4 +62,12 @@ describe('When getting single invitation service', () => {
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.send).toHaveBeenCalledTimes(1);
   });
+
+  it('should raise an exception if an exception is raised in getInvitationService', async () => {
+    getInvitationService.mockImplementation(() => {
+      throw new Error('bad times');
+    });
+
+    await expect(getSingleInvitationService(req, res)).rejects.toThrow('bad times');
+  });
 });

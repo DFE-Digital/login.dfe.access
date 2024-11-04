@@ -102,6 +102,7 @@ const mapUserServiceRequest = async (entity) => {
     return undefined;
   }
   return {
+    id: entity.id,
     userId: entity.user_id || undefined,
     serviceId: entity.service_id,
     roles: entity.role_ids || undefined,
@@ -159,5 +160,8 @@ module.exports = {
   mapPolicyEntity,
   mapPolicyEntities,
   mapUserServiceRoles,
+  mapUserServiceEntity,
+  mapUserServiceRequest,
   mapUserServiceRequests,
+
 };

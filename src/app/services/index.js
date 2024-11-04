@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const { body } = require('express-validator');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
 const listUsersOfService = require('./listUsersOfService');
@@ -13,6 +14,7 @@ const getPolicyOfService = require('./getPolicyOfService');
 const updatePolicyOfService = require('./updatePolicyOfService');
 const deletePolicyOfService = require('./deletePolicyOfService');
 const pageOfPoliciesForService = require('./pageOfPoliciesForService');
+const updateServiceRequest = require('./updateServiceRequest');
 
 
 const router = express.Router();
@@ -37,6 +39,13 @@ const buildArea = () => {
   router.get('/:sid/policies/:pid', asyncWrapper(getPolicyOfService));
   router.patch('/:sid/policies/:pid', asyncWrapper(updatePolicyOfService));
   router.delete('/:sid/policies/:pid', asyncWrapper(deletePolicyOfService));
+
+  router.patch('/requests/:id',
+    body('status', 'status must be an number').optional().isNumeric(),
+    body('actioned_by', 'actioned_by must be a uuid').optional().isUUID(),
+    body('actioned_reason', 'actioned_reason has a maxiumum length of 5000 characters').optional().isLength({ max: 5000 }),
+    body('actioned_at', 'actioned_at must be a date').optional().isISO8601(),
+    asyncWrapper(updateServiceRequest));
 
   return router;
 };
