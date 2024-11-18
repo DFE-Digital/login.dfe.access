@@ -3,7 +3,7 @@ const {
 } = require('winston');
 
 const {
-  combine, prettyPrint, errors, simple, colorize,
+  combine, prettyPrint, errors, simple, json, timestamp,
 } = format;
 const appInsights = require('applicationinsights');
 const AuditTransporter = require('login.dfe.audit.transporter');
@@ -20,7 +20,6 @@ const customLevels = {
     info: 3,
     verbose: 4,
     debug: 5,
-    silly: 6,
   },
   colors: {
     audit: 'magenta',
@@ -29,9 +28,9 @@ const customLevels = {
     info: 'blue',
     verbose: 'cyan',
     debug: 'green',
-    silly: 'cyan',
   },
 };
+
 addColors(customLevels.colors);
 
 // Formatter to hide audit records from other loggers.
@@ -45,8 +44,8 @@ const loggerConfig = {
 loggerConfig.transports.push(new transports.Console({
   format: combine(
     hideAudit(),
-    colorize({ all: true }),
-    simple(),
+    timestamp(),
+    json(),
   ),
   level: logLevel,
 }));
@@ -59,12 +58,16 @@ if (auditTransport) {
 }
 
 if (config.hostingEnvironment.applicationInsights) {
-  appInsights.setup(config.hostingEnvironment.applicationInsights)
+  appInsights
+    .setup(config.hostingEnvironment.applicationInsights)
     .setAutoCollectConsole(false, false)
     .setSendLiveMetrics(config.loggerSettings.aiSendLiveMetrics || false)
     .start();
   loggerConfig.transports.push(new AppInsightsTransport({
-    format: combine(hideAudit(), format.json()),
+    format: combine(
+      hideAudit(),
+      format.json(),
+    ),
     client: appInsights.defaultClient,
     applicationName: config.loggerSettings.applicationName || 'ACCESS',
     type: 'event',

@@ -3,10 +3,12 @@ const mockLogger = () => {
     info: jest.fn(),
     warn: jest.fn(),
     error: jest.fn(),
+    debug: jest.fn(),
     mockResetAll: function () {
       this.info.mockReset();
       this.warn.mockReset();
       this.error.mockReset();
+      this.debug.mockReset();
     },
   };
 };

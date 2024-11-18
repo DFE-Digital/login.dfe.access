@@ -1,6 +1,14 @@
-const logger = require('./../../infrastructure/logger');
+const logger = require('../../infrastructure/logger');
 
-const { getInvitationService, addInvitationServiceIdentifier, removeAllInvitationServiceIdentifiers, getServiceRoles, getUserOfServiceIdentifier, removeAllInvitationServiceRoles, addInvitationServiceRole } = require('./../../infrastructure/data');
+const {
+  getInvitationService,
+  addInvitationServiceIdentifier,
+  removeAllInvitationServiceIdentifiers,
+  getServiceRoles,
+  getUserOfServiceIdentifier,
+  removeAllInvitationServiceRoles,
+  addInvitationServiceRole,
+} = require('../../infrastructure/data');
 
 const parseAndValidateRequest = async (req) => {
   const model = {
@@ -17,7 +25,7 @@ const parseAndValidateRequest = async (req) => {
     model.errors.push('Must specify organisation');
   }
 
-  if(model.identifiers) {
+  if (model.identifiers) {
     if (!(model.identifiers instanceof Array)) {
       model.errors.push('Identifiers must be an array');
     } else {
@@ -26,7 +34,7 @@ const parseAndValidateRequest = async (req) => {
         const item = model.identifiers[i];
 
         const keys = Object.keys(item);
-        if (!keys.find(x => x === 'key') || !keys.find(x => x === 'value')) {
+        if (!keys.find((x) => x === 'key') || !keys.find((x) => x === 'value')) {
           allItemsOk = false;
         } else if (await getUserOfServiceIdentifier(model.sid, item.key, item.value)) {
           model.errors.push(`Identifier ${item.key} already in use`);
@@ -39,14 +47,14 @@ const parseAndValidateRequest = async (req) => {
     }
   }
 
-  if(model.roles) {
+  if (model.roles) {
     if (!(model.roles instanceof Array)) {
       model.errors.push('Roles must be an array');
     } else {
       const availableRolesForService = await getServiceRoles(model.sid);
       model.roles.forEach((roleId) => {
         const safeRoleId = (roleId || '').toLowerCase();
-        if (!availableRolesForService.find(x => x.id.toLowerCase() === safeRoleId.toLowerCase())) {
+        if (!availableRolesForService.find((x) => x.id.toLowerCase() === safeRoleId.toLowerCase())) {
           model.errors.push(`Role ${roleId} is not available for service ${model.sid}`);
         }
       });
@@ -57,11 +65,11 @@ const parseAndValidateRequest = async (req) => {
 };
 
 const updateInvitationService = async (req, res) => {
-  const correlationId = req.correlationId;
+  const { correlationId } = req;
   const model = await parseAndValidateRequest(req);
   const { iid, oid, sid, identifiers, roles } = model;
 
-  logger.info(`Updating service ${sid} with org ${oid} for invitation ${iid} (correlation id: ${correlationId})`, { correlationId });
+  logger.info(`Updating service ${sid} with org ${oid} for invitation ${iid}`, { correlationId });
   try {
     if (model.errors.length > 0) {
       return res.status(model.errorStatus).send({ details: model.errors });
@@ -92,9 +100,9 @@ const updateInvitationService = async (req, res) => {
 
     return res.status(202).send();
   } catch (e) {
-    logger.error(`Error adding service ${sid} with org ${oid} to invitation ${iid} (correlation id: ${correlationId}) - ${e.message}`, {
+    logger.error(`Error adding service ${sid} with org ${oid} to invitation ${iid}`, {
       correlationId,
-      stack: e.stack
+      error: { ...e },
     });
     throw e;
   }
