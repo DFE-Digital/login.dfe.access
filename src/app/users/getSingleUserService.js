@@ -1,14 +1,14 @@
-const logger = require('./../../infrastructure/logger');
-const { getUserService } = require('./../../infrastructure/data');
-const { formatDate } = require('./../utils');
+const logger = require('../../infrastructure/logger');
+const { getUserService } = require('../../infrastructure/data');
+const { formatDate } = require('../utils');
 
 const getSingleUserService = async (req, res) => {
-  const uid = req.params.uid;
-  const sid = req.params.sid;
-  const oid = req.params.oid;
-  const correlationId = req.correlationId;
+  const { uid } = req.params;
+  const { sid } = req.params;
+  const { oid } = req.params;
+  const { correlationId } = req;
 
-  logger.info(`Getting service with id ${sid} in organisation ${oid} for user ${uid} (correlation id: ${correlationId})`, { correlationId });
+  logger.debug(`Getting service with id ${sid} in organisation ${oid} for user ${uid}`, { correlationId });
   try {
     const userService = await getUserService(uid, sid, oid);
 
@@ -18,9 +18,9 @@ const getSingleUserService = async (req, res) => {
 
     return res.json(Object.assign({}, userService, { accessGrantedOn: formatDate(userService.accessGrantedOn) }));
   } catch (e) {
-    logger.error(`Error getting service with id ${sid} in organisation ${oid} for user ${uid} (correlation id: ${correlationId}) - ${e.message}`, {
+    logger.error(`Error getting service with id ${sid} in organisation ${oid} for user ${uid}`, {
       correlationId,
-      stack: e.stack
+      error: { ...e },
     });
     throw e;
   }

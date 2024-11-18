@@ -1,5 +1,13 @@
-const logger = require('./../../infrastructure/logger');
-const { addInvitationService, addInvitationServiceIdentifier, removeAllInvitationServiceIdentifiers, getUserOfServiceIdentifier, getServiceRoles, removeAllInvitationServiceRoles, addInvitationServiceRole } = require('./../../infrastructure/data');
+const logger = require('../../infrastructure/logger');
+const {
+  addInvitationService,
+  addInvitationServiceIdentifier,
+  removeAllInvitationServiceIdentifiers,
+  getUserOfServiceIdentifier,
+  getServiceRoles,
+  removeAllInvitationServiceRoles,
+  addInvitationServiceRole,
+} = require('../../infrastructure/data');
 
 const parseAndValidateRequest = async (req) => {
   const model = {
@@ -24,7 +32,7 @@ const parseAndValidateRequest = async (req) => {
       const item = model.identifiers[i];
 
       const keys = Object.keys(item);
-      if (!keys.find(x => x === 'key') || !keys.find(x => x === 'value')) {
+      if (!keys.find((x) => x === 'key') || !keys.find((x) => x === 'value')) {
         allItemsOk = false;
       } else if (await getUserOfServiceIdentifier(model.sid, item.key, item.value)) {
         model.errors.push(`Identifier ${item.key} already in use`);
@@ -52,11 +60,17 @@ const parseAndValidateRequest = async (req) => {
 };
 
 const addServiceToInvitation = async (req, res) => {
-  const correlationId = req.correlationId;
+  const { correlationId } = req;
   const model = await parseAndValidateRequest(req);
-  const { iid, oid, sid, identifiers, roles } = model;
+  const {
+    iid,
+    oid,
+    sid,
+    identifiers,
+    roles,
+  } = model;
 
-  logger.info(`Adding service ${sid} with org ${oid} to invitation ${iid} (correlation id: ${correlationId})`, { correlationId });
+  logger.info(`Adding service ${sid} with org ${oid} to invitation ${iid}`, { correlationId });
   try {
     if (model.errors.length > 0) {
       return res.status(model.errorStatus).send({ details: model.errors });
@@ -79,9 +93,9 @@ const addServiceToInvitation = async (req, res) => {
 
     return res.status(202).send();
   } catch (e) {
-    logger.error(`Error adding service ${sid} with org ${oid} to invitation ${iid} (correlation id: ${correlationId}) - ${e.message}`, {
+    logger.error(`Error adding service ${sid} with org ${oid} to invitation ${iid}`, {
       correlationId,
-      stack: e.stack
+      error: { ...e },
     });
     throw e;
   }

@@ -1,7 +1,7 @@
-const logger = require('./../../infrastructure/logger');
 const uniq = require('lodash/uniq');
-const { addPolicy, addPolicyCondition, addPolicyRole } = require('./../../infrastructure/data');
 const uuid = require('uuid');
+const logger = require('../../infrastructure/logger');
+const { addPolicy, addPolicyCondition, addPolicyRole } = require('../../infrastructure/data');
 
 const validateRequest = (req) => {
   const model = {
@@ -66,10 +66,10 @@ const validateRequest = (req) => {
   return model;
 };
 const createPolicyOfService = async (req, res) => {
-  const correlationId = req.correlationId;
+  const { correlationId } = req;
   const model = validateRequest(req);
 
-  logger.info(`Getting policies for service ${model.applicationId} (correlation id: ${correlationId})`, { correlationId });
+  logger.debug(`Getting policies for service ${model.applicationId}`, { correlationId });
   try {
     if (model.errors.length > 0) {
       return res.status(400).send({
@@ -95,9 +95,9 @@ const createPolicyOfService = async (req, res) => {
         id: policyId,
       });
   } catch (e) {
-    logger.error(`Error getting policies for service ${sid} (correlation id: ${correlationId}) - ${e.message}`, {
+    logger.error(`Error getting policies for service ${model.applicationId}`, {
       correlationId,
-      stack: e.stack
+      error: { ...e },
     });
     throw e;
   }

@@ -1,10 +1,10 @@
-const logger = require('./../../infrastructure/logger');
-const { getPageOfInvitationServices } = require('./../../infrastructure/data');
+const logger = require('../../infrastructure/logger');
+const { getPageOfInvitationServices } = require('../../infrastructure/data');
 
 const listAllInvitationsServices = async (req, res) => {
-  const pageNumber = req.query.page ? parseInt(req.query.page) : 1;
-  const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 100;
-  const correlationId = req.correlationId;
+  const pageNumber = req.query.page ? parseInt(req.query.page, 10) : 1;
+  const pageSize = req.query.pageSize ? parseInt(req.query.pageSize, 10) : 100;
+  const { correlationId } = req;
 
   if (isNaN(pageNumber)) {
     return res.status(400).json({
@@ -17,7 +17,7 @@ const listAllInvitationsServices = async (req, res) => {
     });
   }
 
-  logger.info(`Listing page ${pageNumber} of invitation services (pageSize: ${pageSize}, correlation id: ${correlationId})`, { correlationId });
+  logger.debug(`Listing page ${pageNumber} of invitation services (pageSize: ${pageSize}`, { correlationId });
   try {
     const invitationServices = await getPageOfInvitationServices(pageNumber, pageSize) || [];
 
@@ -27,9 +27,9 @@ const listAllInvitationsServices = async (req, res) => {
 
     return res.json(invitationServices);
   } catch (e) {
-    logger.error(`Error listing page ${pageNumber} services (pageSize: ${pageSize}, correlation id: ${correlationId}) - ${e.message}`, {
+    logger.error(`Error listing page ${pageNumber} services (pageSize: ${pageSize}`, {
       correlationId,
-      stack: e.stack
+      error: { ...e },
     });
     throw e;
   }
