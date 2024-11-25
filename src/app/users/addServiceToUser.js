@@ -1,6 +1,13 @@
-const logger = require('./../../infrastructure/logger');
-const { notifyUserUpdated } = require('./../../infrastructure/notifications');
-const { addUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers, getServiceRoles, removeAllUserServiceRoles, addUserServiceRole } = require('./../../infrastructure/data');
+const logger = require('../../infrastructure/logger');
+const { notifyUserUpdated } = require('../../infrastructure/notifications');
+const {
+  addUserService,
+  addUserServiceIdentifier,
+  removeAllUserServiceIdentifiers,
+  getServiceRoles,
+  removeAllUserServiceRoles,
+  addUserServiceRole,
+} = require('../../infrastructure/data');
 
 const parseAndValidateRequest = async (req) => {
   const model = {
@@ -22,7 +29,7 @@ const parseAndValidateRequest = async (req) => {
     let allItemsOk = true;
     model.identifiers.forEach((item) => {
       const keys = Object.keys(item);
-      if (!keys.find(x => x === 'key') || !keys.find(x => x === 'value')) {
+      if (!keys.find((x) => x === 'key') || !keys.find((x) => x === 'value')) {
         allItemsOk = false;
       }
     });
@@ -37,7 +44,7 @@ const parseAndValidateRequest = async (req) => {
     const availableRolesForService = await getServiceRoles(model.sid);
     model.roles.forEach((roleId) => {
       const safeRoleId = (roleId || '').toLowerCase();
-      if (!availableRolesForService.find(x => x.id.toLowerCase() === safeRoleId.toLowerCase())) {
+      if (!availableRolesForService.find((x) => x.id.toLowerCase() === safeRoleId.toLowerCase())) {
         model.errors.push(`Role ${roleId} is not available for service ${model.sid}`);
       }
     });
@@ -47,11 +54,11 @@ const parseAndValidateRequest = async (req) => {
 };
 
 const addServiceToUser = async (req, res) => {
-  const correlationId = req.correlationId;
+  const { correlationId } = req;
   const model = await parseAndValidateRequest(req);
   const { uid, oid, sid, identifiers, roles } = model;
 
-  logger.info(`Adding service ${sid} with org ${oid} to user ${uid} (correlation id: ${correlationId})`, { correlationId });
+  logger.info(`Adding service ${sid} with org ${oid} to user ${uid}`, { correlationId });
   try {
     if (model.errors.length > 0) {
       return res.status(400).send({ details: model.errors });
@@ -76,9 +83,9 @@ const addServiceToUser = async (req, res) => {
 
     return res.status(202).send();
   } catch (e) {
-    logger.error(`Error adding service ${sid} with org ${oid} to user ${uid} (correlation id: ${correlationId}) - ${e.message}`, {
+    logger.error(`Error adding service ${sid} with org ${oid} to user ${uid}`, {
       correlationId,
-      stack: e.stack
+      error: { ...e },
     });
     throw e;
   }

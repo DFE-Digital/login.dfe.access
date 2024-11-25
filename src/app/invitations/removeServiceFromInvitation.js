@@ -1,5 +1,9 @@
-const logger = require('./../../infrastructure/logger');
-const { removeInvitationService, removeAllInvitationServiceIdentifiers, removeAllInvitationServiceRoles } = require('./../../infrastructure/data');
+const logger = require('../../infrastructure/logger');
+const {
+  removeInvitationService,
+  removeAllInvitationServiceIdentifiers,
+  removeAllInvitationServiceRoles,
+} = require('../../infrastructure/data');
 
 const parseAndValidateRequest = (req) => {
   const model = {
@@ -19,9 +23,9 @@ const parseAndValidateRequest = (req) => {
 const removeServiceFromInvitation = async (req, res) => {
   const model = parseAndValidateRequest(req);
   const { iid, oid, sid } = model;
-  const correlationId = req.correlationId;
+  const { correlationId } = req;
 
-  logger.info(`Removing service ${sid} for org ${oid} from invitation ${iid} (correlation id: ${correlationId})`, { correlationId });
+  logger.info(`Removing service ${sid} for org ${oid} from invitation ${iid}`, { correlationId });
   try {
     if (model.errors.length > 0) {
       return res.status(400).send({ details: model.errors });
@@ -33,9 +37,9 @@ const removeServiceFromInvitation = async (req, res) => {
 
     return res.status(204).send();
   } catch (e) {
-    logger.error(`Error removing service ${sid} for org ${oid} from invitation ${iid} (correlation id: ${correlationId}) - ${e.message}`, {
+    logger.error(`Error removing service ${sid} for org ${oid} from invitation ${iid}`, {
       correlationId,
-      stack: e.stack
+      error: { ...e },
     });
     throw e;
   }

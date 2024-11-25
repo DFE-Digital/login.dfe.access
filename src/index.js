@@ -1,12 +1,12 @@
 const express = require('express');
-const logger = require('./infrastructure/logger');
 const https = require('https');
-const config = require('./infrastructure/config');
 const helmet = require('helmet');
 const healthCheck = require('login.dfe.healthcheck');
-const registerRoutes = require('./routes');
 const { getErrorHandler } = require('login.dfe.express-error-handling');
 const apiAuth = require('login.dfe.api.auth');
+const registerRoutes = require('./routes');
+const config = require('./infrastructure/config');
+const logger = require('./infrastructure/logger');
 const configSchema = require('./infrastructure/config/schema');
 
 configSchema.validate();
@@ -19,7 +19,7 @@ app.use(helmet({
   },
 }));
 
-logger.info('set helmet policy defaults');
+logger.debug('set helmet policy defaults');
 
 // Setting helmet Content Security Policy
 const scriptSources = ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'localhost', '*.signin.education.gov.uk', 'https://code.jquery.com'];
@@ -41,7 +41,7 @@ app.use(helmet.contentSecurityPolicy({
   },
 }));
 
-logger.info('Set helmet filters');
+logger.debug('Set helmet filters');
 
 app.use(helmet.hsts({
   maxAge: config.hostingEnvironment.hstsMaxAge,
@@ -51,7 +51,7 @@ app.use(helmet.xssFilter());
 app.use(helmet.frameguard('false'));
 app.use(helmet.ieNoOpen());
 
-logger.info('helmet setup complete');
+logger.debug('helmet setup complete');
 
 if (config.hostingEnvironment.env !== 'dev') {
   app.set('trust proxy', 1);
