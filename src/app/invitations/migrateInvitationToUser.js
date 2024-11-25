@@ -1,5 +1,10 @@
-const logger = require('./../../infrastructure/logger');
-const { getInvitationServices, addUserService, addUserServiceIdentifier, addUserServiceRole } = require('./../../infrastructure/data');
+const logger = require('../../infrastructure/logger');
+const {
+  getInvitationServices,
+  addUserService,
+  addUserServiceIdentifier,
+  addUserServiceRole,
+} = require('../../infrastructure/data');
 
 const parseAndValidateRequest = (req) => {
   const model = {
@@ -30,7 +35,7 @@ const migrateInvitationToUser = async (req, res) => {
   const model = parseAndValidateRequest(req);
   const { iid, uid } = model;
 
-  logger.info(`Migrating invitation ${iid} to ${uid} (correlation id: ${correlationId})`, { correlationId });
+  logger.info(`Migrating invitation ${iid} to ${uid}`, { correlationId });
   try {
     if (model.errors.length > 0) {
       return res.status(400).send({ details: model.errors });
@@ -43,9 +48,9 @@ const migrateInvitationToUser = async (req, res) => {
 
     return res.status(202).send();
   } catch (e) {
-    logger.error(`Error migrating invitation ${iid} to ${uid} (correlation id: ${correlationId}) - ${e.message}`, {
+    logger.error(`Error migrating invitation ${iid} to ${uid}`, {
       correlationId,
-      stack: e.stack
+      error: { ...e },
     });
     throw e;
   }

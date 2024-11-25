@@ -1,6 +1,6 @@
-const logger = require('./../../infrastructure/logger');
-const { notifyUserUpdated } = require('./../../infrastructure/notifications');
-const { addUserServiceIdentifier, getUserOfServiceIdentifier } = require('./../../infrastructure/data');
+const logger = require('../../infrastructure/logger');
+const { notifyUserUpdated } = require('../../infrastructure/notifications');
+const { addUserServiceIdentifier, getUserOfServiceIdentifier } = require('../../infrastructure/data');
 
 const parseAndValidateRequest = (req) => {
   const model = {
@@ -20,11 +20,11 @@ const parseAndValidateRequest = (req) => {
 };
 
 const addServiceIdentifierToUser = async (req, res) => {
-  const correlationId = req.correlationId;
+  const { correlationId } = req;
   const model = parseAndValidateRequest(req);
   const { uid, oid, sid, key, value } = model;
 
-  logger.info(`Adding service identifier with key ${key} and value ${value} ti ${sid} with org ${oid} for user ${uid} (correlation id: ${correlationId})`, { correlationId });
+  logger.info(`Adding service identifier with key ${key} and value ${value} ti ${sid} with org ${oid} for user ${uid}`, { correlationId });
   try {
     if (model.errors.length > 0) {
       return res.status(400).send({ details: model.errors });
@@ -33,7 +33,7 @@ const addServiceIdentifierToUser = async (req, res) => {
     if (await getUserOfServiceIdentifier(sid, key, value)) {
       return res.status(409).send({
         details: [
-          'Identifier already in use'
+          'Identifier already in use',
         ],
       });
     }
@@ -44,9 +44,9 @@ const addServiceIdentifierToUser = async (req, res) => {
 
     return res.status(202).send();
   } catch (e) {
-    logger.error(`Error adding service identifier with key ${key} and value ${value} ti ${sid} with org ${oid} for user ${uid} (correlation id: ${correlationId}) - ${e.message}`, {
+    logger.error(`Error adding service identifier with key ${key} and value ${value} ti ${sid} with org ${oid} for user ${uid}`, {
       correlationId,
-      stack: e.stack
+      error: { ...e },
     });
     throw e;
   }

@@ -1,7 +1,14 @@
-const logger = require('./../../infrastructure/logger');
 const uniq = require('lodash/uniq');
-const { getPolicy, addPolicy, addPolicyCondition, addPolicyRole, deletePolicyConditions, deletePolicyRoles } = require('./../../infrastructure/data');
 const uuid = require('uuid');
+const logger = require('../../infrastructure/logger');
+const {
+  getPolicy,
+  addPolicy,
+  addPolicyCondition,
+  addPolicyRole,
+  deletePolicyConditions,
+  deletePolicyRoles,
+} = require('../../infrastructure/data');
 
 const validateRequest = (req) => {
   const model = {
@@ -91,10 +98,10 @@ const updateRoles = async (model, existingPolicy) => {
 };
 
 const updatePolicyOfService = async (req, res) => {
-  const correlationId = req.correlationId;
+  const { correlationId } = req;
   const model = validateRequest(req);
 
-  logger.info(`Patching policy ${model.id} for service ${model.applicationId} (correlation id: ${correlationId})`, { correlationId });
+  logger.info(`Patching policy ${model.id} for service ${model.applicationId}`, { correlationId });
   try {
     if (model.errors.length > 0) {
       return res.status(400).send({
@@ -114,9 +121,9 @@ const updatePolicyOfService = async (req, res) => {
     return res.set('Location', `/services/${model.applicationId}/policies/${model.id}`)
       .status(202).send();
   } catch (e) {
-    logger.error(`Error patching policy ${model.id} for service ${model.applicationId} (correlation id: ${correlationId}) - ${e.message}`, {
+    logger.error(`Error patching policy ${model.id} for service ${model.applicationId}`, {
       correlationId,
-      stack: e.stack
+      error: { ...e },
     });
     throw e;
   }
