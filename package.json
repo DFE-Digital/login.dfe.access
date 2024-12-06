@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "settings='./config/login.dfe.access.dev.json' node src/index.js",
     "dev:container": "nodemon src/index.js",
+    "format": "prettier . --write",
     "test": "jest --coverage --detectOpenHandles",
     "test:watch": "./node_modules/.bin/jest --watch"
   },
@@ -42,7 +43,8 @@
   "devDependencies": {
     "eslint": "^8.52.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "prettier": "^3.4.2"
   },
   "jest": {
     "testEnvironment": "node",
