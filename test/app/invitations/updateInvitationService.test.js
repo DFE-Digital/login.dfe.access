@@ -18,7 +18,6 @@ const {
   addInvitationServiceIdentifier,
   removeAllInvitationServiceIdentifiers,
   getServiceRoles,
-  getUserOfServiceIdentifier,
   removeAllInvitationServiceRoles,
   addInvitationServiceRole,
 } = require("./../../../src/infrastructure/data");

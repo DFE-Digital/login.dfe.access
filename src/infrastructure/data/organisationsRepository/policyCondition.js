@@ -34,7 +34,7 @@ const define = (db, schema) => {
   );
 };
 
-const extend = ({ userServices, userServiceIdentifiers }) => {};
+const extend = () => {};
 
 module.exports = {
   name: "policyConditions",
