@@ -1,5 +1,5 @@
-const logger = require('../../infrastructure/logger');
-const { getInvitationServices } = require('../../infrastructure/data');
+const logger = require("../../infrastructure/logger");
+const { getInvitationServices } = require("../../infrastructure/data");
 
 const listInvitationServices = async (req, res) => {
   const { iid } = req.params;
@@ -7,7 +7,7 @@ const listInvitationServices = async (req, res) => {
 
   logger.debug(`Listing services for invitation ${iid}`, { correlationId });
   try {
-    const invitationServices = await getInvitationServices(iid) || [];
+    const invitationServices = (await getInvitationServices(iid)) || [];
 
     if (invitationServices.length === 0) {
       return res.status(404).send();

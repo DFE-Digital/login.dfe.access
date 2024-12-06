@@ -1,11 +1,29 @@
-const { Op, QueryTypes, Model } = require('sequelize');
-const uuid = require('uuid');
+const { Op, QueryTypes, Model } = require("sequelize");
+const uuid = require("uuid");
 const {
-  connection, userServices, userServiceIdentifiers, userServiceRequests, invitationServices, invitationServiceIdentifiers, policies, policyConditions, policyRoles, roles, userServiceRoles, invitationServiceRoles,
-} = require('./organisationsRepository');
+  connection,
+  userServices,
+  userServiceIdentifiers,
+  userServiceRequests,
+  invitationServices,
+  invitationServiceIdentifiers,
+  policies,
+  policyConditions,
+  policyRoles,
+  roles,
+  userServiceRoles,
+  invitationServiceRoles,
+} = require("./organisationsRepository");
 const {
-  mapUserServiceEntities, mapUserServiceEntity, mapPolicyEntities, mapPolicyEntity, mapRoleEntities, mapUserServiceRoles, mapUserServiceRequests, mapUserServiceRequest
-} = require('./mappers');
+  mapUserServiceEntities,
+  mapUserServiceEntity,
+  mapPolicyEntities,
+  mapPolicyEntity,
+  mapRoleEntities,
+  mapUserServiceRoles,
+  mapUserServiceRequests,
+  mapUserServiceRequest,
+} = require("./mappers");
 
 const getUserServices = async (uid) => {
   const entities = await userServices.findAll({
@@ -14,7 +32,7 @@ const getUserServices = async (uid) => {
         [Op.eq]: uid,
       },
     },
-    order: ['service_id', 'organisation_id'],
+    order: ["service_id", "organisation_id"],
   });
   return mapUserServiceEntities(entities);
 };
@@ -123,7 +141,7 @@ const removeAllUserServiceGroupIdentifiers = async (uid, sid, oid) => {
         [Op.eq]: oid,
       },
       identifier_key: {
-        [Op.eq]: 'groups',
+        [Op.eq]: "groups",
       },
     },
   });
@@ -134,7 +152,7 @@ const addGroupsToUserServiceIdentifier = async (uid, sid, oid, value) => {
     user_id: uid,
     organisation_id: oid,
     service_id: sid,
-    identifier_key: 'groups',
+    identifier_key: "groups",
     identifier_value: value,
   });
 };
@@ -156,9 +174,15 @@ const removeUserService = async (uid, sid, oid) => {
 };
 
 // TODO: update model to support sequelize relationships
-const getUsersOfServicePaged = async (sid, oid, filters, pageNumber, pageSize) => {
-  let queryFrom = 'FROM [dbo].[user_services] AS [user_services]';
-  let queryWhere = 'WHERE [user_services].[service_id] = :sid';
+const getUsersOfServicePaged = async (
+  sid,
+  oid,
+  filters,
+  pageNumber,
+  pageSize,
+) => {
+  let queryFrom = "FROM [dbo].[user_services] AS [user_services]";
+  let queryWhere = "WHERE [user_services].[service_id] = :sid";
   const queryOpts = {
     type: QueryTypes.SELECT,
     replacements: { sid },
@@ -166,33 +190,40 @@ const getUsersOfServicePaged = async (sid, oid, filters, pageNumber, pageSize) =
 
   if (oid) {
     queryOpts.replacements.oid = oid;
-    queryWhere += ' AND [user_services].[organisation_id] = :oid';
+    queryWhere += " AND [user_services].[organisation_id] = :oid";
   }
 
   if (filters) {
     let needsIdentifiersJoin = false;
 
     if (filters.idkey) {
-      queryWhere += ' AND [user_service_identifiers].[identifier_key] = :idkey';
+      queryWhere += " AND [user_service_identifiers].[identifier_key] = :idkey";
       queryOpts.replacements.idkey = filters.idkey;
       needsIdentifiersJoin = true;
     }
 
     if (filters.idvalue) {
-      queryWhere += ' AND [user_service_identifiers].[identifier_value] = :idvalue';
+      queryWhere +=
+        " AND [user_service_identifiers].[identifier_value] = :idvalue";
       queryOpts.replacements.idvalue = filters.idvalue;
       needsIdentifiersJoin = true;
     }
 
     if (needsIdentifiersJoin) {
-      queryFrom += ' INNER JOIN [user_service_identifiers] AS [user_service_identifiers] '
-        + 'ON [user_services].[user_id] = [user_service_identifiers].[user_id] '
-        + 'AND [user_services].[organisation_id] = [user_service_identifiers].[organisation_id] '
-        + 'AND [user_services].[service_id] = [user_service_identifiers].[service_id] ';
+      queryFrom +=
+        " INNER JOIN [user_service_identifiers] AS [user_service_identifiers] " +
+        "ON [user_services].[user_id] = [user_service_identifiers].[user_id] " +
+        "AND [user_services].[organisation_id] = [user_service_identifiers].[organisation_id] " +
+        "AND [user_services].[service_id] = [user_service_identifiers].[service_id] ";
     }
   }
 
-  const { count } = (await connection.query(`SELECT COUNT(DISTINCT [id]) AS [count] ${queryFrom} ${queryWhere};`, queryOpts))[0];
+  const { count } = (
+    await connection.query(
+      `SELECT COUNT(DISTINCT [id]) AS [count] ${queryFrom} ${queryWhere};`,
+      queryOpts,
+    )
+  )[0];
   const rows = await connection.query(
     `SELECT DISTINCT [user_services].* ${queryFrom} ${queryWhere} ORDER BY [user_services].user_id, [user_services].organisation_id`,
     { model: userServices, ...queryOpts },
@@ -206,7 +237,13 @@ const getUsersOfServicePaged = async (sid, oid, filters, pageNumber, pageSize) =
   };
 };
 
-const getUsersOfServicePagedV2 = async (sid, oid, roleIds, pageNumber, pageSize) => {
+const getUsersOfServicePagedV2 = async (
+  sid,
+  oid,
+  roleIds,
+  pageNumber,
+  pageSize,
+) => {
   const result = await userServiceRoles.findAndCountAll({
     where: {
       organisation_id: {
@@ -219,7 +256,7 @@ const getUsersOfServicePagedV2 = async (sid, oid, roleIds, pageNumber, pageSize)
         [Op.in]: roleIds,
       },
     },
-    include: ['role'],
+    include: ["role"],
     limit: pageSize,
     offset: (pageNumber - 1) * pageSize,
   });
@@ -239,37 +276,45 @@ const getPageOfUserServices = async (pageNumber, pageSize) => {
     type: QueryTypes.SELECT,
   };
   const skip = (pageNumber - 1) * pageSize;
-  const { count } = (await connection.query('SELECT COUNT(1) count FROM user_services', queryOpts))[0];
-  const rows = await connection.query('SELECT\n'
-    + '       page.id user_service_id,\n'
-    + '       page.user_id,\n'
-    + '       page.service_id,\n'
-    + '       page.organisation_id,\n'
-    + '       page.CreatedAt,\n'
-    + '       role.Id role_id,\n'
-    + '       role.Name role_name,\n'
-    + '       role.ApplicationId role_application_id,\n'
-    + '       role.Status role_status,\n'
-    + '       role.Code role_code,\n'
-    + '       role.ParentId role_parent_id,\n'
-    + '       role.NumericId role_numeric_id,\n'
-    + '       usi.identifier_key,\n'
-    + '       usi.identifier_value\n'
-    + 'FROM (SELECT *\n'
-    + '      FROM user_services\n'
-    + '      ORDER BY user_id, service_id, organisation_id\n'
-    + `      OFFSET ${skip} ROWS FETCH NEXT ${pageSize} ROWS ONLY) page\n`
-    + 'LEFT JOIN user_service_roles usr\n'
-    + '    ON page.user_id = usr.user_id\n'
-    + '    AND page.service_id = usr.service_id\n'
-    + '    AND page.organisation_id = usr.organisation_id\n'
-    + 'LEFT JOIN Role\n'
-    + '    ON usr.role_id = role.id\n'
-    + 'LEFT JOIN user_service_identifiers usi\n'
-    + '    ON page.user_id = usi.user_id\n'
-    + '    AND page.service_id = usi.service_id\n'
-    + '    AND page.organisation_id = usi.organisation_id\n'
-    + 'ORDER BY page.user_id, page.service_id, page.organisation_id, role.name, usi.identifier_key', queryOpts);
+  const { count } = (
+    await connection.query(
+      "SELECT COUNT(1) count FROM user_services",
+      queryOpts,
+    )
+  )[0];
+  const rows = await connection.query(
+    "SELECT\n" +
+      "       page.id user_service_id,\n" +
+      "       page.user_id,\n" +
+      "       page.service_id,\n" +
+      "       page.organisation_id,\n" +
+      "       page.CreatedAt,\n" +
+      "       role.Id role_id,\n" +
+      "       role.Name role_name,\n" +
+      "       role.ApplicationId role_application_id,\n" +
+      "       role.Status role_status,\n" +
+      "       role.Code role_code,\n" +
+      "       role.ParentId role_parent_id,\n" +
+      "       role.NumericId role_numeric_id,\n" +
+      "       usi.identifier_key,\n" +
+      "       usi.identifier_value\n" +
+      "FROM (SELECT *\n" +
+      "      FROM user_services\n" +
+      "      ORDER BY user_id, service_id, organisation_id\n" +
+      `      OFFSET ${skip} ROWS FETCH NEXT ${pageSize} ROWS ONLY) page\n` +
+      "LEFT JOIN user_service_roles usr\n" +
+      "    ON page.user_id = usr.user_id\n" +
+      "    AND page.service_id = usr.service_id\n" +
+      "    AND page.organisation_id = usr.organisation_id\n" +
+      "LEFT JOIN Role\n" +
+      "    ON usr.role_id = role.id\n" +
+      "LEFT JOIN user_service_identifiers usi\n" +
+      "    ON page.user_id = usi.user_id\n" +
+      "    AND page.service_id = usi.service_id\n" +
+      "    AND page.organisation_id = usi.organisation_id\n" +
+      "ORDER BY page.user_id, page.service_id, page.organisation_id, role.name, usi.identifier_key",
+    queryOpts,
+  );
   const entities = [];
   let currentEntity;
   for (let i = 0; i < rows.length; i += 1) {
@@ -287,14 +332,22 @@ const getPageOfUserServices = async (pageNumber, pageSize) => {
       entities.push(currentEntity);
     }
 
-    if (currentRow.identifier_key && !currentEntity.identifiers.find((x) => x.identifier_key === currentRow.identifier_key)) {
+    if (
+      currentRow.identifier_key &&
+      !currentEntity.identifiers.find(
+        (x) => x.identifier_key === currentRow.identifier_key,
+      )
+    ) {
       currentEntity.identifiers.push({
         identifier_key: currentRow.identifier_key,
         identifier_value: currentRow.identifier_value,
       });
     }
 
-    if (currentRow.role_id && !currentEntity.roles.find((x) => x.id === currentRow.role_id)) {
+    if (
+      currentRow.role_id &&
+      !currentEntity.roles.find((x) => x.id === currentRow.role_id)
+    ) {
       currentEntity.roles.push({
         role: {
           id: currentRow.role_id,
@@ -418,7 +471,7 @@ const getInvitationServices = async (iid) => {
         [Op.eq]: iid,
       },
     },
-    order: ['service_id', 'organisation_id'],
+    order: ["service_id", "organisation_id"],
   });
   return mapUserServiceEntities(entities);
 };
@@ -444,7 +497,7 @@ const getPageOfInvitationServices = async (pageNumber, pageSize) => {
   const resultset = await invitationServices.findAndCountAll({
     limit: pageSize,
     offset: (pageNumber - 1) * pageSize,
-    order: ['invitation_id', 'service_id', 'organisation_id'],
+    order: ["invitation_id", "service_id", "organisation_id"],
   });
   const services = await mapUserServiceEntities(resultset.rows);
   return {
@@ -486,8 +539,8 @@ const getPoliciesForService = async (sid) => {
         [Op.eq]: sid,
       },
     },
-    include: ['conditions', 'roles'],
-    order: ['name'],
+    include: ["conditions", "roles"],
+    order: ["name"],
   });
   return await mapPolicyEntities(entities);
 };
@@ -501,8 +554,8 @@ const getPageOfPolicies = async (sid, pageNumber, pageSize) => {
       },
     },
     distinct: true,
-    include: ['conditions', 'roles'],
-    order: ['name'],
+    include: ["conditions", "roles"],
+    order: ["name"],
     limit: pageSize,
     offset,
   });
@@ -521,7 +574,7 @@ const getPolicy = async (id) => {
         [Op.eq]: id,
       },
     },
-    include: ['conditions', 'roles'],
+    include: ["conditions", "roles"],
   });
   return mapPolicyEntity(entity);
 };
@@ -589,8 +642,8 @@ const getServiceRoles = async (sid) => {
         [Op.eq]: sid,
       },
     },
-    include: ['parent'],
-    order: ['name'],
+    include: ["parent"],
+    order: ["name"],
   });
   if (!entities || entities.length === 0) {
     return [];
@@ -616,7 +669,7 @@ const getUserServiceRequests = async (uid) => {
         [Op.eq]: uid,
       },
     },
-    order: ['service_id', 'organisation_id'],
+    order: ["service_id", "organisation_id"],
   });
   return mapUserServiceRequests(entities);
 };
@@ -636,7 +689,7 @@ const updateUserServiceRequest = async (existingRequest, request) => {
     status: updatedRequest.status,
     actioned_by: updatedRequest.actioned_by,
     actioned_reason: updatedRequest.actioned_reason,
-    actioned_at: updatedRequest.actioned_at
+    actioned_at: updatedRequest.actioned_at,
   });
 };
 

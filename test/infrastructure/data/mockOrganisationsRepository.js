@@ -1,4 +1,4 @@
-const uuid = require('uuid');
+const uuid = require("uuid");
 
 const mockTable = () => {
   return {
@@ -54,7 +54,11 @@ const mockRepository = () => {
   };
 };
 
-const mockUserServiceEntity = (data, identifiers = undefined, roles = undefined) => {
+const mockUserServiceEntity = (
+  data,
+  identifiers = undefined,
+  roles = undefined,
+) => {
   const defaultEntity = {
     service_id: uuid.v4(),
     organisation_id: uuid.v4(),
@@ -70,7 +74,6 @@ const mockUserServiceEntity = (data, identifiers = undefined, roles = undefined)
   return entity;
 };
 
-
 const mockUserServiceRequestEntity = (data, status) => {
   const defaultEntity = {
     user_id: uuid.v4(),
@@ -78,18 +81,17 @@ const mockUserServiceRequestEntity = (data, status) => {
     role_ids: uuid.v4(),
     organisation_id: uuid.v4(),
     status: status,
-    reason: 'test reason',
-    actioned_by:  uuid.v4(),
+    reason: "test reason",
+    actioned_by: uuid.v4(),
     actioned_id: uuid.v4(),
-    actioned_reason: 'test reason',
+    actioned_reason: "test reason",
     actioned_at: new Date(),
     createdAt: new Date(),
     updatedAt: new Date(),
-    request_type: 'test type',
+    request_type: "test type",
   };
   const entity = Object.assign({}, defaultEntity, data);
-  entity.mockResetAll = function () {
-  };
+  entity.mockResetAll = function () {};
   return entity;
 };
 
@@ -105,8 +107,7 @@ const mockPolicyEntity = (data) => {
     conditions: [],
   };
   const entity = Object.assign({}, defaultEntity, data);
-  entity.mockResetAll = function () {
-  };
+  entity.mockResetAll = function () {};
   return entity;
 };
 const mockRoleEntity = (data) => {
@@ -120,23 +121,21 @@ const mockRoleEntity = (data) => {
     updatedAt: new Date(),
   };
   const entity = Object.assign({}, defaultEntity, data);
-  entity.mockResetAll = function () {
-  };
+  entity.mockResetAll = function () {};
   return entity;
 };
 const mockPolicyConditionEntity = (data) => {
   const defaultEntity = {
     id: uuid.v4(),
     policyId: uuid.v4(),
-    field: 'id',
-    operator: 'Is',
+    field: "id",
+    operator: "Is",
     value: uuid.v4(),
     createdAt: new Date(),
     updatedAt: new Date(),
   };
   const entity = Object.assign({}, defaultEntity, data);
-  entity.mockResetAll = function () {
-  };
+  entity.mockResetAll = function () {};
   return entity;
 };
 
