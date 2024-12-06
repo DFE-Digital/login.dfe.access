@@ -1,34 +1,38 @@
-const Sequelize = require('sequelize');
+const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
 const define = (db, schema) => {
-  return db.define('user_services', {
-    id: {
-      type: Sequelize.UUID,
-      primaryKey: true,
-      allowNull: false,
+  return db.define(
+    "user_services",
+    {
+      id: {
+        type: Sequelize.UUID,
+        primaryKey: true,
+        allowNull: false,
+      },
+      status: {
+        type: Sequelize.SMALLINT,
+        allowNull: false,
+      },
+      user_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+      },
+      organisation_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+      },
+      service_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+      },
     },
-    status: {
-      type: Sequelize.SMALLINT,
-      allowNull: false,
+    {
+      timestamps: true,
+      tableName: "user_services",
+      schema,
     },
-    user_id: {
-      type: Sequelize.UUID,
-      allowNull: false,
-    },
-    organisation_id: {
-      type: Sequelize.UUID,
-      allowNull: false,
-    },
-    service_id: {
-      type: Sequelize.UUID,
-      allowNull: false,
-    },
-  }, {
-    timestamps: true,
-    tableName: 'user_services',
-    schema,
-  });
+  );
 };
 
 const extend = ({ userServices, userServiceIdentifiers, userServiceRoles }) => {
@@ -60,13 +64,13 @@ const extend = ({ userServices, userServiceIdentifiers, userServiceRoles }) => {
           [Op.eq]: this.service_id,
         },
       },
-      include: ['role'],
+      include: ["role"],
     });
   };
 };
 
 module.exports = {
-  name: 'userServices',
+  name: "userServices",
   define,
   extend,
 };

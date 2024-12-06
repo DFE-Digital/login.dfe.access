@@ -1,45 +1,48 @@
-const Sequelize = require('sequelize');
+const Sequelize = require("sequelize");
 
 const define = (db, schema) => {
-  const model = db.define('user_service_identifiers', {
-    user_id: {
-      type: Sequelize.UUID,
-      allowNull: false,
-      primaryKey: true,
+  const model = db.define(
+    "user_service_identifiers",
+    {
+      user_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        primaryKey: true,
+      },
+      organisation_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        primaryKey: true,
+      },
+      service_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        primaryKey: true,
+      },
+      identifier_key: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        primaryKey: true,
+      },
+      identifier_value: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
     },
-    organisation_id: {
-      type: Sequelize.UUID,
-      allowNull: false,
-      primaryKey: true,
+    {
+      timestamps: false,
+      tableName: "user_service_identifiers",
+      schema,
     },
-    service_id: {
-      type: Sequelize.UUID,
-      allowNull: false,
-      primaryKey: true,
-    },
-    identifier_key: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      primaryKey: true,
-    },
-    identifier_value: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-  }, {
-    timestamps: false,
-    tableName: 'user_service_identifiers',
-    schema,
-  });
-  model.removeAttribute('id');
+  );
+  model.removeAttribute("id");
   return model;
 };
 
-const extend = () => {
-};
+const extend = () => {};
 
 module.exports = {
-  name: 'userServiceIdentifiers',
+  name: "userServiceIdentifiers",
   define,
   extend,
 };

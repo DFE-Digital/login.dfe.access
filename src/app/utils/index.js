@@ -15,7 +15,7 @@ const formatDate = (date) => {
   const minutes = date.getUTCMinutes();
   const seconds = date.getUTCSeconds();
 
-  const pad = (value) => leftPad(value, 2, '0');
+  const pad = (value) => leftPad(value, 2, "0");
 
   return `${year}-${pad(month)}-${pad(day)}T${pad(hours)}:${pad(minutes)}:${pad(seconds)}Z`;
 };

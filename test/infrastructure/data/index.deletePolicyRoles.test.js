@@ -1,17 +1,19 @@
-jest.mock('./../../../src/infrastructure/data/organisationsRepository', () => require('./mockOrganisationsRepository').mockRepository());
+jest.mock("./../../../src/infrastructure/data/organisationsRepository", () =>
+  require("./mockOrganisationsRepository").mockRepository(),
+);
 
-const repository = require('./../../../src/infrastructure/data/organisationsRepository');
-const { deletePolicyRoles } = require('./../../../src/infrastructure/data');
-const { Op } = require('sequelize');
+const repository = require("./../../../src/infrastructure/data/organisationsRepository");
+const { deletePolicyRoles } = require("./../../../src/infrastructure/data");
+const { Op } = require("sequelize");
 
-const pid = 'policy-1';
+const pid = "policy-1";
 
-describe('When deleting policy roles in repository', () => {
+describe("When deleting policy roles in repository", () => {
   beforeEach(() => {
     repository.mockResetAll();
   });
 
-  it('then it should delete records based on policyId', async () => {
+  it("then it should delete records based on policyId", async () => {
     await deletePolicyRoles(pid);
 
     expect(repository.policyRoles.destroy).toHaveBeenCalledTimes(1);

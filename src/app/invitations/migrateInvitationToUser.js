@@ -1,10 +1,10 @@
-const logger = require('../../infrastructure/logger');
+const logger = require("../../infrastructure/logger");
 const {
   getInvitationServices,
   addUserService,
   addUserServiceIdentifier,
   addUserServiceRole,
-} = require('../../infrastructure/data');
+} = require("../../infrastructure/data");
 
 const parseAndValidateRequest = (req) => {
   const model = {
@@ -14,7 +14,7 @@ const parseAndValidateRequest = (req) => {
   };
 
   if (!model.uid) {
-    model.errors.push('Must specify userId');
+    model.errors.push("Must specify userId");
   }
 
   return model;
@@ -23,10 +23,21 @@ const migrateServiceMapping = async (service, uid) => {
   await addUserService(uid, service.serviceId, service.organisationId);
   for (let i = 0; i < service.identifiers.length; i++) {
     const { key, value } = service.identifiers[i];
-    await addUserServiceIdentifier(uid, service.serviceId, service.organisationId, key, value);
+    await addUserServiceIdentifier(
+      uid,
+      service.serviceId,
+      service.organisationId,
+      key,
+      value,
+    );
   }
   for (let i = 0; i < service.roles.length; i++) {
-    await addUserServiceRole(uid, service.serviceId, service.organisationId, service.roles[i].id);
+    await addUserServiceRole(
+      uid,
+      service.serviceId,
+      service.organisationId,
+      service.roles[i].id,
+    );
   }
 };
 

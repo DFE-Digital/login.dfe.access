@@ -1,5 +1,5 @@
-const logger = require('../../infrastructure/logger');
-const { getUserServiceRequests } = require('../../infrastructure/data');
+const logger = require("../../infrastructure/logger");
+const { getUserServiceRequests } = require("../../infrastructure/data");
 
 const listUserServiceRequests = async (req, res) => {
   const { uid } = req.params;
@@ -7,7 +7,7 @@ const listUserServiceRequests = async (req, res) => {
 
   logger.debug(`Listing services for user ${uid}`, { correlationId });
   try {
-    const userServiceRequests = await getUserServiceRequests(uid) || [];
+    const userServiceRequests = (await getUserServiceRequests(uid)) || [];
 
     if (userServiceRequests.length === 0) {
       return res.status(404).send();

@@ -1,28 +1,30 @@
-jest.mock('./../../../src/infrastructure/data/organisationsRepository', () => require('./mockOrganisationsRepository').mockRepository());
-jest.mock('uuid');
+jest.mock("./../../../src/infrastructure/data/organisationsRepository", () =>
+  require("./mockOrganisationsRepository").mockRepository(),
+);
+jest.mock("uuid");
 
-const uuid = require('uuid');
-const repository = require('./../../../src/infrastructure/data/organisationsRepository');
-const { addUserServiceRole } = require('./../../../src/infrastructure/data');
+const uuid = require("uuid");
+const repository = require("./../../../src/infrastructure/data/organisationsRepository");
+const { addUserServiceRole } = require("./../../../src/infrastructure/data");
 
-const uid = 'user-1';
-const sid = 'service-1';
-const oid = 'organisation-1';
-const rid = 'role1';
+const uid = "user-1";
+const sid = "service-1";
+const oid = "organisation-1";
+const rid = "role1";
 
-describe('When adding a role to a user service in repository', () => {
+describe("When adding a role to a user service in repository", () => {
   beforeEach(() => {
     repository.mockResetAll();
 
-    uuid.v4.mockReset().mockReturnValue('new-uuid');
+    uuid.v4.mockReset().mockReturnValue("new-uuid");
   });
 
-  it('then it should create the record', async () => {
-     await addUserServiceRole(uid, sid, oid, rid);
+  it("then it should create the record", async () => {
+    await addUserServiceRole(uid, sid, oid, rid);
 
     expect(repository.userServiceRoles.create).toHaveBeenCalledTimes(1);
     expect(repository.userServiceRoles.create.mock.calls[0][0]).toMatchObject({
-      id: 'new-uuid',
+      id: "new-uuid",
       user_id: uid,
       organisation_id: oid,
       service_id: sid,

@@ -1,31 +1,39 @@
-const Sequelize = require('sequelize');
+const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
 const define = (db, schema) => {
-  const model = db.define('invitation_services', {
-    invitation_id: {
-      type: Sequelize.UUID,
-      allowNull: false,
-      primaryKey: true,
+  const model = db.define(
+    "invitation_services",
+    {
+      invitation_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        primaryKey: true,
+      },
+      organisation_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+      },
+      service_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+      },
     },
-    organisation_id: {
-      type: Sequelize.UUID,
-      allowNull: false,
+    {
+      timestamps: true,
+      tableName: "invitation_services",
+      schema,
     },
-    service_id: {
-      type: Sequelize.UUID,
-      allowNull: false,
-    },
-  }, {
-    timestamps: true,
-    tableName: 'invitation_services',
-    schema,
-  });
-  model.removeAttribute('id');
+  );
+  model.removeAttribute("id");
   return model;
 };
 
-const extend = ({ invitationServices, invitationServiceIdentifiers, invitationServiceRoles }) => {
+const extend = ({
+  invitationServices,
+  invitationServiceIdentifiers,
+  invitationServiceRoles,
+}) => {
   invitationServices.prototype.getIdentifiers = async function () {
     return invitationServiceIdentifiers.findAll({
       where: {
@@ -54,13 +62,13 @@ const extend = ({ invitationServices, invitationServiceIdentifiers, invitationSe
           [Op.eq]: this.service_id,
         },
       },
-      include: ['role'],
+      include: ["role"],
     });
   };
 };
 
 module.exports = {
-  name: 'invitationServices',
+  name: "invitationServices",
   define,
   extend,
 };

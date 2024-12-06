@@ -1,10 +1,18 @@
-const { validationResult } = require('express-validator');
-const logger = require('../../infrastructure/logger');
-const { getUserServiceRequestEntity, updateUserServiceRequest } = require('../../infrastructure/data');
+const { validationResult } = require("express-validator");
+const logger = require("../../infrastructure/logger");
+const {
+  getUserServiceRequestEntity,
+  updateUserServiceRequest,
+} = require("../../infrastructure/data");
 
 const validate = (req) => {
   const keys = Object.keys(req.body);
-  const patchableProperties = ['status', 'actioned_by', 'actioned_reason', 'actioned_at'];
+  const patchableProperties = [
+    "status",
+    "actioned_by",
+    "actioned_reason",
+    "actioned_at",
+  ];
   if (keys.length === 0) {
     return `Must specify at least one property. Patchable properties ${patchableProperties}`;
   }
@@ -35,7 +43,9 @@ const updateServiceRequest = async (req, res) => {
       return res.status(400).send({ details: validationErrorMessage });
     }
 
-    const existingServiceRequestEntity = await getUserServiceRequestEntity(req.params.id);
+    const existingServiceRequestEntity = await getUserServiceRequestEntity(
+      req.params.id,
+    );
     if (!existingServiceRequestEntity) {
       return res.status(404).send();
     }

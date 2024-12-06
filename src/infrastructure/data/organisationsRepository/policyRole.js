@@ -1,29 +1,32 @@
-const Sequelize = require('sequelize');
+const Sequelize = require("sequelize");
 
 const define = (db, schema) => {
-  return db.define('policyRole', {
-    policyId: {
-      type: Sequelize.UUID,
-      primaryKey: true,
-      allowNull: false,
+  return db.define(
+    "policyRole",
+    {
+      policyId: {
+        type: Sequelize.UUID,
+        primaryKey: true,
+        allowNull: false,
+      },
+      roleId: {
+        type: Sequelize.UUID,
+        primaryKey: true,
+        allowNull: false,
+      },
     },
-    roleId: {
-      type: Sequelize.UUID,
-      primaryKey: true,
-      allowNull: false,
+    {
+      timestamps: true,
+      tableName: "policyRole",
+      schema,
     },
-  }, {
-    timestamps: true,
-    tableName: 'policyRole',
-    schema,
-  });
+  );
 };
 
-const extend = () => {
-};
+const extend = () => {};
 
 module.exports = {
-  name: 'policyRoles',
+  name: "policyRoles",
   define,
   extend,
 };

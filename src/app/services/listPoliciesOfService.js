@@ -1,5 +1,5 @@
-const logger = require('../../infrastructure/logger');
-const { getPoliciesForService } = require('../../infrastructure/data');
+const logger = require("../../infrastructure/logger");
+const { getPoliciesForService } = require("../../infrastructure/data");
 
 const listPoliciesOfService = async (req, res) => {
   const { correlationId } = req;

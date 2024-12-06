@@ -1,22 +1,28 @@
-jest.mock('./../../../src/infrastructure/data/organisationsRepository', () => require('./mockOrganisationsRepository').mockRepository());
+jest.mock("./../../../src/infrastructure/data/organisationsRepository", () =>
+  require("./mockOrganisationsRepository").mockRepository(),
+);
 
-const { mockUserServiceEntity } = require('./mockOrganisationsRepository');
-const repository = require('./../../../src/infrastructure/data/organisationsRepository');
-const { getUserService } = require('./../../../src/infrastructure/data');
-const { Op } = require('sequelize');
+const { mockUserServiceEntity } = require("./mockOrganisationsRepository");
+const repository = require("./../../../src/infrastructure/data/organisationsRepository");
+const { getUserService } = require("./../../../src/infrastructure/data");
+const { Op } = require("sequelize");
 
-const uid = 'user-1';
-const sid = 'service-1';
-const oid = 'organisation-1';
-const service = mockUserServiceEntity({}, [
-  { identifier_key: 'k2s-id', identifier_value: '123456' },
-  { identifier_key: 'groups', identifier_value: 'g1,g2' },
-], [
-  { role: { id: 'role1', code: 'R1', name: 'Role One', status: 1 } },
-  { role: { id: 'role2', code: 'R2', name: 'Role Two', status: 0 } },
-]);
+const uid = "user-1";
+const sid = "service-1";
+const oid = "organisation-1";
+const service = mockUserServiceEntity(
+  {},
+  [
+    { identifier_key: "k2s-id", identifier_value: "123456" },
+    { identifier_key: "groups", identifier_value: "g1,g2" },
+  ],
+  [
+    { role: { id: "role1", code: "R1", name: "Role One", status: 1 } },
+    { role: { id: "role2", code: "R2", name: "Role Two", status: 0 } },
+  ],
+);
 
-describe('When getting user service from the repository', () => {
+describe("When getting user service from the repository", () => {
   beforeEach(() => {
     repository.mockResetAll();
 
@@ -25,7 +31,7 @@ describe('When getting user service from the repository', () => {
     service.mockResetAll();
   });
 
-  it('then it should find for user_id, service_id, organisation_id', async () => {
+  it("then it should find for user_id, service_id, organisation_id", async () => {
     await getUserService(uid, sid, oid);
 
     expect(repository.userServices.findOne).toHaveBeenCalledTimes(1);
@@ -44,7 +50,7 @@ describe('When getting user service from the repository', () => {
     });
   });
 
-  it('then it should return services mapped to model', async () => {
+  it("then it should return services mapped to model", async () => {
     const actual = await getUserService(uid, sid, oid);
 
     expect(actual).toEqual({
@@ -52,35 +58,35 @@ describe('When getting user service from the repository', () => {
       organisationId: service.organisation_id,
       roles: [
         {
-          id: 'role1',
-          code: 'R1',
-          name: 'Role One',
+          id: "role1",
+          code: "R1",
+          name: "Role One",
           status: {
-            id: 1
-          }
+            id: 1,
+          },
         },
         {
-          id: 'role2',
-          code: 'R2',
-          name: 'Role Two',
+          id: "role2",
+          code: "R2",
+          name: "Role Two",
           status: {
-            id: 0
-          }
+            id: 0,
+          },
         },
       ],
       identifiers: [
-        { key: 'k2s-id', value: '123456' },
-        { key: 'groups', value: 'g1,g2' },
+        { key: "k2s-id", value: "123456" },
+        { key: "groups", value: "g1,g2" },
       ],
       accessGrantedOn: service.createdAt,
     });
   });
 
-  it('then it should return undefined if no record found', async () => {
+  it("then it should return undefined if no record found", async () => {
     repository.userServices.findOne.mockReturnValue(undefined);
 
     const actual = await getUserService(uid, sid, oid);
 
     expect(actual).toBeUndefined();
-  })
+  });
 });
