@@ -1,4 +1,3 @@
-/* eslint-disable global-require */
 jest.mock("./../../../src/infrastructure/logger", () =>
   require("../../utils").mockLogger(),
 );
