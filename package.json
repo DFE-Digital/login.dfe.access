@@ -1,7 +1,16 @@
 {
   "name": "login.dfe.access",
   "version": "4.0.0",
+  "engines": {
+    "node": "18.x.x"
+  },
   "description": "Provides resource access functionality to platform components.",
+  "repository": {
+    "type": "git",
+    "url": "github:DFE-Digital/login.dfe.access"
+  },
+  "author": "",
+  "license": "MIT",
   "scripts": {
     "dev": "settings='./config/login.dfe.access.dev.json' node src/index.js",
     "dev:container": "nodemon src/index.js",
@@ -11,26 +20,13 @@
     "lint:fix": "eslint . --fix",
     "lint:report": "eslint . -f junit -o eslint-results.xml",
     "test": "jest --coverage --detectOpenHandles",
-    "test:report": "jest --coverage --reporters=default --reporters jest-junit --coverageReporters=clover",
     "test:watch": "./node_modules/.bin/jest --watch",
+    "test:report": "jest --coverage --reporters=default --reporters jest-junit --coverageReporters=clover",
     "prepare": "husky"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
   },
-  "engines": {
-    "node": "18.x.x"
-  },
-  "repository": {
-    "type": "git",
-    "url": "github:DFE-Digital/login.dfe.access"
-  },
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/DFE-Digital/login.dfe.access/issues"
-  },
-  "homepage": "https://github.com/DFE-Digital/login.dfe.access#readme",
   "dependencies": {
     "applicationinsights": "^2.9.6",
     "express": "^4.21.1",
