@@ -1,17 +1,27 @@
-jest.mock('./../../../src/infrastructure/data/organisationsRepository', () => require('./mockOrganisationsRepository').mockRepository());
+jest.mock("./../../../src/infrastructure/data/organisationsRepository", () =>
+  require("./mockOrganisationsRepository").mockRepository(),
+);
 
-const { mockPolicyEntity, mockRoleEntity, mockPolicyConditionEntity } = require('./mockOrganisationsRepository');
-const repository = require('./../../../src/infrastructure/data/organisationsRepository');
-const { getPolicy } = require('./../../../src/infrastructure/data');
-const { Op } = require('sequelize');
+const {
+  mockPolicyEntity,
+  mockRoleEntity,
+  mockPolicyConditionEntity,
+} = require("./mockOrganisationsRepository");
+const repository = require("./../../../src/infrastructure/data/organisationsRepository");
+const { getPolicy } = require("./../../../src/infrastructure/data");
+const { Op } = require("sequelize");
 
-const id = 'policy-1';
+const id = "policy-1";
 const policy = mockPolicyEntity({
   roles: [mockRoleEntity(), mockRoleEntity()],
-  conditions: [mockPolicyConditionEntity({ field: 'id' }), mockPolicyConditionEntity({ field: 'organisation.id' }), mockPolicyConditionEntity({ field: 'id' })],
+  conditions: [
+    mockPolicyConditionEntity({ field: "id" }),
+    mockPolicyConditionEntity({ field: "organisation.id" }),
+    mockPolicyConditionEntity({ field: "id" }),
+  ],
 });
 
-describe('When getting policy from the repository', () => {
+describe("When getting policy from the repository", () => {
   beforeEach(() => {
     repository.mockResetAll();
 
@@ -20,7 +30,7 @@ describe('When getting policy from the repository', () => {
     policy.mockResetAll();
   });
 
-  it('then it should find for id', async () => {
+  it("then it should find for id", async () => {
     await getPolicy(id);
 
     expect(repository.policies.findOne).toHaveBeenCalledTimes(1);
@@ -33,7 +43,7 @@ describe('When getting policy from the repository', () => {
     });
   });
 
-  it('then it should return policy mapped to model', async () => {
+  it("then it should return policy mapped to model", async () => {
     const actual = await getPolicy(id);
 
     expect(actual).toEqual({
@@ -69,16 +79,16 @@ describe('When getting policy from the repository', () => {
           status: {
             id: policy.roles[1].status,
           },
-        }
+        },
       ],
     });
   });
 
-  it('then it should return undefined if no record found', async () => {
+  it("then it should return undefined if no record found", async () => {
     repository.policies.findOne.mockReturnValue(undefined);
 
     const actual = await getPolicy(id);
 
     expect(actual).toBeUndefined();
-  })
+  });
 });

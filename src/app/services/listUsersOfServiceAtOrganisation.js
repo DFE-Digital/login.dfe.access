@@ -1,4 +1,4 @@
-const { getUsersOfServicePaged } = require('./../../infrastructure/data');
+const { getUsersOfServicePaged } = require("./../../infrastructure/data");
 
 const getPageNumber = (req) => {
   const pageValue = req.query.page;
@@ -7,9 +7,9 @@ const getPageNumber = (req) => {
   }
   const page = parseInt(pageValue);
   if (isNaN(page)) {
-    throw new Error('Page must be a number');
+    throw new Error("Page must be a number");
   } else if (page < 1) {
-    throw new Error('Page must be at least 1');
+    throw new Error("Page must be at least 1");
   }
   return page;
 };
@@ -20,9 +20,9 @@ const getPageSize = (req) => {
   }
   const page = parseInt(pageSizeValue);
   if (isNaN(page)) {
-    throw new Error('Page size must be a number');
+    throw new Error("Page size must be a number");
   } else if (page < 1) {
-    throw new Error('Page size must be at least 1');
+    throw new Error("Page size must be at least 1");
   }
   return page;
 };
@@ -41,10 +41,14 @@ const listUsersOfServiceAtOrganisation = async (req, res) => {
     });
   }
 
-  const pageOfUserServices = await getUsersOfServicePaged(sid, oid, undefined, pageNumber, pageSize);
+  const pageOfUserServices = await getUsersOfServicePaged(
+    sid,
+    oid,
+    undefined,
+    pageNumber,
+    pageSize,
+  );
   return res.json(pageOfUserServices);
 };
 
-
-module.exports =  listUsersOfServiceAtOrganisation
-
+module.exports = listUsersOfServiceAtOrganisation;

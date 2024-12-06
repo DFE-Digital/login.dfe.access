@@ -1,28 +1,27 @@
-'use strict';
+"use strict";
 
-const config = require('./../../config');
+const config = require("./../../config");
 
-const { makeConnection } = require('./connection');
-const userServices = require('./userServices');
-const userServiceIdentifiers = require('./userServiceIdentifiers');
-const invitationServices = require('./invitationServices');
-const invitationServiceIdentifiers = require('./invitationServiceIdentifiers');
-const policies = require('./policy');
-const roles = require('./role');
-const policyRoles = require('./policyRole');
-const policyConditions = require('./policyCondition');
-const userServiceRoles = require('./userServiceRoles');
-const invitationServiceRoles = require('./invitationServiceRoles');
-const userServiceRequests = require('./userServiceRequest');
-const organisations = require('./organisation');
+const { makeConnection } = require("./connection");
+const userServices = require("./userServices");
+const userServiceIdentifiers = require("./userServiceIdentifiers");
+const invitationServices = require("./invitationServices");
+const invitationServiceIdentifiers = require("./invitationServiceIdentifiers");
+const policies = require("./policy");
+const roles = require("./role");
+const policyRoles = require("./policyRole");
+const policyConditions = require("./policyCondition");
+const userServiceRoles = require("./userServiceRoles");
+const invitationServiceRoles = require("./invitationServiceRoles");
+const userServiceRequests = require("./userServiceRequest");
+const organisations = require("./organisation");
 
 const db = makeConnection();
 
-const defineStatic = (model) => {
-};
+const defineStatic = (model) => {};
 
 const buildDataModel = (model, connection, entityModels) => {
-  const dbSchema = config.database.schema || 'services';
+  const dbSchema = config.database.schema || "services";
 
   // Define
   entityModels.forEach((entityModel) => {
@@ -31,9 +30,11 @@ const buildDataModel = (model, connection, entityModels) => {
   defineStatic(model);
 
   // Extend
-  entityModels.filter(m => m.extend !== undefined).forEach((entityModel) => {
-    entityModel.extend(model);
-  });
+  entityModels
+    .filter((m) => m.extend !== undefined)
+    .forEach((entityModel) => {
+      entityModel.extend(model);
+    });
 };
 const dataModel = {};
 buildDataModel(dataModel, db, [
@@ -51,6 +52,5 @@ buildDataModel(dataModel, db, [
   organisations,
 ]);
 dataModel.connection = db;
-
 
 module.exports = dataModel;

@@ -1,20 +1,30 @@
-jest.mock('./../../../src/infrastructure/data/organisationsRepository', () => require('./mockOrganisationsRepository').mockRepository());
+jest.mock("./../../../src/infrastructure/data/organisationsRepository", () =>
+  require("./mockOrganisationsRepository").mockRepository(),
+);
 
-const { mockPolicyEntity, mockRoleEntity, mockPolicyConditionEntity } = require('./mockOrganisationsRepository');
-const repository = require('./../../../src/infrastructure/data/organisationsRepository');
-const { getPoliciesForService } = require('./../../../src/infrastructure/data');
-const { Op } = require('sequelize');
+const {
+  mockPolicyEntity,
+  mockRoleEntity,
+  mockPolicyConditionEntity,
+} = require("./mockOrganisationsRepository");
+const repository = require("./../../../src/infrastructure/data/organisationsRepository");
+const { getPoliciesForService } = require("./../../../src/infrastructure/data");
+const { Op } = require("sequelize");
 
-const sid = 'service-1';
+const sid = "service-1";
 const policies = [
   mockPolicyEntity(),
   mockPolicyEntity({
     roles: [mockRoleEntity(), mockRoleEntity()],
-    conditions: [mockPolicyConditionEntity({ field: 'id' }), mockPolicyConditionEntity({ field: 'organisation.id' }), mockPolicyConditionEntity({ field: 'id' })],
+    conditions: [
+      mockPolicyConditionEntity({ field: "id" }),
+      mockPolicyConditionEntity({ field: "organisation.id" }),
+      mockPolicyConditionEntity({ field: "id" }),
+    ],
   }),
 ];
 
-describe('When getting policies for service from the repository', () => {
+describe("When getting policies for service from the repository", () => {
   beforeEach(() => {
     repository.mockResetAll();
 
@@ -24,7 +34,7 @@ describe('When getting policies for service from the repository', () => {
     policies[1].mockResetAll();
   });
 
-  it('then it should find all for applicationId', async () => {
+  it("then it should find all for applicationId", async () => {
     await getPoliciesForService(sid);
 
     expect(repository.policies.findAll).toHaveBeenCalledTimes(1);
@@ -37,16 +47,16 @@ describe('When getting policies for service from the repository', () => {
     });
   });
 
-  it('then it should order results by policy name', async () => {
+  it("then it should order results by policy name", async () => {
     await getPoliciesForService(sid);
 
     expect(repository.policies.findAll).toHaveBeenCalledTimes(1);
     expect(repository.policies.findAll.mock.calls[0][0]).toMatchObject({
-      order: ['name'],
+      order: ["name"],
     });
   });
 
-  it('then it should return policies mapped to model', async () => {
+  it("then it should return policies mapped to model", async () => {
     const actual = await getPoliciesForService(sid);
 
     expect(actual.length).toBe(2);
@@ -71,7 +81,10 @@ describe('When getting policies for service from the repository', () => {
         {
           field: policies[1].conditions[0].field,
           operator: policies[1].conditions[0].operator,
-          value: [policies[1].conditions[0].value, policies[1].conditions[2].value],
+          value: [
+            policies[1].conditions[0].value,
+            policies[1].conditions[2].value,
+          ],
         },
         {
           field: policies[1].conditions[1].field,
@@ -93,7 +106,7 @@ describe('When getting policies for service from the repository', () => {
           status: {
             id: policies[1].roles[1].status,
           },
-        }
+        },
       ],
     });
   });

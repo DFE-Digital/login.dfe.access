@@ -1,8 +1,10 @@
-const logger = require('../../infrastructure/logger');
-const { getPageOfPolicies } = require('../../infrastructure/data');
+const logger = require("../../infrastructure/logger");
+const { getPageOfPolicies } = require("../../infrastructure/data");
 
 const getQueryStringValue = (req, key) => {
-  const qsKey = Object.keys(req.query).find((x) => x.toLowerCase() === key.toLowerCase());
+  const qsKey = Object.keys(req.query).find(
+    (x) => x.toLowerCase() === key.toLowerCase(),
+  );
   return qsKey ? req.query[qsKey] : undefined;
 };
 const getQueryStringIntValue = (req, key, defaultValue = 0) => {
@@ -19,8 +21,8 @@ const getQueryStringIntValue = (req, key, defaultValue = 0) => {
 };
 
 const getPageOfPoliciesForService = async (req, res) => {
-  const page = getQueryStringIntValue(req, 'page', 1);
-  const pageSize = getQueryStringIntValue(req, 'pageSize', 50);
+  const page = getQueryStringIntValue(req, "page", 1);
+  const pageSize = getQueryStringIntValue(req, "pageSize", 50);
 
   const { correlationId } = req;
   const { sid } = req.params;

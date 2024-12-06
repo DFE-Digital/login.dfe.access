@@ -1,4 +1,4 @@
-const logger = require('../../infrastructure/logger');
+const logger = require("../../infrastructure/logger");
 const {
   addGroupsToUserServiceIdentifier,
   removeAllUserServiceGroupIdentifiers,
@@ -8,8 +8,8 @@ const {
   getServiceRoles,
   removeAllUserServiceRoles,
   addUserServiceRole,
-} = require('../../infrastructure/data');
-const { notifyUserUpdated } = require('../../infrastructure/notifications');
+} = require("../../infrastructure/data");
+const { notifyUserUpdated } = require("../../infrastructure/notifications");
 
 const parseAndValidateRequest = async (req) => {
   const model = {
@@ -22,34 +22,43 @@ const parseAndValidateRequest = async (req) => {
   };
 
   if (!model.oid) {
-    model.errors.push('Must specify organisation');
+    model.errors.push("Must specify organisation");
   }
   if (model.identifiers) {
     if (!(model.identifiers instanceof Array)) {
-      model.errors.push('Identifiers must be an array');
+      model.errors.push("Identifiers must be an array");
     } else {
       let allItemsOk = true;
       model.identifiers.forEach((item) => {
         const keys = Object.keys(item);
-        if (!keys.find((x) => x === 'key') || !keys.find((x) => x === 'value')) {
+        if (
+          !keys.find((x) => x === "key") ||
+          !keys.find((x) => x === "value")
+        ) {
           allItemsOk = false;
         }
       });
       if (!allItemsOk) {
-        model.errors.push('Identifiers items must contain key and value');
+        model.errors.push("Identifiers items must contain key and value");
       }
     }
   }
 
   if (model.roles) {
     if (!(model.roles instanceof Array)) {
-      model.errors.push('Roles must be an array');
+      model.errors.push("Roles must be an array");
     } else {
       const availableRolesForService = await getServiceRoles(model.sid);
       model.roles.forEach((roleId) => {
-        const safeRoleId = (roleId || '').toLowerCase();
-        if (!availableRolesForService.find((x) => x.id.toLowerCase() === safeRoleId.toLowerCase())) {
-          model.errors.push(`Role ${roleId} is not available for service ${model.sid}`);
+        const safeRoleId = (roleId || "").toLowerCase();
+        if (
+          !availableRolesForService.find(
+            (x) => x.id.toLowerCase() === safeRoleId.toLowerCase(),
+          )
+        ) {
+          model.errors.push(
+            `Role ${roleId} is not available for service ${model.sid}`,
+          );
         }
       });
     }
@@ -62,7 +71,9 @@ const updateUserService = async (req, res) => {
   const model = await parseAndValidateRequest(req);
   const { uid, oid, sid, identifiers, roles } = model;
 
-  logger.info(`Updating service ${sid} with org ${oid} for user ${uid}`, { correlationId });
+  logger.info(`Updating service ${sid} with org ${oid} for user ${uid}`, {
+    correlationId,
+  });
   try {
     if (model.errors.length > 0) {
       return res.status(400).send({ details: model.errors });
@@ -77,7 +88,13 @@ const updateUserService = async (req, res) => {
       await removeAllUserServiceIdentifiers(uid, sid, oid);
       if (identifiers.length > 0) {
         for (let i = 0; i < identifiers.length; i += 1) {
-          await addUserServiceIdentifier(uid, sid, oid, identifiers[i].key, identifiers[i].value);
+          await addUserServiceIdentifier(
+            uid,
+            sid,
+            oid,
+            identifiers[i].key,
+            identifiers[i].value,
+          );
         }
       }
     }
@@ -89,8 +106,15 @@ const updateUserService = async (req, res) => {
         for (let i = 0; i < roles.length; i += 1) {
           await addUserServiceRole(uid, sid, oid, roles[i]);
         }
-        const roleCodes = (await getServiceRoles(sid) || []).filter((g) => roles.find((r) => r === g.id)).map((g) => g.code);
-        await addGroupsToUserServiceIdentifier(uid, sid, oid, roleCodes.join(','));
+        const roleCodes = ((await getServiceRoles(sid)) || [])
+          .filter((g) => roles.find((r) => r === g.id))
+          .map((g) => g.code);
+        await addGroupsToUserServiceIdentifier(
+          uid,
+          sid,
+          oid,
+          roleCodes.join(","),
+        );
       }
     }
     notifyUserUpdated(uid);
