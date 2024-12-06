@@ -11,6 +11,7 @@
     "lint:fix": "eslint . --fix",
     "lint:report": "eslint . -f junit -o eslint-results.xml",
     "test": "jest --coverage --detectOpenHandles",
+    "test:report": "jest --coverage --reporters=default --reporters jest-junit --coverageReporters=clover",
     "test:watch": "./node_modules/.bin/jest --watch",
     "prepare": "husky"
   },
@@ -56,6 +57,7 @@
     "globals": "^15.13.0",
     "husky": "^9.1.7",
     "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
     "lint-staged": "^15.2.10",
     "prettier": "^3.4.2"
   },
