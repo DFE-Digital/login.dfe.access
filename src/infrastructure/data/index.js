@@ -1,4 +1,4 @@
-const { Op, QueryTypes, Model } = require("sequelize");
+const { Op, QueryTypes } = require("sequelize");
 const uuid = require("uuid");
 const {
   connection,
@@ -22,7 +22,6 @@ const {
   mapRoleEntities,
   mapUserServiceRoles,
   mapUserServiceRequests,
-  mapUserServiceRequest,
 } = require("./mappers");
 
 const getUserServices = async (uid) => {

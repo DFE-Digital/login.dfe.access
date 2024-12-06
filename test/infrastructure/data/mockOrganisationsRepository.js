@@ -116,7 +116,6 @@ const mockRoleEntity = (data) => {
     name: uuid.v4(),
     applicationId: uuid.v4(),
     status: 1,
-    status: 1,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

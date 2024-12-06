@@ -84,7 +84,7 @@ const updatePolicy = async (model, existingPolicy) => {
     updatedPolicy.status.id,
   );
 };
-const updateConditions = async (model, existingPolicy) => {
+const updateConditions = async (model) => {
   if (model.conditions) {
     await deletePolicyConditions(model.id);
     for (let i = 0; i < model.conditions.length; i++) {
@@ -101,7 +101,7 @@ const updateConditions = async (model, existingPolicy) => {
     }
   }
 };
-const updateRoles = async (model, existingPolicy) => {
+const updateRoles = async (model) => {
   if (model.roles) {
     await deletePolicyRoles(model.id);
     for (let i = 0; i < model.roles.length; i++) {
@@ -136,8 +136,8 @@ const updatePolicyOfService = async (req, res) => {
     }
 
     await updatePolicy(model, existingPolicy);
-    await updateConditions(model, existingPolicy);
-    await updateRoles(model, existingPolicy);
+    await updateConditions(model);
+    await updateRoles(model);
 
     return res
       .set("Location", `/services/${model.applicationId}/policies/${model.id}`)

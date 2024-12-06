@@ -25,7 +25,7 @@ const existingRequest = {
   update: jest.fn(),
 };
 
-request = { status: 1 };
+const request = { status: 1 };
 
 describe("When updating a user service request in the repository", () => {
   beforeEach(() => {
