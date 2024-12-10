@@ -1,6 +1,10 @@
-const logger = require('../../infrastructure/logger');
-const { notifyUserUpdated } = require('../../infrastructure/notifications');
-const { removeUserService, removeAllUserServiceIdentifiers, removeAllUserServiceRoles } = require('../../infrastructure/data');
+const logger = require("../../infrastructure/logger");
+const { notifyUserUpdated } = require("../../infrastructure/notifications");
+const {
+  removeUserService,
+  removeAllUserServiceIdentifiers,
+  removeAllUserServiceRoles,
+} = require("../../infrastructure/data");
 
 const parseAndValidateRequest = (req) => {
   const model = {
@@ -11,7 +15,7 @@ const parseAndValidateRequest = (req) => {
   };
 
   if (!model.oid) {
-    model.errors.push('Must specify organisation');
+    model.errors.push("Must specify organisation");
   }
 
   return model;
@@ -22,7 +26,9 @@ const removeServiceFromUser = async (req, res) => {
   const model = parseAndValidateRequest(req);
   const { uid, oid, sid } = model;
 
-  logger.info(`Removing service ${sid} with org ${oid} from user ${uid}`, { correlationId });
+  logger.info(`Removing service ${sid} with org ${oid} from user ${uid}`, {
+    correlationId,
+  });
   try {
     if (model.errors.length > 0) {
       return res.status(400).send({ details: model.errors });
@@ -36,10 +42,13 @@ const removeServiceFromUser = async (req, res) => {
 
     return res.status(204).send();
   } catch (e) {
-    logger.error(`Error removing service ${sid} with org ${oid} from user ${uid}`, {
-      correlationId,
-      error: { ...e },
-    });
+    logger.error(
+      `Error removing service ${sid} with org ${oid} from user ${uid}`,
+      {
+        correlationId,
+        error: { ...e },
+      },
+    );
     throw e;
   }
 };
