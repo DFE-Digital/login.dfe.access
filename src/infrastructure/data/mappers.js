@@ -3,12 +3,18 @@ const mapUserServiceEntity = async (entity) => {
     return undefined;
   }
 
-  const identifiers = (entity.identifiers || await entity.getIdentifiers() || []).map(x => ({
+  const identifiers = (
+    entity.identifiers ||
+    (await entity.getIdentifiers()) ||
+    []
+  ).map((x) => ({
     key: x.identifier_key,
-    value: x.identifier_value
+    value: x.identifier_value,
   }));
 
-  const roles = await mapRoleEntities((entity.roles || await entity.getRoles() || []).map(x => x.role));
+  const roles = await mapRoleEntities(
+    (entity.roles || (await entity.getRoles()) || []).map((x) => x.role),
+  );
 
   return Promise.resolve({
     userId: entity.user_id || undefined,
@@ -64,7 +70,7 @@ const mapPolicyEntity = async (entity) => {
 
   const conditions = [];
   entity.conditions.forEach((conditionEntity) => {
-    const condition = conditions.find(c => c.field === conditionEntity.field);
+    const condition = conditions.find((c) => c.field === conditionEntity.field);
     if (condition) {
       condition.value.push(conditionEntity.value);
     } else {
@@ -115,7 +121,7 @@ const mapUserServiceRequest = async (entity) => {
     createdAt: entity.createdAt,
     updatedAt: entity.updatedAt,
     requestType: entity.request_type,
-  }
+  };
 };
 
 const mapUserServiceRequests = async (entities) => {
@@ -139,7 +145,7 @@ const mapUserServiceRole = async (entity) => {
     organisationId: entity.organisation_id || undefined,
     roles: entity.role,
     accessGrantedOn: entity.createdAt,
-  }
+  };
 };
 
 const mapUserServiceRoles = async (entities) => {
@@ -151,7 +157,7 @@ const mapUserServiceRoles = async (entities) => {
     mappedResult.push(await mapUserServiceRole(entities[i]));
   }
   return mappedResult;
-}
+};
 module.exports = {
   mapUserServiceEntity,
   mapUserServiceEntities,
@@ -160,8 +166,6 @@ module.exports = {
   mapPolicyEntity,
   mapPolicyEntities,
   mapUserServiceRoles,
-  mapUserServiceEntity,
   mapUserServiceRequest,
   mapUserServiceRequests,
-
 };
