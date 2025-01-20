@@ -38,7 +38,7 @@
     "login.dfe.config.schema.common": "github:DFE-Digital/login.dfe.config.schema.common#v2.1.6",
     "login.dfe.express-error-handling": "github:DFE-Digital/login.dfe.express-error-handling#v3.0.1",
     "login.dfe.healthcheck": "github:DFE-Digital/login.dfe.healthcheck#v3.0.2",
-    "login.dfe.service-notifications.jobs.client": "github:DFE-Digital/login.dfe.service-notifications.jobs.client#v2.0.2",
+    "login.dfe.jobs-client": "github:DFE-Digital/login.dfe.jobs-client#v6.1.0",
     "login.dfe.winston-appinsights": "github:DFE-Digital/login.dfe.winston-appinsights#v5.0.3",
     "sequelize": "^6.37.1",
     "tedious": "^18.6.1",
