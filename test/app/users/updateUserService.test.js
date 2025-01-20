@@ -16,7 +16,7 @@ jest.mock("./../../../src/infrastructure/data", () => ({
   removeAllUserServiceRoles: jest.fn(),
   addUserServiceRole: jest.fn(),
 }));
-jest.mock("login.dfe.service-notifications.jobs.client");
+jest.mock("login.dfe.jobs-client");
 
 const { mockRequest, mockResponse } = require("../../utils");
 const {
