@@ -1,5 +1,5 @@
 const config = require("./../config");
-const ServiceNotificationsClient = require("login.dfe.service-notifications.jobs.client");
+const { ServiceNotificationsClient } = require("login.dfe.jobs-client");
 
 const serviceNotificationsClient = new ServiceNotificationsClient(
   config.notifications,
