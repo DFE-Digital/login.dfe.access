@@ -24,6 +24,10 @@ const define = (db, schema) => {
       type: Sequelize.UUID,
       allowNull: false,
     },
+    lastAccess: {
+      type: Sequelize.DATE,
+      allowNull: true,
+    },
   }, {
     timestamps: true,
     tableName: 'user_services',

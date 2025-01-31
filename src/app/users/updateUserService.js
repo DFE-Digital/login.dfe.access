@@ -1,6 +1,6 @@
-const logger = require('./../../infrastructure/logger');
+const logger = require("../../infrastructure/logger");
 const { addGroupsToUserServiceIdentifier, removeAllUserServiceGroupIdentifiers, getUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers, getServiceRoles, removeAllUserServiceRoles, addUserServiceRole } = require('./../../infrastructure/data');
-const { notifyUserUpdated } = require('./../../infrastructure/notifications');
+const { notifyUserUpdated } = require("../../infrastructure/notifications");
 
 const parseAndValidateRequest = async (req) => {
   const model = {

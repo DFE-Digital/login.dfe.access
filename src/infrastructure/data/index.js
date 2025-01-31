@@ -1,3 +1,4 @@
+const Sequelize = require('sequelize');
 const { Op, QueryTypes } = require('sequelize');
 const uuid = require('uuid');
 const {
@@ -55,6 +56,48 @@ const addUserService = async (uid, sid, oid) => {
     await userServices.create({
       id,
       status: 1,
+      user_id: uid,
+      organisation_id: oid,
+      service_id: sid,
+    });
+    return id;
+  }
+  return existing.id;
+};
+
+const updateUserServiceLastAccess = async (uid, sid, oid) => {
+  await userServices.update(
+    { lastAccess: Sequelize.literal('CURRENT_TIMESTAMP') },
+    {
+      where: {
+        user_id: {
+          [Op.eq]: uid,
+        },
+        service_id: {
+          [Op.eq]: sid,
+        },
+        organisation_id: {
+          [Op.eq]: oid,
+        },
+      },
+    },
+  );
+
+  const existing = await userServices.findOne({
+    where: {
+      user_id: {
+        [Op.eq]: uid,
+      },
+      service_id: {
+        [Op.eq]: sid,
+      },
+      organisation_id: {
+        [Op.eq]: oid,
+      },
+    },
+  });
+  if (existing) {
+    await userServices.updateLastAccess({
       user_id: uid,
       organisation_id: oid,
       service_id: sid,
@@ -614,6 +657,7 @@ module.exports = {
   getUserServices,
   getUserService,
   addUserService,
+  updateUserServiceLastAccess,
   addUserServiceIdentifier,
   getUserOfServiceIdentifier,
   removeAllUserServiceIdentifiers,
