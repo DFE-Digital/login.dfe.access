@@ -9,7 +9,7 @@ const listUserServiceRequests = require('./listUserServiceRequests');
 const getSingleUserService = require('./getSingleUserService');
 const addServiceToUser = require('./addServiceToUser');
 const updateUserService = require('./updateUserService');
-const setUserServiceLastAccess = require('./updateLastAccess');
+const updateLastAccess = require('./updateLastAccess');
 const removeServiceFromUser = require('./removeServiceFromUser');
 const addServiceIdentifierToUser = require('./addServiceIdentifierToUser');
 
