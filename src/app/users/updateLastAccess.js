@@ -28,7 +28,7 @@ const updateLastAccess = async (req, res) => {
     uid, oid, sid,
   } = model;
 
-  logger.info(`Setting lst access for service ${sid} with org ${oid} for user ${uid} (correlation id: ${correlationId})`, { correlationId });
+  logger.info(`Setting last access for service ${sid} with org ${oid} for user ${uid} (correlation id: ${correlationId})`, { correlationId });
   try {
     if (model.errors.length > 0) {
       return res.status(400).send({ details: model.errors });
