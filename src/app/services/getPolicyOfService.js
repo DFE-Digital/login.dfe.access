@@ -1,11 +1,11 @@
-const logger = require('./../../infrastructure/logger');
-const { getPolicy } = require('./../../infrastructure/data');
+const logger = require("../../infrastructure/logger");
+const { getPolicy } = require("../../infrastructure/data");
 
 const getPolicyOfService = async (req, res) => {
-  const correlationId = req.correlationId;
+  const { correlationId } = req;
   const { sid, pid } = req.params;
 
-  logger.info(`Getting policy ${pid} for service ${sid} (correlation id: ${correlationId})`, { correlationId });
+  logger.debug(`Getting policy ${pid} for service ${sid}`, { correlationId });
   try {
     const policy = await getPolicy(pid);
 
@@ -15,9 +15,9 @@ const getPolicyOfService = async (req, res) => {
 
     return res.json(policy);
   } catch (e) {
-    logger.error(`Error getting policy ${pid} for service ${sid} (correlation id: ${correlationId}) - ${e.message}`, {
+    logger.error(`Error getting policy ${pid} for service ${sid}`, {
       correlationId,
-      stack: e.stack
+      error: { ...e },
     });
     throw e;
   }

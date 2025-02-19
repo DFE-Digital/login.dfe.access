@@ -1,7 +1,7 @@
 const SimpleSchema = require('simpl-schema').default;
 const { validateConfigAgainstSchema, schemas, patterns } = require('login.dfe.config.schema.common');
 const config = require('./index');
-const logger = require('./../logger');
+const logger = require('../logger');
 
 const notificationsSchema = new SimpleSchema({
   connectionString: patterns.redis,
@@ -21,5 +21,5 @@ const schema = new SimpleSchema({
 });
 
 module.exports.validate = () => {
-  validateConfigAgainstSchema(config, schema, logger)
+  validateConfigAgainstSchema(config, schema, logger);
 };
