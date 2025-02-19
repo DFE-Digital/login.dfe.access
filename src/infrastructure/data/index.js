@@ -1,11 +1,7 @@
-<<<<<<< HEAD
-const Sequelize = require('sequelize');
-const { Op, QueryTypes } = require('sequelize');
-const uuid = require('uuid');
-=======
+const Sequelize = require("sequelize");
 const { Op, QueryTypes } = require("sequelize");
 const uuid = require("uuid");
->>>>>>> 2f3b529c403bd328c0fd830cb0531088029577ce
+
 const {
   connection,
   userServices,
@@ -89,7 +85,7 @@ const addUserService = async (uid, sid, oid) => {
 
 const updateUserServiceLastAccess = async (uid, sid, oid) => {
   await userServices.update(
-    { lastAccess: Sequelize.literal('CURRENT_TIMESTAMP') },
+    { lastAccess: Sequelize.literal("CURRENT_TIMESTAMP") },
     {
       where: {
         user_id: {
