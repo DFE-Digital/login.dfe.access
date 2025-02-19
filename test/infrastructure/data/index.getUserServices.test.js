@@ -1,21 +1,29 @@
-jest.mock('./../../../src/infrastructure/data/organisationsRepository', () => require('./mockOrganisationsRepository').mockRepository());
+jest.mock("./../../../src/infrastructure/data/organisationsRepository", () =>
+  require("./mockOrganisationsRepository").mockRepository(),
+);
 
-const { mockUserServiceEntity } = require('./mockOrganisationsRepository');
-const repository = require('./../../../src/infrastructure/data/organisationsRepository');
-const { getUserServices } = require('./../../../src/infrastructure/data');
-const { Op } = require('sequelize');
+const { mockUserServiceEntity } = require("./mockOrganisationsRepository");
+const repository = require("./../../../src/infrastructure/data/organisationsRepository");
+const { getUserServices } = require("./../../../src/infrastructure/data");
+const { Op } = require("sequelize");
 
-const uid = 'user-1';
+const uid = "user-1";
 const services = [
   mockUserServiceEntity({}),
-  mockUserServiceEntity({}, [{ identifier_key: 'k2s-id', identifier_value: '123456' }]),
-  mockUserServiceEntity({}, [{ identifier_key: 'groups', identifier_value: 'g1,g2' }], [
-    { role: { id: 'role1', code: 'R1', name: 'Role One', status: 1 } },
-    { role: { id: 'role2', code: 'R2', name: 'Role Two', status: 0 } },
+  mockUserServiceEntity({}, [
+    { identifier_key: "k2s-id", identifier_value: "123456" },
   ]),
+  mockUserServiceEntity(
+    {},
+    [{ identifier_key: "groups", identifier_value: "g1,g2" }],
+    [
+      { role: { id: "role1", code: "R1", name: "Role One", status: 1 } },
+      { role: { id: "role2", code: "R2", name: "Role Two", status: 0 } },
+    ],
+  ),
 ];
 
-describe('When getting user services from the repository', () => {
+describe("When getting user services from the repository", () => {
   beforeEach(() => {
     repository.mockResetAll();
 
@@ -26,7 +34,7 @@ describe('When getting user services from the repository', () => {
     services[2].mockResetAll();
   });
 
-  it('then it should find all for user_id', async () => {
+  it("then it should find all for user_id", async () => {
     await getUserServices(uid);
 
     expect(repository.userServices.findAll).toHaveBeenCalledTimes(1);
@@ -39,16 +47,16 @@ describe('When getting user services from the repository', () => {
     });
   });
 
-  it('then it should order results by service id, then organisation id', async () => {
+  it("then it should order results by service id, then organisation id", async () => {
     await getUserServices(uid);
 
     expect(repository.userServices.findAll).toHaveBeenCalledTimes(1);
     expect(repository.userServices.findAll.mock.calls[0][0]).toMatchObject({
-      order: ['service_id', 'organisation_id'],
+      order: ["service_id", "organisation_id"],
     });
   });
 
-  it('then it should return services mapped to model', async () => {
+  it("then it should return services mapped to model", async () => {
     const actual = await getUserServices(uid);
 
     expect(actual.length).toBe(3);
@@ -63,7 +71,7 @@ describe('When getting user services from the repository', () => {
       serviceId: services[1].service_id,
       organisationId: services[1].organisation_id,
       roles: [],
-      identifiers: [{ key: 'k2s-id', value: '123456' }],
+      identifiers: [{ key: "k2s-id", value: "123456" }],
       accessGrantedOn: services[1].createdAt,
     });
     expect(actual[2]).toEqual({
@@ -71,23 +79,23 @@ describe('When getting user services from the repository', () => {
       organisationId: services[2].organisation_id,
       roles: [
         {
-          id: 'role1',
-          code: 'R1',
-          name: 'Role One',
+          id: "role1",
+          code: "R1",
+          name: "Role One",
           status: {
-            id: 1
-          }
+            id: 1,
+          },
         },
         {
-          id: 'role2',
-          code: 'R2',
-          name: 'Role Two',
+          id: "role2",
+          code: "R2",
+          name: "Role Two",
           status: {
-            id: 0
-          }
+            id: 0,
+          },
         },
       ],
-      identifiers: [{ key: 'groups', value: 'g1,g2' }],
+      identifiers: [{ key: "groups", value: "g1,g2" }],
       accessGrantedOn: services[2].createdAt,
     });
   });

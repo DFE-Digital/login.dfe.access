@@ -1,5 +1,7 @@
-'use strict';
+const express = require("express");
+const { asyncWrapper } = require("login.dfe.express-error-handling");
 
+<<<<<<< HEAD
 const express = require('express');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
@@ -12,10 +14,21 @@ const updateUserService = require('./updateUserService');
 const updateLastAccess = require('./updateLastAccess');
 const removeServiceFromUser = require('./removeServiceFromUser');
 const addServiceIdentifierToUser = require('./addServiceIdentifierToUser');
+=======
+const listAllUsersServices = require("./listAllUsersServices");
+const listUserServices = require("./listUserServices");
+const listUserServiceRequests = require("./listUserServiceRequests");
+const getSingleUserService = require("./getSingleUserService");
+const addServiceToUser = require("./addServiceToUser");
+const updateUserService = require("./updateUserService");
+const removeServiceFromUser = require("./removeServiceFromUser");
+const addServiceIdentifierToUser = require("./addServiceIdentifierToUser");
+>>>>>>> 2f3b529c403bd328c0fd830cb0531088029577ce
 
 const router = express.Router();
 
 const buildArea = () => {
+<<<<<<< HEAD
   router.get('/', asyncWrapper(listAllUsersServices));
   router.get('/:uid/services', asyncWrapper(listUserServices));
   router.get('/:uid/service-requests', asyncWrapper(listUserServiceRequests));
@@ -25,6 +38,31 @@ const buildArea = () => {
   router.patch('/:uid/services/:sid/organisations/:oid', asyncWrapper(updateUserService)); // Duplicate for /:uid/services/:sid when org becomes optional
   router.delete('/:uid/services/:sid/organisations/:oid', asyncWrapper(removeServiceFromUser)); // Duplicate for /:uid/services/:sid when org becomes optional
   router.put('/:uid/services/:sid/organisations/:oid/identifiers/:idkey', asyncWrapper(addServiceIdentifierToUser)); // Duplicate for /:uid/services/:sid/identifiers when org becomes optional
+=======
+  router.get("/", asyncWrapper(listAllUsersServices));
+  router.get("/:uid/services", asyncWrapper(listUserServices));
+  router.get("/:uid/service-requests", asyncWrapper(listUserServiceRequests));
+  router.get(
+    "/:uid/services/:sid/organisations/:oid",
+    asyncWrapper(getSingleUserService),
+  ); // Duplicate for /:uid/services/:sid when org becomes optional
+  router.put(
+    "/:uid/services/:sid/organisations/:oid",
+    asyncWrapper(addServiceToUser),
+  ); // Duplicate for /:uid/services/:sid when org becomes optional
+  router.patch(
+    "/:uid/services/:sid/organisations/:oid",
+    asyncWrapper(updateUserService),
+  ); // Duplicate for /:uid/services/:sid when org becomes optional
+  router.delete(
+    "/:uid/services/:sid/organisations/:oid",
+    asyncWrapper(removeServiceFromUser),
+  ); // Duplicate for /:uid/services/:sid when org becomes optional
+  router.put(
+    "/:uid/services/:sid/organisations/:oid/identifiers/:idkey",
+    asyncWrapper(addServiceIdentifierToUser),
+  ); // Duplicate for /:uid/services/:sid/identifiers when org becomes optional
+>>>>>>> 2f3b529c403bd328c0fd830cb0531088029577ce
 
   return router;
 };

@@ -1,13 +1,13 @@
-const logger = require('./../../infrastructure/logger');
-const { getInvitationServices } = require('./../../infrastructure/data');
+const logger = require("../../infrastructure/logger");
+const { getInvitationServices } = require("../../infrastructure/data");
 
 const listInvitationServices = async (req, res) => {
-  const iid = req.params.iid;
-  const correlationId = req.correlationId;
+  const { iid } = req.params;
+  const { correlationId } = req;
 
-  logger.info(`Listing services for invitation ${iid} (correlation id: ${correlationId})`, { correlationId });
+  logger.debug(`Listing services for invitation ${iid}`, { correlationId });
   try {
-    const invitationServices = await getInvitationServices(iid) || [];
+    const invitationServices = (await getInvitationServices(iid)) || [];
 
     if (invitationServices.length === 0) {
       return res.status(404).send();
@@ -15,9 +15,9 @@ const listInvitationServices = async (req, res) => {
 
     return res.json(invitationServices);
   } catch (e) {
-    logger.error(`Error listing services for invitation ${iid} (correlation id: ${correlationId}) - ${e.message}`, {
+    logger.error(`Error listing services for invitation ${iid}`, {
       correlationId,
-      stack: e.stack
+      error: { ...e },
     });
     throw e;
   }
