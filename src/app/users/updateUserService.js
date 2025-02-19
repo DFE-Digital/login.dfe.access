@@ -1,7 +1,4 @@
 const logger = require("../../infrastructure/logger");
-<<<<<<< HEAD
-const { addGroupsToUserServiceIdentifier, removeAllUserServiceGroupIdentifiers, getUserService, addUserServiceIdentifier, removeAllUserServiceIdentifiers, getServiceRoles, removeAllUserServiceRoles, addUserServiceRole } = require('./../../infrastructure/data');
-=======
 const {
   addGroupsToUserServiceIdentifier,
   removeAllUserServiceGroupIdentifiers,
@@ -12,7 +9,6 @@ const {
   removeAllUserServiceRoles,
   addUserServiceRole,
 } = require("../../infrastructure/data");
->>>>>>> 2f3b529c403bd328c0fd830cb0531088029577ce
 const { notifyUserUpdated } = require("../../infrastructure/notifications");
 
 const parseAndValidateRequest = async (req) => {

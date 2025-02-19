@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-const Sequelize = require('sequelize');
-
-const { Op } = Sequelize;
-
-const define = (db, schema) => db.define(
-    'user_services',
-=======
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
 const define = (db, schema) => {
   return db.define(
     "user_services",
->>>>>>> 2f3b529c403bd328c0fd830cb0531088029577ce
     {
       id: {
         type: Sequelize.UUID,
@@ -35,19 +26,10 @@ const define = (db, schema) => {
         type: Sequelize.UUID,
         allowNull: false,
       },
-<<<<<<< HEAD
       lastAccess: {
         type: Sequelize.DATE,
         allowNull: true,
       },
-    },
-    {
-      timestamps: true,
-      tableName: 'user_services',
-      schema,
-    }
-  );
-=======
     },
     {
       timestamps: true,
@@ -56,7 +38,6 @@ const define = (db, schema) => {
     },
   );
 };
->>>>>>> 2f3b529c403bd328c0fd830cb0531088029577ce
 
 const extend = ({ userServices, userServiceIdentifiers, userServiceRoles }) => {
   userServices.prototype.getIdentifiers = async function () {
@@ -74,6 +55,7 @@ const extend = ({ userServices, userServiceIdentifiers, userServiceRoles }) => {
       },
     });
   };
+
   userServices.prototype.getRoles = async function () {
     return userServiceRoles.findAll({
       where: {
