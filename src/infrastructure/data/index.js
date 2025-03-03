@@ -120,7 +120,6 @@ const updateUserServiceLastAccess = async (uid, sid, oid) => {
       organisation_id: oid,
       service_id: sid,
     });
-    return id;
   }
   return existing.id;
 };
