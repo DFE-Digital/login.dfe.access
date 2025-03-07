@@ -26,7 +26,7 @@ const define = (db, schema) => {
         type: Sequelize.UUID,
         allowNull: false,
       },
-      lastAccess: {
+      lastAccessed: {
         type: Sequelize.DATE,
         allowNull: true,
       },
