@@ -1,9 +1,6 @@
 {
   "name": "login.dfe.access",
   "version": "6.0.0",
-  "engines": {
-    "node": "18.x.x"
-  },
   "description": "Provides resource access functionality to platform components.",
   "repository": {
     "type": "git",
