@@ -26,6 +26,10 @@ const define = (db, schema) => {
         type: Sequelize.UUID,
         allowNull: false,
       },
+      lastAccessed: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
     },
     {
       timestamps: true,
@@ -51,6 +55,7 @@ const extend = ({ userServices, userServiceIdentifiers, userServiceRoles }) => {
       },
     });
   };
+
   userServices.prototype.getRoles = async function () {
     return userServiceRoles.findAll({
       where: {
