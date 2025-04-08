@@ -84,23 +84,6 @@ const addUserService = async (uid, sid, oid) => {
 };
 
 const updateUserServiceLastAccess = async (uid, sid, oid) => {
-  await userServices.update(
-    { lastAccess: Sequelize.literal("CURRENT_TIMESTAMP") },
-    {
-      where: {
-        user_id: {
-          [Op.eq]: uid,
-        },
-        service_id: {
-          [Op.eq]: sid,
-        },
-        organisation_id: {
-          [Op.eq]: oid,
-        },
-      },
-    },
-  );
-
   const existing = await userServices.findOne({
     where: {
       user_id: {
@@ -115,13 +98,11 @@ const updateUserServiceLastAccess = async (uid, sid, oid) => {
     },
   });
   if (existing) {
-    await userServices.updateLastAccess({
-      user_id: uid,
-      organisation_id: oid,
-      service_id: sid,
+    await existing.update({
+      lastAccessed: Sequelize.literal("CURRENT_TIMESTAMP"),
     });
   }
-  return existing.id;
+  return existing?.id;
 };
 
 const addUserServiceIdentifier = async (uid, sid, oid, key, value) => {
