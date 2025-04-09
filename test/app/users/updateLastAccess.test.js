@@ -23,9 +23,13 @@ describe("when setting the lastAccess date for a user, organisation and service"
   let req;
   let res;
 
+  const userId = "57a978f2-d7b7-4c33-b2af-87fd253e2ef3";
+  const serviceId = "4e1ace4b-35c5-4b90-b03f-219838bff610";
+  const orgId = "719bec7b-53e0-4cdb-a80e-affea0793ab3";
+
   beforeEach(() => {
     req = {
-      params: { uid: "user123", sid: "service456", oid: "org789" },
+      params: { uid: userId, sid: serviceId, oid: orgId },
       req: { correlationId: "test-correlation-id" },
     };
     res = {
@@ -41,12 +45,30 @@ describe("when setting the lastAccess date for a user, organisation and service"
     expect(res.send).toHaveBeenCalledWith({ details: ["Must specify user"] });
   });
 
+  it("should return 400 if uid is an invalid uuid", async () => {
+    req.params.uid = "an-invalid-uuid";
+    await updateLastAccess(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
+      details: ["User must be a valid uuid"],
+    });
+  });
+
   it("should return 400 if sid is missing", async () => {
     delete req.params.sid;
     await updateLastAccess(req, res);
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith({
       details: ["Must specify service"],
+    });
+  });
+
+  it("should return 400 if sid is an invalid uuid", async () => {
+    req.params.sid = "an-invalid-uuid";
+    await updateLastAccess(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
+      details: ["Service must be a valid uuid"],
     });
   });
 
@@ -59,14 +81,36 @@ describe("when setting the lastAccess date for a user, organisation and service"
     });
   });
 
-  it("should call updateUserServiceLastAccess and notifyUserUpdated on valid request", async () => {
+  it("should return 400 if oid is an invalid uuid", async () => {
+    req.params.oid = "an-invalid-uuid";
+    await updateLastAccess(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
+      details: ["Organisation must be a valid uuid"],
+    });
+  });
+
+  it("should not call notifyUserUpdated if no record is updated", async () => {
     await updateLastAccess(req, res);
     expect(updateUserServiceLastAccess).toHaveBeenCalledWith(
-      "user123",
-      "service456",
-      "org789",
+      userId,
+      serviceId,
+      orgId,
     );
-    expect(notifyUserUpdated).toHaveBeenCalledWith("user123");
+    expect(notifyUserUpdated).toHaveBeenCalledTimes(0);
+    expect(res.status).toHaveBeenCalledWith(202);
+    expect(res.send).toHaveBeenCalled();
+  });
+
+  it("should call updateUserServiceLastAccess and notifyUserUpdated on valid request", async () => {
+    updateUserServiceLastAccess.mockReturnValue("a-uuid");
+    await updateLastAccess(req, res);
+    expect(updateUserServiceLastAccess).toHaveBeenCalledWith(
+      userId,
+      serviceId,
+      orgId,
+    );
+    expect(notifyUserUpdated).toHaveBeenCalledWith(userId);
     expect(res.status).toHaveBeenCalledWith(202);
     expect(res.send).toHaveBeenCalled();
   });
