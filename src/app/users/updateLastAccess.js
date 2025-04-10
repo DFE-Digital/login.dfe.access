@@ -63,7 +63,8 @@ const updateLastAccess = async (req, res) => {
         `No user service record was updated (correlation id: ${correlationId})`,
         { correlationId },
       );
-      return res.status(202).send();
+      // If id is undefined, it couldn't find a record that contains the 3 values
+      return res.status(404).send();
     }
     logger.info(
       `A userServices record with id [${userServicesRecordId}] was updated (correlation id: ${correlationId})`,
