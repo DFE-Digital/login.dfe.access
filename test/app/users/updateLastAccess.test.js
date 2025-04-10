@@ -98,7 +98,7 @@ describe("when setting the lastAccess date for a user, organisation and service"
       orgId,
     );
     expect(notifyUserUpdated).toHaveBeenCalledTimes(0);
-    expect(res.status).toHaveBeenCalledWith(202);
+    expect(res.status).toHaveBeenCalledWith(404);
     expect(res.send).toHaveBeenCalled();
   });
 
