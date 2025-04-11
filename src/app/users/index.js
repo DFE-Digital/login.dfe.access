@@ -7,6 +7,7 @@ const listUserServiceRequests = require("./listUserServiceRequests");
 const getSingleUserService = require("./getSingleUserService");
 const addServiceToUser = require("./addServiceToUser");
 const updateUserService = require("./updateUserService");
+const updateLastAccess = require("./updateLastAccess");
 const removeServiceFromUser = require("./removeServiceFromUser");
 const addServiceIdentifierToUser = require("./addServiceIdentifierToUser");
 
@@ -28,6 +29,10 @@ const buildArea = () => {
     "/:uid/services/:sid/organisations/:oid",
     asyncWrapper(updateUserService),
   ); // Duplicate for /:uid/services/:sid when org becomes optional
+  router.post(
+    "/:uid/services/:sid/organisations/:oid/updateLastAccess",
+    asyncWrapper(updateLastAccess),
+  );
   router.delete(
     "/:uid/services/:sid/organisations/:oid",
     asyncWrapper(removeServiceFromUser),
