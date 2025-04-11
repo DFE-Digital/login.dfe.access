@@ -1,5 +1,7 @@
+const Sequelize = require("sequelize");
 const { Op, QueryTypes } = require("sequelize");
 const uuid = require("uuid");
+
 const {
   connection,
   userServices,
@@ -79,6 +81,28 @@ const addUserService = async (uid, sid, oid) => {
     return id;
   }
   return existing.id;
+};
+
+const updateUserServiceLastAccess = async (uid, sid, oid) => {
+  const existing = await userServices.findOne({
+    where: {
+      user_id: {
+        [Op.eq]: uid,
+      },
+      service_id: {
+        [Op.eq]: sid,
+      },
+      organisation_id: {
+        [Op.eq]: oid,
+      },
+    },
+  });
+  if (existing) {
+    await existing.update({
+      lastAccessed: Sequelize.literal("CURRENT_TIMESTAMP"),
+    });
+  }
+  return existing?.id;
 };
 
 const addUserServiceIdentifier = async (uid, sid, oid, key, value) => {
@@ -696,6 +720,7 @@ module.exports = {
   getUserServices,
   getUserService,
   addUserService,
+  updateUserServiceLastAccess,
   addUserServiceIdentifier,
   getUserOfServiceIdentifier,
   removeAllUserServiceIdentifiers,
