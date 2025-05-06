@@ -25,23 +25,22 @@
     "**/*": "prettier --write --ignore-unknown"
   },
   "dependencies": {
-    "applicationinsights": "^2.9.6",
     "dotenv": "^16.4.7",
     "express": "^4.21.1",
     "express-validator": "7.2.0",
     "helmet": "^7.2.0",
     "lodash": "^4.17.21",
+    "login.dfe.api-client": "^1.0.4",
     "login.dfe.api.auth": "^2.3.4",
     "login.dfe.audit.transporter": "^4.0.3",
+    "login.dfe.audit.winston-sequelize-transport": "^3.2.6",
     "login.dfe.config.schema.common": "^2.1.7",
     "login.dfe.express-error-handling": "^3.0.3",
     "login.dfe.healthcheck": "^3.0.3",
     "login.dfe.jobs-client": "^6.1.2",
-    "login.dfe.winston-appinsights": "github:DFE-Digital/login.dfe.winston-appinsights#v5.0.3",
     "sequelize": "^6.37.6",
     "tedious": "^18.6.1",
-    "uuid": "^10.0.0",
-    "winston": "^3.17.0"
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
