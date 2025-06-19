@@ -39,11 +39,13 @@ const getFilters = (req) => {
 const listUsersOfService = async (req, res) => {
   const page = getQueryStringIntValue(req, "page", 1);
   const pageSize = getQueryStringIntValue(req, "pageSize", 50);
+  const userIds = getQueryStringValue(req, "userIds");
   const filters = getFilters(req);
 
   const result = await getUsersOfServicePaged(
     req.params.sid,
     undefined,
+    userIds,
     filters,
     page,
     pageSize,
