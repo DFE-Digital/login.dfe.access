@@ -39,7 +39,12 @@ const getFilters = (req) => {
 const listUsersOfService = async (req, res) => {
   const page = getQueryStringIntValue(req, "page", 1);
   const pageSize = getQueryStringIntValue(req, "pageSize", 50);
-  const userIds = getQueryStringValue(req, "userIds");
+  let userIds = getQueryStringValue(req, "userIds");
+
+  // If params are in the form of value1,value2,value3,etc then convert into an array
+  if (userIds && !Array.isArray(userIds)) {
+    userIds = userIds.split(",");
+  }
   const filters = getFilters(req);
 
   const result = await getUsersOfServicePaged(
