@@ -113,7 +113,7 @@ const mapUserServiceRequest = async (entity) => {
     serviceId: entity.service_id,
     roles: entity.role_ids || undefined,
     organisationId: entity.organisation_id || undefined,
-    status: entity.status || 999999,
+    status: entity.status,
     reason: entity.reason || undefined,
     actionedBy: entity.actioned_by || undefined,
     actionedReason: entity.actioned_reason || undefined,
