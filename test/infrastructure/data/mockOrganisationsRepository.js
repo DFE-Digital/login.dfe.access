@@ -75,7 +75,9 @@ const mockUserServiceEntity = (
 };
 
 const mockUserServiceRequestEntity = (data, status) => {
+  const actionedReason = getActionedReason(status);
   const defaultEntity = {
+    id: uuid.v4(),
     user_id: uuid.v4(),
     service_id: uuid.v4(),
     role_ids: uuid.v4(),
@@ -84,7 +86,7 @@ const mockUserServiceRequestEntity = (data, status) => {
     reason: "test reason",
     actioned_by: uuid.v4(),
     actioned_id: uuid.v4(),
-    actioned_reason: "test reason",
+    actioned_reason: actionedReason,
     actioned_at: new Date(),
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -136,6 +138,21 @@ const mockPolicyConditionEntity = (data) => {
   const entity = Object.assign({}, defaultEntity, data);
   entity.mockResetAll = function () {};
   return entity;
+};
+
+const getActionedReason = (status) => {
+  switch (status) {
+    case -1:
+      return "Rejected";
+    case 0:
+      return "Pending";
+    case 1:
+      return "Approved";
+    case 2:
+      return "Overdue";
+    case 3:
+      return "Pending";
+  }
 };
 
 module.exports = {
