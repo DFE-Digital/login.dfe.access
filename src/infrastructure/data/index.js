@@ -200,6 +200,7 @@ const removeUserService = async (uid, sid, oid) => {
 const getUsersOfServicePaged = async (
   sid,
   oid,
+  userIds,
   filters,
   pageNumber,
   pageSize,
@@ -214,6 +215,11 @@ const getUsersOfServicePaged = async (
   if (oid) {
     queryOpts.replacements.oid = oid;
     queryWhere += " AND [user_services].[organisation_id] = :oid";
+  }
+
+  if (userIds) {
+    queryOpts.replacements.userIds = userIds;
+    queryWhere += " AND [user_services].[user_id] IN(:userIds)";
   }
 
   if (filters) {
