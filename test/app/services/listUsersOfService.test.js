@@ -29,7 +29,7 @@ const filteridkey = "k2s-id";
 const filteridvalue = "123456";
 const res = mockResponse();
 
-describe("When listing services of a service", () => {
+describe("When listing users of a service", () => {
   let req;
 
   beforeEach(() => {
@@ -54,23 +54,30 @@ describe("When listing services of a service", () => {
     res.mockResetAll();
   });
 
-  it("then it should query using service id", async () => {
+  it("should query using service id and pagination params when provided", async () => {
     await listUsersOfService(req, res);
 
     expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
     expect(getUsersOfServicePaged.mock.calls[0][0]).toBe(sid);
-  });
-
-  it("then it should query using pagination params when provided", async () => {
-    await listUsersOfService(req, res);
-
-    expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
     expect(getUsersOfServicePaged.mock.calls[0][1]).toBeUndefined();
+    expect(getUsersOfServicePaged.mock.calls[0][2]).toBeUndefined();
     expect(getUsersOfServicePaged.mock.calls[0][4]).toBe(page);
     expect(getUsersOfServicePaged.mock.calls[0][5]).toBe(pageSize);
   });
 
-  it("then it should query using defalult page size of 50 when param not provided", async () => {
+  it("should include filter idkey and idvalue filter if present", async () => {
+    await listUsersOfService(req, res);
+
+    expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
+    expect(getUsersOfServicePaged.mock.calls[0][3]).toMatchObject({
+      idkey: filteridkey,
+    });
+    expect(getUsersOfServicePaged.mock.calls[0][3]).toMatchObject({
+      idvalue: filteridvalue,
+    });
+  });
+
+  it("should query using defalult page size of 50 when param not provided", async () => {
     req.query.pageSize = undefined;
 
     await listUsersOfService(req, res);
@@ -81,7 +88,17 @@ describe("When listing services of a service", () => {
     expect(getUsersOfServicePaged.mock.calls[0][5]).toBe(50);
   });
 
-  it("then it should query using defalult page of 1 when param not provided", async () => {
+  it("should raise an error if pageSize is not a number", async () => {
+    req.query.pageSize = "not-a-number";
+
+    await expect(listUsersOfService(req, res)).rejects.toThrow(
+      "pageSize must be a number",
+    );
+
+    expect(getUsersOfServicePaged).toHaveBeenCalledTimes(0);
+  });
+
+  it("should query using defalult page of 1 when param not provided", async () => {
     req.query.page = undefined;
 
     await listUsersOfService(req, res);
@@ -92,25 +109,17 @@ describe("When listing services of a service", () => {
     expect(getUsersOfServicePaged.mock.calls[0][5]).toBe(pageSize);
   });
 
-  it("then it should include filter idkey filter if present", async () => {
-    await listUsersOfService(req, res);
+  it("should raise an error if page is not a number", async () => {
+    req.query.page = "not-a-number";
 
-    expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
-    expect(getUsersOfServicePaged.mock.calls[0][3]).toMatchObject({
-      idkey: filteridkey,
-    });
+    await expect(listUsersOfService(req, res)).rejects.toThrow(
+      "page must be a number",
+    );
+
+    expect(getUsersOfServicePaged).toHaveBeenCalledTimes(0);
   });
 
-  it("then it should include filter idvalue filter if present", async () => {
-    await listUsersOfService(req, res);
-
-    expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
-    expect(getUsersOfServicePaged.mock.calls[0][3]).toMatchObject({
-      idvalue: filteridvalue,
-    });
-  });
-
-  it("then it should not include filters if none present", async () => {
+  it("should not include filters if none present", async () => {
     req.query.filteridkey = undefined;
     req.query.filteridvalue = undefined;
 
@@ -118,5 +127,27 @@ describe("When listing services of a service", () => {
 
     expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
     expect(getUsersOfServicePaged.mock.calls[0][2]).toBeUndefined();
+  });
+
+  it("should convert a single userId into an array", async () => {
+    req.query.userIds = "user-1";
+
+    await listUsersOfService(req, res);
+
+    expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
+    expect(getUsersOfServicePaged.mock.calls[0][2]).toStrictEqual(["user-1"]);
+  });
+
+  it("should convert a list of userIds into an array", async () => {
+    req.query.userIds = "user-1,user-2,user-3";
+
+    await listUsersOfService(req, res);
+
+    expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
+    expect(getUsersOfServicePaged.mock.calls[0][2]).toStrictEqual([
+      "user-1",
+      "user-2",
+      "user-3",
+    ]);
   });
 });
