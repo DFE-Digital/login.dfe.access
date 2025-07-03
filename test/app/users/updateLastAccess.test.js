@@ -2,9 +2,6 @@ const updateLastAccess = require("../../../src/app/users/updateLastAccess");
 const {
   updateUserServiceLastAccess,
 } = require("../../../src/infrastructure/data");
-const {
-  notifyUserUpdated,
-} = require("../../../src/infrastructure/notifications");
 
 jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").mockConfig(),
@@ -90,19 +87,18 @@ describe("when setting the lastAccess date for a user, organisation and service"
     });
   });
 
-  it("should not call notifyUserUpdated if no record is updated", async () => {
+  it("should return 404 if no record is updated", async () => {
     await updateLastAccess(req, res);
     expect(updateUserServiceLastAccess).toHaveBeenCalledWith(
       userId,
       serviceId,
       orgId,
     );
-    expect(notifyUserUpdated).toHaveBeenCalledTimes(0);
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.send).toHaveBeenCalled();
   });
 
-  it("should call updateUserServiceLastAccess and notifyUserUpdated on valid request", async () => {
+  it("should call updateUserServiceLastAccess on valid request", async () => {
     updateUserServiceLastAccess.mockReturnValue("a-uuid");
     await updateLastAccess(req, res);
     expect(updateUserServiceLastAccess).toHaveBeenCalledWith(
@@ -110,7 +106,6 @@ describe("when setting the lastAccess date for a user, organisation and service"
       serviceId,
       orgId,
     );
-    expect(notifyUserUpdated).toHaveBeenCalledWith(userId);
     expect(res.status).toHaveBeenCalledWith(202);
     expect(res.send).toHaveBeenCalled();
   });
