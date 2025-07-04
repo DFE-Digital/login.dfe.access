@@ -12,9 +12,6 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 jest.mock("../../../src/infrastructure/data", () => ({
   updateUserServiceLastAccess: jest.fn(),
 }));
-jest.mock("../../../src/infrastructure/notifications", () => ({
-  notifyUserUpdated: jest.fn(),
-}));
 
 describe("when setting the lastAccess date for a user, organisation and service", () => {
   let req;
