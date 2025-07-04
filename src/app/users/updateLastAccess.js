@@ -2,7 +2,6 @@ const { validate } = require("uuid");
 
 const logger = require("../../infrastructure/logger");
 const { updateUserServiceLastAccess } = require("../../infrastructure/data");
-const { notifyUserUpdated } = require("../../infrastructure/notifications");
 
 const parseAndValidateRequest = async (req) => {
   const model = {
@@ -71,7 +70,6 @@ const updateLastAccess = async (req, res) => {
       { correlationId },
     );
 
-    notifyUserUpdated(uid);
     return res.status(202).send();
   } catch (e) {
     logger.error(
