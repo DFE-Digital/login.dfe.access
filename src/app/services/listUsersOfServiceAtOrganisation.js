@@ -45,6 +45,7 @@ const listUsersOfServiceAtOrganisation = async (req, res) => {
     sid,
     oid,
     undefined,
+    undefined,
     pageNumber,
     pageSize,
   );
