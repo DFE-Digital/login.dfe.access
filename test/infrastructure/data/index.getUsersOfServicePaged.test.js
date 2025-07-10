@@ -39,6 +39,7 @@ describe("When getting a page of users with access to service from repository - 
     const output = await getUsersOfServicePaged(
       sid,
       oid,
+      undefined,
       filters,
       pageNumber,
       pageSize,
@@ -95,7 +96,14 @@ describe("When getting a page of users with access to service from repository - 
         services[2],
         services[1],
       ]);
-    let output = await getUsersOfServicePaged(sid, oid, filters, pageNumber, 2);
+    let output = await getUsersOfServicePaged(
+      sid,
+      oid,
+      undefined,
+      filters,
+      pageNumber,
+      2,
+    );
 
     expect(repository.connection.query).toHaveBeenCalledTimes(2);
     expect(output.services.length).toBe(5);
@@ -114,7 +122,14 @@ describe("When getting a page of users with access to service from repository - 
         services[2],
         services[1],
       ]);
-    output = await getUsersOfServicePaged(sid, oid, filters, pageNumber, 3);
+    output = await getUsersOfServicePaged(
+      sid,
+      oid,
+      undefined,
+      filters,
+      pageNumber,
+      3,
+    );
 
     expect(repository.connection.query).toHaveBeenCalledTimes(2);
     expect(output.services.length).toBe(5);

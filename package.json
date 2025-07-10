@@ -16,7 +16,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint:report": "eslint . -f junit -o eslint-results.xml",
-    "test": "jest --coverage --detectOpenHandles",
+    "test": "jest --coverage",
     "test:watch": "./node_modules/.bin/jest --watch",
     "test:report": "jest --coverage --reporters=default --reporters jest-junit --coverageReporters=clover",
     "prepare": "husky"
