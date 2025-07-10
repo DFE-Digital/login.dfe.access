@@ -79,6 +79,7 @@ describe("when listing users of service within organisation", () => {
       "service-1",
       "organisation-1",
       undefined,
+      undefined,
       2,
       50,
     );
@@ -94,6 +95,7 @@ describe("when listing users of service within organisation", () => {
       "service-1",
       "organisation-1",
       undefined,
+      undefined,
       1,
       50,
     );
@@ -108,6 +110,7 @@ describe("when listing users of service within organisation", () => {
     expect(getUsersOfServicePaged).toHaveBeenCalledWith(
       "service-1",
       "organisation-1",
+      undefined,
       undefined,
       2,
       25,
