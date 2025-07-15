@@ -1,10 +1,11 @@
 const { getUsersOfServicePaged } = require("./../../infrastructure/data");
 
 const getQueryStringValue = (req, key) => {
-  const qsKey = Object.keys(req.query).find(
+  let paramsSource = req.method === "POST" ? req.body : req.query;
+  const qsKey = Object.keys(paramsSource).find(
     (x) => x.toLowerCase() === key.toLowerCase(),
   );
-  return qsKey ? req.query[qsKey] : undefined;
+  return qsKey ? paramsSource[qsKey] : undefined;
 };
 const getQueryStringIntValue = (req, key, defaultValue = 0) => {
   const value = getQueryStringValue(req, key);
@@ -39,6 +40,8 @@ const getFilters = (req) => {
 const listUsersOfService = async (req, res) => {
   const page = getQueryStringIntValue(req, "page", 1);
   const pageSize = getQueryStringIntValue(req, "pageSize", 50);
+
+  // NOTE: If more than 119 ids are provided, it will return a 431 status error.
   let userIds = getQueryStringValue(req, "userIds");
 
   // If params are in the form of value1,value2,value3,etc then convert into an array

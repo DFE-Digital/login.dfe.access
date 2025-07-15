@@ -28,6 +28,7 @@ const routeUserService = async (req, res, next) => {
 };
 const buildArea = () => {
   router.get("/:sid/users", asyncWrapper(listUsersOfService));
+  router.post("/:sid/users", asyncWrapper(listUsersOfService));
   router.get(
     "/:sid/organisations/:oid/users",
     routeUserService,
