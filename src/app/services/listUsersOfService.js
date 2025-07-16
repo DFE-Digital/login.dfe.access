@@ -41,12 +41,12 @@ const listUsersOfService = async (req, res) => {
   const page = getQueryStringIntValue(req, "page", 1);
   const pageSize = getQueryStringIntValue(req, "pageSize", 50);
 
-  // NOTE: If more than 119 ids are provided, it will return a 431 status error.
-  let userIds = getQueryStringValue(req, "userIds");
+  let userIds = undefined;
 
-  // If params are in the form of value1,value2,value3,etc then convert into an array
-  if (userIds && !Array.isArray(userIds)) {
-    userIds = userIds.split(",");
+  if (req.method === "POST") {
+    // userIds are in POST only, because if more than 119 ids are provided as a query
+    // parameter, it will return a 431 status error.
+    userIds = getQueryStringValue(req, "userIds");
   }
   const filters = getFilters(req);
 
