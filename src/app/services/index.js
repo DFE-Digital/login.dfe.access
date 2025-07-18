@@ -27,7 +27,12 @@ const routeUserService = async (req, res, next) => {
   }
 };
 const buildArea = () => {
+  // The GET version of this endpoint should generally be used.  The POST
+  // endpoint should mainly be used if there is too much data to put in
+  // the query of the url (e.g., 100s of userIds for example)
   router.get("/:sid/users", asyncWrapper(listUsersOfService));
+  router.post("/:sid/users", asyncWrapper(listUsersOfService));
+
   router.get(
     "/:sid/organisations/:oid/users",
     routeUserService,
