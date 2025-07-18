@@ -142,6 +142,13 @@ describe("When listing users of a service", () => {
     expect(getUsersOfServicePaged.mock.calls[0][2]).toBeUndefined();
   });
 
+  it("should continue work in a POST request when userIds are not provided", async () => {
+    await listUsersOfService(postReq, res);
+
+    expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
+    expect(getUsersOfServicePaged.mock.calls[0][2]).toStrictEqual(undefined);
+  });
+
   it("should convert a single userId in a POST request to an array", async () => {
     postReq.body.userIds = ["user-1"];
 
