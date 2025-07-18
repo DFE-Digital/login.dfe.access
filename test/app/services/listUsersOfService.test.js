@@ -31,6 +31,7 @@ const res = mockResponse();
 
 describe("When listing users of a service", () => {
   let req;
+  let postReq;
 
   beforeEach(() => {
     getUsersOfServicePaged.mockReset().mockReturnValue({
@@ -51,6 +52,18 @@ describe("When listing users of a service", () => {
         filteridvalue,
       },
     });
+
+    postReq = mockRequest({
+      params: {
+        sid,
+      },
+      method: "POST",
+      body: {
+        page: page.toString(),
+        pageSize: pageSize.toString(),
+      },
+    });
+
     res.mockResetAll();
   });
 
@@ -129,19 +142,26 @@ describe("When listing users of a service", () => {
     expect(getUsersOfServicePaged.mock.calls[0][2]).toBeUndefined();
   });
 
-  it("should convert a single userId into an array", async () => {
-    req.query.userIds = "user-1";
+  it("should continue work in a POST request when userIds are not provided", async () => {
+    await listUsersOfService(postReq, res);
 
-    await listUsersOfService(req, res);
+    expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
+    expect(getUsersOfServicePaged.mock.calls[0][2]).toStrictEqual(undefined);
+  });
+
+  it("should convert a single userId in a POST request to an array", async () => {
+    postReq.body.userIds = ["user-1"];
+
+    await listUsersOfService(postReq, res);
 
     expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
     expect(getUsersOfServicePaged.mock.calls[0][2]).toStrictEqual(["user-1"]);
   });
 
-  it("should convert a list of userIds into an array", async () => {
-    req.query.userIds = "user-1,user-2,user-3";
+  it("should convert an array of userIds in a POST request to an array", async () => {
+    postReq.body.userIds = ["user-1", "user-2", "user-3"];
 
-    await listUsersOfService(req, res);
+    await listUsersOfService(postReq, res);
 
     expect(getUsersOfServicePaged).toHaveBeenCalledTimes(1);
     expect(getUsersOfServicePaged.mock.calls[0][2]).toStrictEqual([
