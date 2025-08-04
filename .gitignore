@@ -61,11 +61,5 @@ junit.xml
 
 # Dev env
 /config/
-!/config/login.dfe.access.dev.json
 
-.idea/workspace.xml
-.idea/watcherTasks.xml
 access.log
-\.idea/markdown-navigator\.xml
-
-\.idea/markdown-navigator/
