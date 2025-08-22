@@ -24,6 +24,7 @@ const {
   mapRoleEntities,
   mapUserServiceRoles,
   mapUserServiceRequests,
+  mapRoleEntity,
 } = require("./mappers");
 
 const getUserServices = async (uid) => {
@@ -680,6 +681,40 @@ const getServiceRoles = async (sid) => {
   return await mapRoleEntities(entities);
 };
 
+/**
+ * Gets a role.
+ *
+ * @param {string} id Id of the role that is being searched for
+ * @returns The database entity representing the role
+ */
+const getRole = async (id) => {
+  const entity = await roles.findOne({
+    where: {
+      Id: {
+        [Op.eq]: id,
+      },
+    },
+    include: ["parent"],
+  });
+  return entity;
+};
+
+/**
+ * Updates a role.  role can only contain the following keys
+ * ('name', 'code').
+ *
+ * @param {Model} existingRole A database entity representing an existing role
+ * @param {Object} role An object containing new values.
+ */
+
+const updateRole = async (existingRole, role) => {
+  const updatedRole = Object.assign(existingRole, role);
+  await existingRole.update({
+    name: updatedRole.name,
+    code: updatedRole.code,
+  });
+};
+
 const getUserServiceRequestEntity = async (id) => {
   const entity = await userServiceRequests.findOne({
     where: {
@@ -757,6 +792,8 @@ module.exports = {
   deletePolicyConditions,
   deletePolicyRoles,
   getServiceRoles,
+  getRole,
+  updateRole,
   getInvitationService,
   removeInvitationService,
   getUsersOfServicePagedV2,
