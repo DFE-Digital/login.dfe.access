@@ -24,7 +24,6 @@ const {
   mapRoleEntities,
   mapUserServiceRoles,
   mapUserServiceRequests,
-  mapRoleEntity,
 } = require("./mappers");
 
 const getUserServices = async (uid) => {
