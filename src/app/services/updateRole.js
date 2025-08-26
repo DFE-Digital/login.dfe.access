@@ -20,17 +20,17 @@ const validate = (req) => {
     if (key === "name") {
       const name = req.body.name;
       if (!name) {
-        errors.push("name cannot be empty");
+        errors.push("'name' cannot be empty");
       } else if (name.length > 125) {
-        errors.push("name cannot be greater than 125 characters");
+        errors.push("'name' cannot be greater than 125 characters");
       }
     }
     if (key === "code") {
       const code = req.body.code;
       if (!code) {
-        errors.push("code cannot be empty");
+        errors.push("'code' cannot be empty");
       } else if (code.length > 50) {
-        errors.push("code cannot be greater than 50 characters");
+        errors.push("'code' cannot be greater than 50 characters");
       }
     }
   });
@@ -44,9 +44,9 @@ const updateRole = async (req, res) => {
   logger.info(`Patching role ${req.params.id}`, { correlationId });
 
   try {
-    const validationErrorMessage = validate(req);
-    if (validationErrorMessage) {
-      return res.status(400).send({ details: validationErrorMessage });
+    const validationErrorMessages = validate(req);
+    if (validationErrorMessages.length > 0) {
+      return res.status(400).send({ errors: validationErrorMessages });
     }
 
     const existingRoleEntity = await getRole(req.params.id);
