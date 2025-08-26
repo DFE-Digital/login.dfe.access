@@ -1,21 +1,41 @@
 const logger = require("../../infrastructure/logger");
-const { getRole, updateRole } = require("../../infrastructure/data");
+const { getRole, updateRoleEntity } = require("../../infrastructure/data");
 
 const validate = (req) => {
   const keys = Object.keys(req.body);
-  // TODO Name length validation
-  // TODO Code length validation
+  const errors = [];
   const patchableProperties = ["name", "code"];
+
   if (keys.length === 0) {
-    return `Must specify at least one property. Patchable properties ${patchableProperties}`;
+    errors.push(
+      `Must specify at least one property. Patchable properties ${patchableProperties}`,
+    );
   }
-  const errorMessages = keys.map((key) => {
+  keys.map((key) => {
     if (!patchableProperties.find((x) => x === key)) {
-      return `Unpatchable property ${key}. Allowed properties ${patchableProperties}`;
+      errors.push(
+        `Unpatchable property ${key}. Allowed properties ${patchableProperties}`,
+      );
     }
-    return null;
+    if (key === "name") {
+      const name = req.body.name;
+      if (!name) {
+        errors.push("name cannot be empty");
+      } else if (name.length > 125) {
+        errors.push("name cannot be greater than 125 characters");
+      }
+    }
+    if (key === "code") {
+      const code = req.body.code;
+      if (!code) {
+        errors.push("code cannot be empty");
+      } else if (code.length > 50) {
+        errors.push("code cannot be greater than 50 characters");
+      }
+    }
   });
-  return errorMessages.find((x) => x !== null);
+
+  return errors;
 };
 
 const updateRole = async (req, res) => {
@@ -34,7 +54,7 @@ const updateRole = async (req, res) => {
       return res.status(404).send();
     }
 
-    await updateRole(existingRoleEntity, req.body);
+    await updateRoleEntity(existingRoleEntity, req.body);
 
     return res.status(202).send();
   } catch (e) {

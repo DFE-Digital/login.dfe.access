@@ -700,14 +700,14 @@ const getRole = async (id) => {
 };
 
 /**
- * Updates a role.  role can only contain the following keys
+ * Updates a role.  `role` can only contain the following keys
  * ('name', 'code').
  *
  * @param {Model} existingRole A database entity representing an existing role
  * @param {Object} role An object containing new values.
  */
 
-const updateRole = async (existingRole, role) => {
+const updateRoleEntity = async (existingRole, role) => {
   const updatedRole = Object.assign(existingRole, role);
   await existingRole.update({
     name: updatedRole.name,
@@ -793,7 +793,7 @@ module.exports = {
   deletePolicyRoles,
   getServiceRoles,
   getRole,
-  updateRole,
+  updateRoleEntity,
   getInvitationService,
   removeInvitationService,
   getUsersOfServicePagedV2,
