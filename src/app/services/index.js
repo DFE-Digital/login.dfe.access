@@ -61,7 +61,7 @@ const buildArea = () => {
     asyncWrapper(updateServiceRequest),
   );
 
-  router.patch("/roles/:id", asyncWrapper(updateRole));
+  router.patch("/:sid/roles/:rid", asyncWrapper(updateRole));
 
   return router;
 };

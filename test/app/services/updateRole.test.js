@@ -3,18 +3,20 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 );
 jest.mock("./../../../src/infrastructure/data", () => ({
   getRole: jest.fn(),
+  getServiceRoles: jest.fn(),
   updateRoleEntity: jest.fn(),
 }));
 
 const { mockRequest, mockResponse } = require("../../utils");
 const {
   getRole,
+  getServiceRoles,
   updateRoleEntity,
 } = require("../../../src/infrastructure/data");
 const updateRole = require("../../../src/app/services/updateRole");
 
 const role = {
-  id: "role1",
+  id: "role-1",
   name: "Role one",
   code: "code-1",
   status: {
@@ -22,7 +24,29 @@ const role = {
   },
 };
 
+const getServiceRolesData = [
+  {
+    id: "role-1",
+    name: "Role one",
+    code: "code-1",
+    numericId: "11111",
+    status: {
+      id: 1,
+    },
+  },
+  {
+    id: "role-2",
+    name: "Role two",
+    code: "code-2",
+    numericId: "22222",
+    status: {
+      id: 1,
+    },
+  },
+];
+
 const roleId = "role-1";
+const serviceId = "service-1";
 const res = mockResponse();
 
 describe("When patching a role of a service", () => {
@@ -30,11 +54,13 @@ describe("When patching a role of a service", () => {
 
   beforeEach(() => {
     getRole.mockReset().mockReturnValue(role);
+    getServiceRoles.mockReset().mockReturnValue(getServiceRolesData);
     updateRoleEntity.mockReset();
 
     req = mockRequest({
       params: {
-        roleId,
+        rid: roleId,
+        sid: serviceId,
       },
       body: {
         name: "new-role-name",
@@ -44,7 +70,7 @@ describe("When patching a role of a service", () => {
     res.mockResetAll();
   });
 
-  it("then it should return 202 response", async () => {
+  it("should return 202 response", async () => {
     await updateRole(req, res);
 
     expect(res.status).toHaveBeenCalledTimes(1);
@@ -52,7 +78,7 @@ describe("When patching a role of a service", () => {
     expect(res.send).toHaveBeenCalledTimes(1);
   });
 
-  it("then it should return 400 if body is empty", async () => {
+  it("should return 400 if body is empty", async () => {
     req.body = {};
 
     await updateRole(req, res);
@@ -67,7 +93,7 @@ describe("When patching a role of a service", () => {
     });
   });
 
-  it("then it should return 400 if name is empty", async () => {
+  it("should return 400 if name is empty", async () => {
     req.body.name = "";
 
     await updateRole(req, res);
@@ -80,7 +106,7 @@ describe("When patching a role of a service", () => {
     });
   });
 
-  it("then it should return 400 if name is greater than 125 characters", async () => {
+  it("should return 400 if name is greater than 125 characters", async () => {
     req.body.name = "abcde12345".repeat(12) + "abcdef"; // 126 characters
 
     await updateRole(req, res);
@@ -93,7 +119,7 @@ describe("When patching a role of a service", () => {
     });
   });
 
-  it("then it should return 400 if code is empty", async () => {
+  it("should return 400 if code is empty", async () => {
     req.body.code = "";
 
     await updateRole(req, res);
@@ -106,7 +132,7 @@ describe("When patching a role of a service", () => {
     });
   });
 
-  it("then it should return 400 if code is greater than 50 characters", async () => {
+  it("should return 400 if code is greater than 50 characters", async () => {
     req.body.code = "abcde12345".repeat(5) + "a"; //51 characters
 
     await updateRole(req, res);
@@ -119,7 +145,21 @@ describe("When patching a role of a service", () => {
     });
   });
 
-  it("then it should return 400 a non-patchable property is provided", async () => {
+  it("should return 400 if code is not unique within the service", async () => {
+    // code-2 is used by another role in this service
+    req.body.code = "code-2";
+
+    await updateRole(req, res);
+
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledTimes(1);
+    expect(res.send).toHaveBeenCalledWith({
+      errors: ["'code' has to be unique for roles within the service"],
+    });
+  });
+
+  it("should return 400 a non-patchable property is provided", async () => {
     req.body.failingField = "should-not-exist";
 
     await updateRole(req, res);
@@ -134,8 +174,8 @@ describe("When patching a role of a service", () => {
     });
   });
 
-  it("then it should return 404 if role not found", async () => {
-    getRole.mockReturnValue(undefined);
+  it(" should return 404 if role does not exist for the service", async () => {
+    getServiceRoles.mockReturnValue([]);
 
     await updateRole(req, res);
 
