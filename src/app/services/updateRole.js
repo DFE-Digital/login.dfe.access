@@ -57,8 +57,8 @@ const validate = (req, serviceRoles) => {
 
 const updateRole = async (req, res) => {
   const { correlationId } = req;
-  const serviceId = req.params.sid;
-  const roleId = req.params.rid;
+  const serviceId = req.params.sid.toLowerCase();
+  const roleId = req.params.rid.toLowerCase();
 
   logger.info(`Patching role [${roleId}] for service [${serviceId}]`, {
     correlationId,
@@ -80,6 +80,13 @@ const updateRole = async (req, res) => {
     // as we need the database entity object for the update to happen
     const existingRoleEntity = await getRole(roleId);
     await updateRoleEntity(existingRoleEntity, req.body);
+
+    logger.info(
+      `Successfully patched role [${roleId}] for service [${serviceId}]`,
+      {
+        correlationId,
+      },
+    );
 
     return res.status(202).send();
   } catch (e) {
