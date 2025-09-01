@@ -102,7 +102,20 @@ describe("When patching a role of a service", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledTimes(1);
     expect(res.send).toHaveBeenCalledWith({
-      errors: ["'name' cannot be empty"],
+      errors: ["'name' must be a non-empty string"],
+    });
+  });
+
+  it("should return 400 if name is not a string", async () => {
+    req.body.name = 123;
+
+    await updateRole(req, res);
+
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledTimes(1);
+    expect(res.send).toHaveBeenCalledWith({
+      errors: ["'name' must be a non-empty string"],
     });
   });
 
@@ -128,7 +141,20 @@ describe("When patching a role of a service", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledTimes(1);
     expect(res.send).toHaveBeenCalledWith({
-      errors: ["'code' cannot be empty"],
+      errors: ["'code' must be a non-empty string"],
+    });
+  });
+
+  it("should return 400 if code is not a string", async () => {
+    req.body.code = 1234;
+
+    await updateRole(req, res);
+
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledTimes(1);
+    expect(res.send).toHaveBeenCalledWith({
+      errors: ["'code' must be a non-empty string"],
     });
   });
 

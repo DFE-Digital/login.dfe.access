@@ -15,7 +15,7 @@ const validate = (req, serviceRoles) => {
       `Must specify at least one property. Patchable properties ${patchableProperties}`,
     );
   }
-  keys.map((key) => {
+  keys.forEach((key) => {
     if (!patchableProperties.find((x) => x === key)) {
       errors.push(
         `Unpatchable property ${key}. Allowed properties ${patchableProperties}`,
@@ -23,16 +23,16 @@ const validate = (req, serviceRoles) => {
     }
     if (key === "name") {
       const name = req.body.name;
-      if (!name) {
-        errors.push("'name' cannot be empty");
+      if (!name || typeof name !== "string") {
+        errors.push("'name' must be a non-empty string");
       } else if (name.length > 125) {
         errors.push("'name' cannot be greater than 125 characters");
       }
     }
     if (key === "code") {
       const code = req.body.code;
-      if (!code) {
-        errors.push("'code' cannot be empty");
+      if (!code || typeof code !== "string") {
+        errors.push("'code' must be a non-empty string");
       } else if (code.length > 50) {
         errors.push("'code' cannot be greater than 50 characters");
       } else {

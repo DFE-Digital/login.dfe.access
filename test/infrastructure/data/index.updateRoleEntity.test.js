@@ -5,9 +5,9 @@ jest.mock("./../../../src/infrastructure/data/organisationsRepository", () =>
 const repository = require("../../../src/infrastructure/data/organisationsRepository");
 const { updateRoleEntity } = require("../../../src/infrastructure/data");
 
-// existingRequest would usually be a Sequelize model object, but simulating the .update function
+// existingEntity would usually be a Sequelize model object, but simulating the .update function
 // on it is good enough for this test
-const existingRequest = {
+const existingEntity = {
   id: "role-1",
   name: "role-name-1",
   code: "role-code-1",
@@ -17,20 +17,20 @@ const existingRequest = {
   update: jest.fn(),
 };
 
-const request = {
+const role = {
   name: "new-role-name-1",
   code: "new-role-code-1",
 };
 
-describe("When updating a user service request in the repository", () => {
+describe("When updating a role entity in the repository", () => {
   beforeEach(() => {
     repository.mockResetAll();
   });
 
   it("then it should update the record", async () => {
-    await updateRoleEntity(existingRequest, request);
-    expect(existingRequest.update).toHaveBeenCalledTimes(1);
-    expect(existingRequest.update.mock.calls[0][0]).toEqual({
+    await updateRoleEntity(existingEntity, role);
+    expect(existingEntity.update).toHaveBeenCalledTimes(1);
+    expect(existingEntity.update.mock.calls[0][0]).toEqual({
       name: "new-role-name-1",
       code: "new-role-code-1",
     });
