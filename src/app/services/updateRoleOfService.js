@@ -1,9 +1,5 @@
 const logger = require("../../infrastructure/logger");
-const {
-  getRole,
-  getServiceRoles,
-  updateRoleEntity,
-} = require("../../infrastructure/data");
+const { getServiceRoles, updateRole } = require("../../infrastructure/data");
 
 const validate = (req, serviceRoles) => {
   const keys = Object.keys(req.body);
@@ -55,7 +51,7 @@ const validate = (req, serviceRoles) => {
   return errors;
 };
 
-const updateRole = async (req, res) => {
+const updateRoleOfService = async (req, res) => {
   const { correlationId } = req;
   const serviceId = req.params.sid.toLowerCase();
   const roleId = req.params.rid.toLowerCase();
@@ -76,10 +72,7 @@ const updateRole = async (req, res) => {
       return res.status(400).send({ errors: validationErrorMessages });
     }
 
-    // We need to do getRole (as opposed to using the role found in getServiceRoles) specifically
-    // as we need the database entity object for the update to happen
-    const existingRoleEntity = await getRole(roleId);
-    await updateRoleEntity(existingRoleEntity, req.body);
+    await updateRole(roleId, req.body);
 
     logger.info(
       `Successfully patched role [${roleId}] for service [${serviceId}]`,
@@ -98,4 +91,4 @@ const updateRole = async (req, res) => {
   }
 };
 
-module.exports = updateRole;
+module.exports = updateRoleOfService;

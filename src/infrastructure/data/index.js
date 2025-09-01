@@ -714,6 +714,22 @@ const updateRoleEntity = async (existingRole, role) => {
   });
 };
 
+/**
+ * Updates a role.  `roleDataToUpdate` can only contain the following keys
+ * ('name', 'code').
+ *
+ * @param {String} id The id of the role that will be updated
+ * @param {Object} roleDataToUpdate An object containing new values.
+ */
+
+const updateRole = async (id, roleDataToUpdate) => {
+  await roles.update(roleDataToUpdate, {
+    where: {
+      id,
+    },
+  });
+};
+
 const getUserServiceRequestEntity = async (id) => {
   const entity = await userServiceRequests.findOne({
     where: {
@@ -792,6 +808,7 @@ module.exports = {
   deletePolicyRoles,
   getServiceRoles,
   getRole,
+  updateRole,
   updateRoleEntity,
   getInvitationService,
   removeInvitationService,
