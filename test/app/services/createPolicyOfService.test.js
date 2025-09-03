@@ -259,4 +259,12 @@ describe("When listing policies of a service", () => {
       errors: ["Roles entries must have id"],
     });
   });
+
+  it("should raise an exception if an exception is raised in addPolicy", async () => {
+    addPolicy.mockImplementation(() => {
+      throw new Error("bad times");
+    });
+
+    await expect(createPolicyOfService(req, res)).rejects.toThrow("bad times");
+  });
 });
