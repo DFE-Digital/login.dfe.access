@@ -680,6 +680,56 @@ const getServiceRoles = async (sid) => {
   return await mapRoleEntities(entities);
 };
 
+/**
+ * Gets a role.
+ *
+ * @param {string} id Id of the role that is being searched for
+ * @returns The database entity representing the role
+ */
+const getRole = async (id) => {
+  const entity = await roles.findOne({
+    where: {
+      Id: {
+        [Op.eq]: id,
+      },
+    },
+    include: ["parent"],
+  });
+  return entity;
+};
+
+/**
+ * Updates a role.  `role` can only contain the following keys
+ * ('name', 'code').
+ *
+ * @param {Model} existingRole A database entity representing an existing role
+ * @param {Object} role An object containing new values.
+ */
+
+const updateRoleEntity = async (existingRole, role) => {
+  const updatedRole = Object.assign(existingRole, role);
+  await existingRole.update({
+    name: updatedRole.name,
+    code: updatedRole.code,
+  });
+};
+
+/**
+ * Updates a role.  `roleDataToUpdate` can only contain the following keys
+ * ('name', 'code').
+ *
+ * @param {String} id The id of the role that will be updated
+ * @param {Object} roleDataToUpdate An object containing new values.
+ */
+
+const updateRole = async (id, roleDataToUpdate) => {
+  await roles.update(roleDataToUpdate, {
+    where: {
+      id,
+    },
+  });
+};
+
 const getUserServiceRequestEntity = async (id) => {
   const entity = await userServiceRequests.findOne({
     where: {
@@ -757,6 +807,9 @@ module.exports = {
   deletePolicyConditions,
   deletePolicyRoles,
   getServiceRoles,
+  getRole,
+  updateRole,
+  updateRoleEntity,
   getInvitationService,
   removeInvitationService,
   getUsersOfServicePagedV2,

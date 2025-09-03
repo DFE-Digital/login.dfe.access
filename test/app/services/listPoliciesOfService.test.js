@@ -65,4 +65,12 @@ describe("When listing policies of a service", () => {
     expect(res.json).toHaveBeenCalledTimes(1);
     expect(res.json).toHaveBeenCalledWith(policies);
   });
+
+  it("should raise an exception if an exception is raised in getPoliciesForService", async () => {
+    getPoliciesForService.mockImplementation(() => {
+      throw new Error("bad times");
+    });
+
+    await expect(listPoliciesOfService(req, res)).rejects.toThrow("bad times");
+  });
 });

@@ -6,6 +6,7 @@ const listUsersOfService = require("./listUsersOfService");
 const listUsersOfServiceAtOrganisation = require("./listUsersOfServiceAtOrganisation");
 const listUsersOfServiceWithRoles = require("./listUsersOfServiceWithRoles");
 const listRolesOfService = require("./listRolesOfService");
+const updateRoleOfService = require("./updateRoleOfService");
 const listPoliciesOfService = require("./listPoliciesOfService");
 const createPolicyOfService = require("./createPolicyOfService");
 const getPolicyOfService = require("./getPolicyOfService");
@@ -59,6 +60,8 @@ const buildArea = () => {
     body("actioned_at", "actioned_at must be a date").optional().isISO8601(),
     asyncWrapper(updateServiceRequest),
   );
+
+  router.patch("/:sid/roles/:rid", asyncWrapper(updateRoleOfService));
 
   return router;
 };
