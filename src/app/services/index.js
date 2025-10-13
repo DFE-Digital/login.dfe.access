@@ -9,7 +9,7 @@ const listRolesOfService = require("./listRolesOfService");
 const updateRoleOfService = require("./updateRoleOfService");
 const listPoliciesOfService = require("./listPoliciesOfService");
 const createPolicyOfService = require("./createPolicyOfService");
-const createRolesOfService = require("./createRolesOfService");
+const createRoleOfService = require("./createRoleOfService");
 
 const getPolicyOfService = require("./getPolicyOfService");
 const updatePolicyOfService = require("./updatePolicyOfService");
@@ -42,7 +42,7 @@ const buildArea = () => {
     asyncWrapper(listUsersOfServiceAtOrganisation),
   );
   router.get("/:sid/roles", asyncWrapper(listRolesOfService));
-  router.post("/:sid/roles", asyncWrapper(createRolesOfService));
+  router.post("/:sid/roles", asyncWrapper(createRoleOfService));
 
   router.get("/:sid/policies", asyncWrapper(listPoliciesOfService));
   router.get("/v2/:sid/policies", asyncWrapper(pageOfPoliciesForService));
