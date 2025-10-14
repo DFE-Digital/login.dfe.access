@@ -33,6 +33,12 @@ const createServiceRole = async (sid, roleName, roleCode) => {
       service_id: {
         [Op.eq]: sid,
       },
+      name: {
+        [Op.eq]: roleName,
+      },
+      code: {
+        [Op.eq]: roleCode,
+      },
     },
   });
   if (!existing) {
