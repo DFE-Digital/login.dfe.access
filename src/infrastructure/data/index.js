@@ -27,10 +27,9 @@ const {
 } = require("./mappers");
 
 const createServiceRole = async (sid, roleName, roleCode) => {
-  console.log("REACHED: createServiceRole");
-  const existing = await userServices.findOne({
+  const existing = await roles.findOne({
     where: {
-      service_id: {
+      applicationId: {
         [Op.eq]: sid,
       },
       name: {
