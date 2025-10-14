@@ -27,6 +27,7 @@ const {
 } = require("./mappers");
 
 const createServiceRole = async (sid, roleName, roleCode) => {
+  console.log("REACHED: createServiceRole");
   const existing = await userServices.findOne({
     where: {
       service_id: {
@@ -40,6 +41,7 @@ const createServiceRole = async (sid, roleName, roleCode) => {
       id,
       name: roleName,
       applicationId: sid,
+      status: 1,
       code: roleCode,
       numericId: Sequelize.literal("NEXT VALUE FOR role_numeric_id_sequence"),
     });
