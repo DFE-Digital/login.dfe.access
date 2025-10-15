@@ -26,11 +26,11 @@ const {
   mapUserServiceRequests,
 } = require("./mappers");
 
-const createServiceRole = async (sid, roleName, roleCode) => {
+const createServiceRole = async (appId, roleName, roleCode) => {
   const existing = await roles.findOne({
     where: {
       applicationId: {
-        [Op.eq]: sid,
+        [Op.eq]: appId,
       },
       name: {
         [Op.eq]: roleName,
@@ -45,14 +45,14 @@ const createServiceRole = async (sid, roleName, roleCode) => {
     const newRole = await roles.create({
       id,
       name: roleName,
-      applicationId: sid,
+      applicationId: appId,
       status: 1,
       code: roleCode,
       numericId: Sequelize.literal("NEXT VALUE FOR role_numeric_id_sequence"),
     });
     return newRole.dataValues;
   }
-  return existing.id;
+  return existing.dataValues;
 };
 
 const getUserServices = async (uid) => {
