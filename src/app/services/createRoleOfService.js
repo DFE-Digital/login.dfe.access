@@ -1,16 +1,15 @@
 const { createServiceRole } = require("../../infrastructure/data");
 
 const createRoleOfService = async (req, res) => {
-  const { sid, roleName, roleCode } = req.body;
+  const { appId, roleName, roleCode } = req.body;
 
-  if (!sid || !roleName || !roleCode) {
+  if (!appId || !roleName || !roleCode) {
     return res
       .status(400)
-      .json({ error: "sid, roleName, and roleCode are required" });
+      .json({ error: "Application id, role name, and role code are required" });
   }
-
   try {
-    const newRole = await createServiceRole(sid, roleName, roleCode);
+    const newRole = await createServiceRole(appId, roleName, roleCode);
     return res.status(201).json(newRole);
   } catch (error) {
     console.error("Error creating service role:", error);
