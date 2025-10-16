@@ -1,4 +1,5 @@
 const { createServiceRole } = require("../../infrastructure/data");
+const logger = require("../../infrastructure/logger");
 
 const createRoleOfService = async (req, res) => {
   const { appId, roleName, roleCode } = req.body;
@@ -6,14 +7,15 @@ const createRoleOfService = async (req, res) => {
   if (!appId || !roleName || !roleCode) {
     return res
       .status(400)
-      .json({ error: "Application id, role name, and role code are required" });
+      .send({ error: "Application id, role name, and role code are required" });
   }
   try {
     const newRole = await createServiceRole(appId, roleName, roleCode);
-    return res.status(201).json(newRole);
+    return res.status(201).send(newRole);
   } catch (error) {
-    console.error("Error creating service role:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    logger.error(`Error creating service role for: ${appId}`, { error });
+    // return res.status(500).send({ error: {...error} });
+    throw error;
   }
 };
 

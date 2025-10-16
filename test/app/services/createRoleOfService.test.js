@@ -4,14 +4,11 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 jest.mock("./../../../src/infrastructure/data", () => ({
   createServiceRole: jest.fn(),
 }));
-jest.mock("uuid");
 
 const { mockRequest, mockResponse } = require("./../../utils");
 const { createServiceRole } = require("./../../../src/infrastructure/data");
-const uuid = require("uuid");
 const createRoleOfService = require("./../../../src/app/services/createRoleOfService");
 
-const sid = "service1";
 const res = mockResponse();
 
 describe("When creating a role of a service", () => {
@@ -41,14 +38,47 @@ describe("When creating a role of a service", () => {
     expect(res.status).toHaveBeenCalledWith(201);
   });
 
-  it("should return 400 if name is not specified", async () => {
+  it("should return 400 if appId is not specified", async () => {
+    req.body.appId = undefined;
+
+    await createRoleOfService(req, res);
+
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
+      error: "Application id, role name, and role code are required",
+    });
+  });
+  it("should return 400 if roleName is not specified", async () => {
     req.body.roleName = undefined;
 
     await createRoleOfService(req, res);
 
     expect(res.status).toHaveBeenCalledTimes(1);
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({
+    expect(res.send).toHaveBeenCalledWith({
+      error: "Application id, role name, and role code are required",
+    });
+  });
+  it("should return 400 if roleCode is not specified", async () => {
+    req.body.roleCode = undefined;
+
+    await createRoleOfService(req, res);
+
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
+      error: "Application id, role name, and role code are required",
+    });
+  });
+  it("should return 400 if roleCode is not specified", async () => {
+    req.body.roleCode = undefined;
+
+    await createRoleOfService(req, res);
+
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       error: "Application id, role name, and role code are required",
     });
   });
