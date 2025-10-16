@@ -71,15 +71,15 @@ describe("When creating a role of a service", () => {
       error: "Application id, role name, and role code are required",
     });
   });
-  it("should return 400 if roleCode is not specified", async () => {
-    req.body.roleCode = undefined;
+  it("should return 500 if createServiceRole throws", async () => {
+    const error = new Error("Database error");
+    createServiceRole.mockRejectedValue(error);
 
     await createRoleOfService(req, res);
 
-    expect(res.status).toHaveBeenCalledTimes(1);
-    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({
-      error: "Application id, role name, and role code are required",
+      error: "Failed to create service role",
     });
   });
 });
