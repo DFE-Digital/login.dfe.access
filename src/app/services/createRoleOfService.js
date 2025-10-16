@@ -14,8 +14,7 @@ const createRoleOfService = async (req, res) => {
     return res.status(201).send(newRole);
   } catch (error) {
     logger.error(`Error creating service role for: ${appId}`, { error });
-    // return res.status(500).send({ error: {...error} });
-    throw error;
+    return res.status(500).send({ error: "Failed to create service role" });
   }
 };
 
