@@ -50,9 +50,15 @@ const createServiceRole = async (appId, roleName, roleCode) => {
       code: roleCode,
       numericId: Sequelize.literal("NEXT VALUE FOR role_numeric_id_sequence"),
     });
-    return newRole.dataValues;
+    return {
+      role: newRole.dataValues,
+      statusCode: 201,
+    };
   }
-  return existing.dataValues;
+  return {
+    role: existing.dataValues,
+    statusCode: 200,
+  };
 };
 
 const getUserServices = async (uid) => {
