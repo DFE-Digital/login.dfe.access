@@ -51,16 +51,17 @@ describe("When creating a role of a service", () => {
     expect(res.send).toHaveBeenCalledWith(mockRole.role);
   });
 
-  it("should return 200 if the role already exists", async () => {
+  it("should return 409 if the role already exists", async () => {
     const mockExisting = {
       role: { id: "existing", name: "test role" },
-      statusCode: 200,
+      statusCode: 409,
     };
     createServiceRole.mockResolvedValue(mockExisting);
+    validate.mockReturnValue(true);
 
     await createRoleOfService(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.status).toHaveBeenCalledWith(409);
     expect(res.send).toHaveBeenCalledWith(mockExisting.role);
   });
 
