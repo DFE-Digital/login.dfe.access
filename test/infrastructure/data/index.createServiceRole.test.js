@@ -21,7 +21,7 @@ describe("When creating a manage service role", () => {
     uuid.v4.mockReset().mockReturnValue("new-role-uuid");
   });
 
-  it("should return an existing role and statusCode 200 if the role already exists", async () => {
+  it("should return an existing role and statusCode 409 if the role already exists", async () => {
     const existingRole = {
       dataValues: {
         id: "existing-id",
@@ -36,20 +36,18 @@ describe("When creating a manage service role", () => {
 
     expect(actual).toEqual({
       role: existingRole.dataValues,
-      statusCode: 200,
+      statusCode: 409,
     });
     expect(repository.roles.findOne).toHaveBeenCalledTimes(1);
     expect(repository.roles.findOne.mock.calls[0][0]).toMatchObject({
       where: {
-        applicationId: { [Op.eq]: appId },
-        name: { [Op.eq]: roleName },
         code: { [Op.eq]: roleCode },
       },
     });
     expect(repository.roles.create).not.toHaveBeenCalled();
   });
 
-  it("and role does not exist then it should create new role and return statusCode 201", async () => {
+  it("should create a new role and return statusCode 201 if the role does not already exist", async () => {
     repository.roles.findOne.mockReturnValue(undefined);
     const createdRole = {
       dataValues: {

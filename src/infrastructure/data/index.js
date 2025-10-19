@@ -26,21 +26,20 @@ const {
   mapUserServiceRequests,
 } = require("./mappers");
 
-const createServiceRole = async (appId, roleName, roleCode) => {
-  const existing = await roles.findOne({
+const getServiceRole = async (roleCode) => {
+  const serviceRole = await roles.findOne({
     where: {
-      applicationId: {
-        [Op.eq]: appId,
-      },
-      name: {
-        [Op.eq]: roleName,
-      },
       code: {
         [Op.eq]: roleCode,
       },
     },
   });
-  if (!existing) {
+  return serviceRole;
+};
+
+const createServiceRole = async (appId, roleName, roleCode) => {
+  const roleExists = await getServiceRole(roleCode);
+  if (!roleExists) {
     const id = uuid.v4();
     const newRole = await roles.create({
       id,
@@ -56,8 +55,8 @@ const createServiceRole = async (appId, roleName, roleCode) => {
     };
   }
   return {
-    role: existing.dataValues,
-    statusCode: 200,
+    role: roleExists.dataValues,
+    statusCode: 409,
   };
 };
 
@@ -808,6 +807,7 @@ const updateUserServiceRequest = async (existingRequest, request) => {
 };
 
 module.exports = {
+  getServiceRole,
   createServiceRole,
   getUserServices,
   getUserService,
