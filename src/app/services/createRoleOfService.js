@@ -12,7 +12,7 @@ const createRoleOfService = async (req, res) => {
   }
 
   if (!validate(appId)) {
-    return res.status(400).send({ error: "Invalid application id format" });
+    return res.status(400).send({ error: "Application ID must be a uuid" });
   }
 
   if (roleName.length > 125) {
