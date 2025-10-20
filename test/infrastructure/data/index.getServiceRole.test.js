@@ -7,6 +7,7 @@ const { Op } = require("sequelize");
 
 const { getServiceRole } = require("./../../../src/infrastructure/data");
 
+const appId = "1234";
 const roleCode = "TEST_ROLE_CODE";
 
 describe("When getting a service role from repository", () => {
@@ -16,18 +17,20 @@ describe("When getting a service role from repository", () => {
 
   it("should return the existing role if found", async () => {
     const mockRole = {
-      id: "1234",
+      id: "role-1",
       name: "test role",
       code: roleCode,
-      dataValues: { id: "1234", name: "test role", code: roleCode },
+      applicationId: appId,
+      dataValues: { id: "role-1", name: "test role", code: roleCode },
     };
     repository.roles.findOne.mockResolvedValue(mockRole);
 
-    const actual = await getServiceRole(roleCode);
+    const actual = await getServiceRole(appId, roleCode);
 
     expect(repository.roles.findOne).toHaveBeenCalledTimes(1);
     expect(repository.roles.findOne.mock.calls[0][0]).toMatchObject({
       where: {
+        applicationId: { [Op.eq]: appId },
         code: { [Op.eq]: roleCode },
       },
     });
@@ -37,11 +40,12 @@ describe("When getting a service role from repository", () => {
   it("should return undefined if role not found", async () => {
     repository.roles.findOne.mockResolvedValue(undefined);
 
-    const actual = await getServiceRole(roleCode);
+    const actual = await getServiceRole(appId, roleCode);
 
     expect(repository.roles.findOne).toHaveBeenCalledTimes(1);
     expect(repository.roles.findOne).toHaveBeenCalledWith({
       where: {
+        applicationId: { [Op.eq]: appId },
         code: { [Op.eq]: roleCode },
       },
     });

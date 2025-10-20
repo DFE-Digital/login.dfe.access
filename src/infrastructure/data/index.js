@@ -26,9 +26,12 @@ const {
   mapUserServiceRequests,
 } = require("./mappers");
 
-const getServiceRole = async (roleCode) => {
+const getServiceRole = async (appId, roleCode) => {
   const serviceRole = await roles.findOne({
     where: {
+      applicationId: {
+        [Op.eq]: appId,
+      },
       code: {
         [Op.eq]: roleCode,
       },
