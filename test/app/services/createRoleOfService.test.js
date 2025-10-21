@@ -106,7 +106,7 @@ describe("When creating a role of a service", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith({
-      error: "Invalid application id format",
+      error: "Application ID must be a uuid",
     });
   });
 
