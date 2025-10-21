@@ -41,7 +41,7 @@ const getServiceRole = async (appId, roleCode) => {
 };
 
 const createServiceRole = async (appId, roleName, roleCode) => {
-  const roleExists = await getServiceRole(roleCode);
+  const roleExists = await getServiceRole(appId, roleCode);
   if (!roleExists) {
     const id = uuid.v4();
     const newRole = await roles.create({
