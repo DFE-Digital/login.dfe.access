@@ -55,15 +55,25 @@ const validateRequest = (req) => {
   } else if (model.roles && model.roles.length === 0) {
     model.errors.push("Roles must have at least one entry");
   } else if (model.roles) {
-    const entryErrors = [];
-    model.roles.forEach((role) => {
+    model.roles = model.roles.map((role) => {
       if (!role.id) {
-        entryErrors.push("Roles entries must have id");
+        const newId = uuid.v4();
+        logger.info(
+          `Role in ${model.name} policy for ${model.applicationId} service did not have an id. Assigned new id: ${newId}`,
+        );
+        return { ...role, id: newId };
       }
+      return role;
     });
-    if (entryErrors) {
-      model.errors.push(...uniq(entryErrors));
-    }
+    // const entryErrors = [];
+    // model.roles.forEach((role) => {
+    //   if (!role.id) {
+    //     entryErrors.push("Roles entries must have id");
+    //   }
+    // });
+    // if (entryErrors) {
+    //   model.errors.push(...uniq(entryErrors));
+    // }
   }
 
   return model;
