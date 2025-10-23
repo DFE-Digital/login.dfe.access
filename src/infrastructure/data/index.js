@@ -26,6 +26,43 @@ const {
   mapUserServiceRequests,
 } = require("./mappers");
 
+const getServiceRole = async (appId, roleCode) => {
+  const serviceRole = await roles.findOne({
+    where: {
+      applicationId: {
+        [Op.eq]: appId,
+      },
+      code: {
+        [Op.eq]: roleCode,
+      },
+    },
+  });
+  return serviceRole;
+};
+
+const createServiceRole = async (appId, roleName, roleCode) => {
+  const roleExists = await getServiceRole(appId, roleCode);
+  if (!roleExists) {
+    const id = uuid.v4();
+    const newRole = await roles.create({
+      id,
+      name: roleName,
+      applicationId: appId,
+      status: 1,
+      code: roleCode,
+      numericId: Sequelize.literal("NEXT VALUE FOR role_numeric_id_sequence"),
+    });
+    return {
+      role: newRole.dataValues,
+      statusCode: 201,
+    };
+  }
+  return {
+    role: roleExists.dataValues,
+    statusCode: 409,
+  };
+};
+
 const getUserServices = async (uid) => {
   const entities = await userServices.findAll({
     where: {
@@ -773,6 +810,8 @@ const updateUserServiceRequest = async (existingRequest, request) => {
 };
 
 module.exports = {
+  getServiceRole,
+  createServiceRole,
   getUserServices,
   getUserService,
   addUserService,
