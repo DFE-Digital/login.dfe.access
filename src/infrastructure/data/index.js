@@ -63,6 +63,23 @@ const createServiceRole = async (appId, roleName, roleCode) => {
   };
 };
 
+const deleteServiceRole = async ({ rid, appId, roleName, roleCode }) => {
+  // need policy id and role id?
+  await roles.destroy({
+    where: {
+      name: {
+        [Op.eq]: roleName,
+      },
+      code: {
+        [Op.eq]: roleCode,
+      },
+      applicationId: {
+        [Op.eq]: appId,
+      },
+    },
+  });
+};
+
 const getUserServices = async (uid) => {
   const entities = await userServices.findAll({
     where: {
@@ -812,6 +829,7 @@ const updateUserServiceRequest = async (existingRequest, request) => {
 module.exports = {
   getServiceRole,
   createServiceRole,
+  deleteServiceRole,
   getUserServices,
   getUserService,
   addUserService,
