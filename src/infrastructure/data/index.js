@@ -63,18 +63,11 @@ const createServiceRole = async (appId, roleName, roleCode) => {
   };
 };
 
-const deleteServiceRole = async ({ rid, appId, roleName, roleCode }) => {
-  // need policy id and role id?
+const deleteServiceRole = async (rid) => {
   await roles.destroy({
     where: {
-      name: {
-        [Op.eq]: roleName,
-      },
-      code: {
-        [Op.eq]: roleCode,
-      },
-      applicationId: {
-        [Op.eq]: appId,
+      id: {
+        [Op.eq]: rid,
       },
     },
   });
