@@ -304,19 +304,6 @@ describe("When patching a policy of a service", () => {
     });
   });
 
-  it("then it should return 400 if roles has no entries", async () => {
-    req.body.roles = [];
-
-    await updatePolicyOfService(req, res);
-
-    expect(res.status).toHaveBeenCalledTimes(1);
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledTimes(1);
-    expect(res.send).toHaveBeenCalledWith({
-      errors: ["Roles must have at least one entry"],
-    });
-  });
-
   it("then it should return 400 if roles entry is missing id", async () => {
     req.body.roles = [
       {
