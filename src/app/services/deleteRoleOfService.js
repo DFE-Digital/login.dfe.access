@@ -16,7 +16,7 @@ const deleteRoleOfService = async (req, res) => {
       return res.status(404).send();
     }
 
-    await deleteServiceRole(sid, rid);
+    await deleteServiceRole(rid);
 
     return res.status(204).send();
   } catch (e) {

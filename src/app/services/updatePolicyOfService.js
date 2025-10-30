@@ -52,8 +52,6 @@ const validateRequest = (req) => {
 
   if (model.roles && !(model.roles instanceof Array)) {
     model.errors.push("Roles must be an array");
-  } else if (model.roles && model.roles.length === 0) {
-    model.errors.push("Roles must have at least one entry");
   } else if (model.roles) {
     const entryErrors = [];
     model.roles.forEach((role) => {
