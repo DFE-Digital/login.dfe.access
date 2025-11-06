@@ -5,6 +5,7 @@ const {
 } = require("../../infrastructure/data");
 
 const deleteRoleOfService = async (req, res) => {
+  console.log("deleteRoleOfService deleteRoleOfService deleteRoleOfService");
   const { correlationId } = req;
   const { sid, rid } = req.params;
 
@@ -16,7 +17,7 @@ const deleteRoleOfService = async (req, res) => {
       return res.status(404).send();
     }
 
-    await deleteServiceRole(rid);
+    await deleteServiceRole(rid, sid);
 
     return res.status(204).send();
   } catch (e) {

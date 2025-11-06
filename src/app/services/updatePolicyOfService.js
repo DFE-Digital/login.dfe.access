@@ -110,6 +110,8 @@ const updateRoles = async (model) => {
 };
 
 const updatePolicyOfService = async (req, res) => {
+  console.log("updatePolicyOfService: ", req.body);
+  console.log("updatePolicyOfService: ", req.params);
   const { correlationId } = req;
   const model = validateRequest(req);
 

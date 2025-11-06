@@ -63,7 +63,55 @@ const createServiceRole = async (appId, roleName, roleCode) => {
   };
 };
 
-const deleteServiceRole = async (rid) => {
+const deleteUserServiceRolesByRoleId = async (roleId) => {
+  console.log("HIT deleteUserServiceRolesByRoleId: roleId:", roleId);
+  await userServiceRoles.destroy({
+    where: {
+      role_id: {
+        [Op.eq]: roleId,
+      },
+    },
+  });
+};
+
+const userServicesCleanUp = async (serviceId) => {
+  console.log("HIT userServicesCleanUp: serviceId:", serviceId);
+  // Remove user_services records where users no longer have any roles
+  const leftoverUserServiceIds = await connection.query(
+    `SELECT us.id 
+     FROM user_services us 
+     WHERE us.service_id = :serviceId 
+     AND NOT EXISTS (
+       SELECT 1 FROM user_service_roles usr
+       WHERE usr.user_id = us.user_id
+       AND usr.organisation_id = us.organisation_id
+       AND usr.service_id = us.service_id
+       AND usr.service_id = :serviceId
+     )`,
+    {
+      type: QueryTypes.SELECT,
+      replacements: { serviceId },
+    },
+  );
+
+  if (leftoverUserServiceIds.length > 0) {
+    console.log("DELETING leftoverUserServiceIds", leftoverUserServiceIds);
+    const idsToDelete = leftoverUserServiceIds.map((row) => row.id);
+    await userServices.destroy({
+      where: {
+        id: {
+          [Op.in]: idsToDelete,
+        },
+      },
+    });
+  }
+};
+
+const deleteServiceRole = async (rid, sid) => {
+  console.log("HIT deleteServiceRole");
+  await deleteUserServiceRolesByRoleId(rid);
+  await userServicesCleanUp(sid);
+  console.log("PASSED deleteUserServiceRolesByRoleId and userServicesCleanUp");
   await roles.destroy({
     where: {
       id: {
@@ -822,6 +870,8 @@ const updateUserServiceRequest = async (existingRequest, request) => {
 module.exports = {
   getServiceRole,
   createServiceRole,
+  deleteUserServiceRolesByRoleId,
+  userServicesCleanUp,
   deleteServiceRole,
   getUserServices,
   getUserService,
