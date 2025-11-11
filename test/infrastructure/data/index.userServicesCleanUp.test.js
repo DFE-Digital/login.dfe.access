@@ -14,7 +14,7 @@ describe("When cleaning up user services for a service id", () => {
   });
 
   it("should not delete anything if there are no leftover user services", async () => {
-    repository.connection.query.mockResolvedValue([]); // No results
+    repository.connection.query.mockResolvedValue([]);
 
     await userServicesCleanUp(sid);
 
