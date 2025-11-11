@@ -26,11 +26,11 @@ const {
   mapUserServiceRequests,
 } = require("./mappers");
 
-const getServiceRole = async (appId, roleCode) => {
+const getServiceRole = async (sid, roleCode) => {
   const serviceRole = await roles.findOne({
     where: {
       applicationId: {
-        [Op.eq]: appId,
+        [Op.eq]: sid,
       },
       code: {
         [Op.eq]: roleCode,
@@ -40,14 +40,14 @@ const getServiceRole = async (appId, roleCode) => {
   return serviceRole;
 };
 
-const createServiceRole = async (appId, roleName, roleCode) => {
-  const roleExists = await getServiceRole(appId, roleCode);
+const createServiceRole = async (sid, roleName, roleCode) => {
+  const roleExists = await getServiceRole(sid, roleCode);
   if (!roleExists) {
     const id = uuid.v4();
     const newRole = await roles.create({
       id,
       name: roleName,
-      applicationId: appId,
+      applicationId: sid,
       status: 1,
       code: roleCode,
       numericId: Sequelize.literal("NEXT VALUE FOR role_numeric_id_sequence"),
@@ -63,39 +63,36 @@ const createServiceRole = async (appId, roleName, roleCode) => {
   };
 };
 
-const deleteUserServiceRolesByRoleId = async (roleId) => {
-  console.log("HIT deleteUserServiceRolesByRoleId: roleId:", roleId);
+const deleteUserServiceRolesByRoleId = async (rid) => {
   await userServiceRoles.destroy({
     where: {
       role_id: {
-        [Op.eq]: roleId,
+        [Op.eq]: rid,
       },
     },
   });
 };
 
-const userServicesCleanUp = async (serviceId) => {
-  console.log("HIT userServicesCleanUp: serviceId:", serviceId);
-  // Remove user_services records where users no longer have any roles
+const userServicesCleanUp = async (sid) => {
+  // Remove user_services records when user no longer has any roles
   const leftoverUserServiceIds = await connection.query(
     `SELECT us.id 
      FROM user_services us 
-     WHERE us.service_id = :serviceId 
+     WHERE us.service_id = :sid 
      AND NOT EXISTS (
        SELECT 1 FROM user_service_roles usr
        WHERE usr.user_id = us.user_id
        AND usr.organisation_id = us.organisation_id
        AND usr.service_id = us.service_id
-       AND usr.service_id = :serviceId
+       AND usr.service_id = :sid
      )`,
     {
       type: QueryTypes.SELECT,
-      replacements: { serviceId },
+      replacements: { sid },
     },
   );
 
   if (leftoverUserServiceIds.length > 0) {
-    console.log("DELETING leftoverUserServiceIds", leftoverUserServiceIds);
     const idsToDelete = leftoverUserServiceIds.map((row) => row.id);
     await userServices.destroy({
       where: {
@@ -107,11 +104,9 @@ const userServicesCleanUp = async (serviceId) => {
   }
 };
 
-const deleteServiceRole = async (rid, sid) => {
-  console.log("HIT deleteServiceRole");
+const deleteServiceRole = async (sid, rid) => {
   await deleteUserServiceRolesByRoleId(rid);
   await userServicesCleanUp(sid);
-  console.log("PASSED deleteUserServiceRolesByRoleId and userServicesCleanUp");
   await roles.destroy({
     where: {
       id: {
