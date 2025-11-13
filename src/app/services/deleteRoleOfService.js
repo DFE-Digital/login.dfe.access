@@ -7,7 +7,6 @@ const {
 const deleteRoleOfService = async (req, res) => {
   const { correlationId } = req;
   const { sid, rid } = req.params;
-  // const code = req.query?.roleCode;
 
   try {
     const existingRole = await getServiceRoleById(sid, rid);
