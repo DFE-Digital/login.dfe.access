@@ -1,16 +1,16 @@
 const logger = require("../../infrastructure/logger");
 const {
-  getServiceRole,
   deleteServiceRole,
+  getServiceRoleById,
 } = require("../../infrastructure/data");
 
 const deleteRoleOfService = async (req, res) => {
   const { correlationId } = req;
   const { sid, rid } = req.params;
-  const code = req.query?.roleCode;
+  // const code = req.query?.roleCode;
 
   try {
-    const existingRole = await getServiceRole(sid, code);
+    const existingRole = await getServiceRoleById(sid, rid);
 
     if (!existingRole) {
       logger.info(
