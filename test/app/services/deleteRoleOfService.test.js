@@ -17,7 +17,6 @@ const deleteRoleOfService = require("./../../../src/app/services/deleteRoleOfSer
 const res = mockResponse();
 const sid = "service-123";
 const rid = "role-abc";
-// const code = "code-abc";
 const correlationId = "correlation-001";
 
 describe("When deleting a role of a service", () => {
@@ -37,7 +36,6 @@ describe("When deleting a role of a service", () => {
   it("should return 204 if the role exists and is deleted successfully", async () => {
     const existingRole = { id: rid, name: "Test Role" };
     getServiceRoleById.mockResolvedValue(existingRole);
-    // req.query = { roleCode: code };
 
     await deleteRoleOfService(req, res);
 
