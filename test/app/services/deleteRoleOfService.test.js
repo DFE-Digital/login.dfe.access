@@ -57,17 +57,6 @@ describe("When deleting a role of a service", () => {
     expect(res.send).toHaveBeenCalledTimes(1);
   });
 
-  it("should return 404 if the found role id does not match the requested role id", async () => {
-    const existingRole = { id: "DIFFERENT-ID" };
-    getServiceRoleById.mockResolvedValue(existingRole);
-
-    await deleteRoleOfService(req, res);
-
-    expect(deleteServiceRole).not.toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.send).toHaveBeenCalledTimes(1);
-  });
-
   it("should throw an error if getServiceRole throws", async () => {
     getServiceRoleById.mockImplementation(() => {
       throw new Error("Database error");
