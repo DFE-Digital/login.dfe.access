@@ -20,15 +20,6 @@ const deleteRoleOfService = async (req, res) => {
       );
       return res.status(404).send();
     }
-    if (existingRole && existingRole.id.toLowerCase() !== rid.toLowerCase()) {
-      logger.info(
-        `Role deletion failed. Role id mismatch: [Request: ${rid.toLowerCase()}] - [Existing: ${existingRole.id.toLowerCase()}]`,
-        {
-          correlationId,
-        },
-      );
-      return res.status(404).send();
-    }
 
     logger.info(`Deleting role ${rid} for service ${sid}`, { correlationId });
     await deleteServiceRole(sid, rid);
