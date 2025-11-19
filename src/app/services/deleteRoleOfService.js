@@ -1,22 +1,28 @@
 const logger = require("../../infrastructure/logger");
 const {
-  getServiceRole,
   deleteServiceRole,
+  getServiceRoleById,
 } = require("../../infrastructure/data");
 
 const deleteRoleOfService = async (req, res) => {
   const { correlationId } = req;
   const { sid, rid } = req.params;
 
-  logger.info(`Deleting role ${rid} for service ${sid}`, { correlationId });
-
   try {
-    const existingRole = await getServiceRole(sid, rid);
-    if (!existingRole || existingRole.id.toLowerCase() !== rid.toLowerCase()) {
+    const existingRole = await getServiceRoleById(sid, rid);
+
+    if (!existingRole) {
+      logger.info(
+        `Could not find requested role to be deleted for service ${sid}`,
+        {
+          correlationId,
+        },
+      );
       return res.status(404).send();
     }
 
-    await deleteServiceRole(rid);
+    logger.info(`Deleting role ${rid} for service ${sid}`, { correlationId });
+    await deleteServiceRole(sid, rid);
 
     return res.status(204).send();
   } catch (e) {

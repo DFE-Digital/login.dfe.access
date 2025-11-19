@@ -3,13 +3,13 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 );
 
 jest.mock("./../../../src/infrastructure/data", () => ({
-  getServiceRole: jest.fn(),
+  getServiceRoleById: jest.fn(),
   deleteServiceRole: jest.fn(),
 }));
 
 const { mockRequest, mockResponse } = require("./../../utils");
 const {
-  getServiceRole,
+  getServiceRoleById,
   deleteServiceRole,
 } = require("./../../../src/infrastructure/data");
 const deleteRoleOfService = require("./../../../src/app/services/deleteRoleOfService");
@@ -23,7 +23,7 @@ describe("When deleting a role of a service", () => {
   let req;
 
   beforeEach(() => {
-    getServiceRole.mockReset();
+    getServiceRoleById.mockReset();
     deleteServiceRole.mockReset();
     res.mockResetAll();
 
@@ -35,31 +35,20 @@ describe("When deleting a role of a service", () => {
 
   it("should return 204 if the role exists and is deleted successfully", async () => {
     const existingRole = { id: rid, name: "Test Role" };
-    getServiceRole.mockResolvedValue(existingRole);
+    getServiceRoleById.mockResolvedValue(existingRole);
 
     await deleteRoleOfService(req, res);
 
-    expect(getServiceRole).toHaveBeenCalledTimes(1);
-    expect(getServiceRole).toHaveBeenCalledWith(sid, rid);
+    expect(getServiceRoleById).toHaveBeenCalledTimes(1);
+    expect(getServiceRoleById).toHaveBeenCalledWith(sid, rid);
     expect(deleteServiceRole).toHaveBeenCalledTimes(1);
-    expect(deleteServiceRole).toHaveBeenCalledWith(rid);
+    expect(deleteServiceRole).toHaveBeenCalledWith(sid, rid);
     expect(res.status).toHaveBeenCalledWith(204);
     expect(res.send).toHaveBeenCalledTimes(1);
   });
 
   it("should return 404 if the role does not exist", async () => {
-    getServiceRole.mockResolvedValue(undefined);
-
-    await deleteRoleOfService(req, res);
-
-    expect(deleteServiceRole).not.toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.send).toHaveBeenCalledTimes(1);
-  });
-
-  it("should return 404 if the found role id does not match the requested role id", async () => {
-    const existingRole = { id: "DIFFERENT-ID" };
-    getServiceRole.mockResolvedValue(existingRole);
+    getServiceRoleById.mockResolvedValue(undefined);
 
     await deleteRoleOfService(req, res);
 
@@ -69,7 +58,7 @@ describe("When deleting a role of a service", () => {
   });
 
   it("should throw an error if getServiceRole throws", async () => {
-    getServiceRole.mockImplementation(() => {
+    getServiceRoleById.mockImplementation(() => {
       throw new Error("Database error");
     });
 
@@ -80,7 +69,7 @@ describe("When deleting a role of a service", () => {
 
   it("should throw an error if deleteServiceRole throws", async () => {
     const existingRole = { id: rid, name: "Test Role" };
-    getServiceRole.mockResolvedValue(existingRole);
+    getServiceRoleById.mockResolvedValue(existingRole);
     deleteServiceRole.mockImplementation(() => {
       throw new Error("Failed to delete role");
     });

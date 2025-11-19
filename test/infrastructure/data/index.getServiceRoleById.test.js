@@ -2,13 +2,13 @@ jest.mock("./../../../src/infrastructure/data/organisationsRepository", () =>
   require("./mockOrganisationsRepository").mockRepository(),
 );
 
-const repository = require("./../../../src/infrastructure/data/organisationsRepository");
+const repository = require("../../../src/infrastructure/data/organisationsRepository");
 const { Op } = require("sequelize");
 
-const { getServiceRole } = require("./../../../src/infrastructure/data");
+const { getServiceRoleById } = require("../../../src/infrastructure/data");
 
 const appId = "1234";
-const roleCode = "TEST_ROLE_CODE";
+const roleId = "role-1";
 
 describe("When getting a service role from repository", () => {
   beforeEach(() => {
@@ -17,21 +17,21 @@ describe("When getting a service role from repository", () => {
 
   it("should return the existing role if found", async () => {
     const mockRole = {
-      id: "role-1",
+      id: roleId,
       name: "test role",
-      code: roleCode,
+      code: "TEST_ROLE_CODE",
       applicationId: appId,
-      dataValues: { id: "role-1", name: "test role", code: roleCode },
+      dataValues: { id: "role-1", name: "test role", code: "TEST_ROLE_CODE" },
     };
     repository.roles.findOne.mockResolvedValue(mockRole);
 
-    const actual = await getServiceRole(appId, roleCode);
+    const actual = await getServiceRoleById(appId, roleId);
 
     expect(repository.roles.findOne).toHaveBeenCalledTimes(1);
     expect(repository.roles.findOne.mock.calls[0][0]).toMatchObject({
       where: {
         applicationId: { [Op.eq]: appId },
-        code: { [Op.eq]: roleCode },
+        id: { [Op.eq]: roleId },
       },
     });
     expect(actual).toBe(mockRole);
@@ -40,13 +40,13 @@ describe("When getting a service role from repository", () => {
   it("should return undefined if role not found", async () => {
     repository.roles.findOne.mockResolvedValue(undefined);
 
-    const actual = await getServiceRole(appId, roleCode);
+    const actual = await getServiceRoleById(appId, roleId);
 
     expect(repository.roles.findOne).toHaveBeenCalledTimes(1);
     expect(repository.roles.findOne).toHaveBeenCalledWith({
       where: {
         applicationId: { [Op.eq]: appId },
-        code: { [Op.eq]: roleCode },
+        id: { [Op.eq]: roleId },
       },
     });
     expect(actual).toBeUndefined();
