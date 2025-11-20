@@ -131,7 +131,7 @@ const userServicesCleanUp = async (sid) => {
 const invitationServicesCleanUp = async (sid) => {
   // Remove invitation_services records when invitation no longer has any roles
   const leftoverInvitationServiceIds = await connection.query(
-    `SELECT ins.id 
+    `SELECT ins.invitation_id, ins.organisation_id, ins.service_id
      FROM invitation_services ins 
      WHERE ins.service_id = :sid 
      AND NOT EXISTS (
@@ -148,14 +148,21 @@ const invitationServicesCleanUp = async (sid) => {
   );
 
   if (leftoverInvitationServiceIds.length > 0) {
-    const idsToDelete = leftoverInvitationServiceIds.map((row) => row.id);
-    await invitationServices.destroy({
-      where: {
-        id: {
-          [Op.in]: idsToDelete,
+    for (const record of leftoverInvitationServiceIds) {
+      await invitationServices.destroy({
+        where: {
+          invitation_id: {
+            [Op.eq]: record.invitation_id,
+          },
+          organisation_id: {
+            [Op.eq]: record.organisation_id,
+          },
+          service_id: {
+            [Op.eq]: record.service_id,
+          },
         },
-      },
-    });
+      });
+    }
   }
 };
 
