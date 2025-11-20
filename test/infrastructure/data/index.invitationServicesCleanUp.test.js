@@ -33,16 +33,51 @@ describe("When cleaning up invitation services", () => {
   });
 
   it("should delete invitation services when there are leftovers with no roles", async () => {
-    const leftoverIds = [{ id: uuid.v4() }, { id: uuid.v4() }];
-    repository.connection.query.mockResolvedValue(leftoverIds);
+    const invitationId1 = uuid.v4();
+    const invitationId2 = uuid.v4();
+    const orgId1 = uuid.v4();
+    const orgId2 = uuid.v4();
+
+    const leftoverRecords = [
+      {
+        invitation_id: invitationId1,
+        organisation_id: orgId1,
+        service_id: sid,
+      },
+      {
+        invitation_id: invitationId2,
+        organisation_id: orgId2,
+        service_id: sid,
+      },
+    ];
+    repository.connection.query.mockResolvedValue(leftoverRecords);
 
     await invitationServicesCleanUp(sid);
 
-    expect(repository.invitationServices.destroy).toHaveBeenCalledTimes(1);
+    expect(repository.invitationServices.destroy).toHaveBeenCalledTimes(2);
     expect(repository.invitationServices.destroy).toHaveBeenCalledWith({
       where: {
-        id: {
-          [Op.in]: leftoverIds.map((row) => row.id),
+        invitation_id: {
+          [Op.eq]: invitationId1,
+        },
+        organisation_id: {
+          [Op.eq]: orgId1,
+        },
+        service_id: {
+          [Op.eq]: sid,
+        },
+      },
+    });
+    expect(repository.invitationServices.destroy).toHaveBeenCalledWith({
+      where: {
+        invitation_id: {
+          [Op.eq]: invitationId2,
+        },
+        organisation_id: {
+          [Op.eq]: orgId2,
+        },
+        service_id: {
+          [Op.eq]: sid,
         },
       },
     });
