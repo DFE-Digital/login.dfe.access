@@ -2,7 +2,7 @@ jest.mock("./../../../src/infrastructure/data/organisationsRepository", () =>
   require("./mockOrganisationsRepository").mockRepository(),
 );
 
-const { Op, QueryTypes } = require("sequelize");
+const { QueryTypes } = require("sequelize");
 const repository = require("./../../../src/infrastructure/data/organisationsRepository");
 const uuid = require("uuid");
 
@@ -17,73 +17,36 @@ describe("When cleaning up invitation services", () => {
     repository.mockResetAll();
   });
 
-  it("should query for leftover invitation services with no roles", async () => {
+  it("should DELETE leftover invitation services with no roles", async () => {
     repository.connection.query.mockResolvedValue([]);
 
     await invitationServicesCleanUp(sid);
 
     expect(repository.connection.query).toHaveBeenCalledTimes(1);
     expect(repository.connection.query).toHaveBeenCalledWith(
-      expect.stringContaining("FROM invitation_services ins"),
+      expect.stringContaining("DELETE ins"),
       {
-        type: QueryTypes.SELECT,
+        type: QueryTypes.DELETE,
         replacements: { sid },
       },
     );
   });
 
-  it("should delete invitation services when there are leftovers with no roles", async () => {
-    const invitationId1 = uuid.v4();
-    const invitationId2 = uuid.v4();
-    const orgId1 = uuid.v4();
-    const orgId2 = uuid.v4();
-
-    const leftoverRecords = [
-      {
-        invitation_id: invitationId1,
-        organisation_id: orgId1,
-        service_id: sid,
-      },
-      {
-        invitation_id: invitationId2,
-        organisation_id: orgId2,
-        service_id: sid,
-      },
-    ];
-    repository.connection.query.mockResolvedValue(leftoverRecords);
+  it("should use NOT EXISTS to identify invitation services with no roles", async () => {
+    repository.connection.query.mockResolvedValue([]);
 
     await invitationServicesCleanUp(sid);
 
-    expect(repository.invitationServices.destroy).toHaveBeenCalledTimes(2);
-    expect(repository.invitationServices.destroy).toHaveBeenCalledWith({
-      where: {
-        invitation_id: {
-          [Op.eq]: invitationId1,
-        },
-        organisation_id: {
-          [Op.eq]: orgId1,
-        },
-        service_id: {
-          [Op.eq]: sid,
-        },
-      },
-    });
-    expect(repository.invitationServices.destroy).toHaveBeenCalledWith({
-      where: {
-        invitation_id: {
-          [Op.eq]: invitationId2,
-        },
-        organisation_id: {
-          [Op.eq]: orgId2,
-        },
-        service_id: {
-          [Op.eq]: sid,
-        },
-      },
-    });
+    const queryCall = repository.connection.query.mock.calls[0];
+    const query = queryCall[0];
+
+    expect(query).toContain("FROM invitation_services ins");
+    expect(query).toContain("WHERE ins.service_id = :sid");
+    expect(query).toContain("NOT EXISTS");
+    expect(query).toContain("FROM invitation_service_roles isr");
   });
 
-  it("should not delete invitation services when there are no leftovers", async () => {
+  it("should not call invitationServices.destroy directly", async () => {
     repository.connection.query.mockResolvedValue([]);
 
     await invitationServicesCleanUp(sid);

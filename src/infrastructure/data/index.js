@@ -130,8 +130,8 @@ const userServicesCleanUp = async (sid) => {
 
 const invitationServicesCleanUp = async (sid) => {
   // Remove invitation_services records when invitation no longer has any roles
-  const leftoverInvitationServiceIds = await connection.query(
-    `SELECT ins.invitation_id, ins.organisation_id, ins.service_id
+  await connection.query(
+    `DELETE ins 
      FROM invitation_services ins 
      WHERE ins.service_id = :sid 
      AND NOT EXISTS (
@@ -142,28 +142,10 @@ const invitationServicesCleanUp = async (sid) => {
        AND isr.service_id = :sid
      )`,
     {
-      type: QueryTypes.SELECT,
+      type: QueryTypes.DELETE,
       replacements: { sid },
     },
   );
-
-  if (leftoverInvitationServiceIds.length > 0) {
-    for (const record of leftoverInvitationServiceIds) {
-      await invitationServices.destroy({
-        where: {
-          invitation_id: {
-            [Op.eq]: record.invitation_id,
-          },
-          organisation_id: {
-            [Op.eq]: record.organisation_id,
-          },
-          service_id: {
-            [Op.eq]: record.service_id,
-          },
-        },
-      });
-    }
-  }
 };
 
 const deleteServiceRole = async (sid, rid) => {
