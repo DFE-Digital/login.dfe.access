@@ -63,37 +63,19 @@ describe("When deleting a service role", () => {
     });
   });
 
-  it("should delete invitation services when there are leftovers with no roles", async () => {
-    const invitationId = uuid.v4();
-    const orgId = uuid.v4();
-    const leftoverInvitationServiceRecords = [
-      {
-        invitation_id: invitationId,
-        organisation_id: orgId,
-        service_id: sid,
-      },
-    ];
-
+  it("should call the cleanup query to find leftover invitation services", async () => {
     repository.connection.query
       .mockResolvedValueOnce([])
-      .mockResolvedValueOnce(leftoverInvitationServiceRecords);
+      .mockResolvedValueOnce([]);
 
     await deleteServiceRole(sid, rid);
 
-    expect(repository.invitationServices.destroy).toHaveBeenCalledTimes(1);
-    expect(repository.invitationServices.destroy).toHaveBeenCalledWith({
-      where: {
-        invitation_id: {
-          [Op.eq]: invitationId,
-        },
-        organisation_id: {
-          [Op.eq]: orgId,
-        },
-        service_id: {
-          [Op.eq]: sid,
-        },
-      },
-    });
+    expect(repository.connection.query).toHaveBeenCalledTimes(2);
+
+    const invitationCleanupCall = repository.connection.query.mock.calls[1];
+    expect(invitationCleanupCall[0]).toContain("DELETE ins");
+    expect(invitationCleanupCall[0]).toContain("FROM invitation_services ins");
+    expect(invitationCleanupCall[0]).toContain("WHERE ins.service_id = :sid");
   });
 
   it("should not delete user services when there are no leftovers", async () => {
