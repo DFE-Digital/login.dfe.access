@@ -96,7 +96,6 @@ variables:
     value: "tran,dev,test,pp,pr"
 
 stages:
-
   - ${{ if eq(parameters.existTag, ' ') }}:
       # Code Scans & Build the artifact for deployment
       - stage: scanBuildApp
@@ -108,17 +107,17 @@ stages:
               custRegAuth: $(custRegAuth)
 
           - ${{ if  and(not(parameters.InfrDeploy), eq(variables.buildNotNeeded, 'false')) }}:
-            - template:  pipeline/components/build/buildAppServicesNodeJs.yml@devopsTemplates
-              parameters:
-                applicationName: ${{variables.applicationFullName}}
-                custRegAuth: $(custRegAuth)
-                ContRegServers:
-                  - ${{ if eq(variables.ContRegServerTran, 'true') }}:
-                    - name: '$(platformGlobalIdentifier)$(tranShaCode)$(platformGlobalName)shdcr.azurecr.io'
-                      servCon: $(devServiceConnection)
-                  - name: '$(platformGlobalIdentifier)$(prShaCode)$(platformGlobalName)shdcr.azurecr.io'
-                    servCon: $(prodServiceConnection)
-                nodeVersionSpec: "22.11.0"
+              - template: pipeline/components/build/buildAppServicesNodeJs.yml@devopsTemplates
+                parameters:
+                  applicationName: ${{variables.applicationFullName}}
+                  custRegAuth: $(custRegAuth)
+                  ContRegServers:
+                    - ${{ if eq(variables.ContRegServerTran, 'true') }}:
+                        - name: "$(platformGlobalIdentifier)$(tranShaCode)$(platformGlobalName)shdcr.azurecr.io"
+                          servCon: $(devServiceConnection)
+                    - name: "$(platformGlobalIdentifier)$(prShaCode)$(platformGlobalName)shdcr.azurecr.io"
+                      servCon: $(prodServiceConnection)
+                  nodeVersionSpec: "22.11.0"
 
   - ${{ each location in parameters.location }}:
       - ${{each env in split(variables[location],',') }}:
@@ -129,10 +128,9 @@ stages:
                   ${{ if eq(location,'northeurope') }}:
                     dependsOn:
                       - Deployment_${{env}}_westeurope
-                    condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
                   ${{ else }}:
-                    dependsOn: 
-                    - Deployment_pp_westeurope
+                    dependsOn:
+                      - Deployment_pp_westeurope
                     condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
                 ${{ elseif eq(location,'westeurope') }}:
                   ${{ if eq(parameters.existTag, ' ') }}:
@@ -143,7 +141,6 @@ stages:
                   ${{ if eq(length(parameters.location), 2) }}:
                     dependsOn:
                       - Deployment_${{env}}_westeurope
-                    condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
                   ${{ elseif eq(parameters.existTag, ' ') }}:
                     dependsOn:
                       - scanBuildApp
@@ -172,7 +169,8 @@ stages:
                       gitCheck: ${{parameters.gitCheck}}
                       tier: middle
                       tierPlan: midtier-g2
-                      ipSecurityRestrictionsSubnets: prestier-g1-sn,prestier-g2-sn,prestier-g3-sn,prestier-g4-sn,prestier-g5-sn,
+                      ipSecurityRestrictionsSubnets:
+                        prestier-g1-sn,prestier-g2-sn,prestier-g3-sn,prestier-g4-sn,prestier-g5-sn,
                         midtier-g1-sn,midtier-g2-sn,midtier-g3-sn,backend-g1-sn,backend-g3-sn
                       shaUse: ${{parameters.shaUse}}
                       slotDeploy: ${{parameters.slotDeploy}}
