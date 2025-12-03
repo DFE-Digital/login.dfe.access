@@ -63,6 +63,21 @@ describe("When deleting a service role", () => {
     });
   });
 
+  it("should call the cleanup query to find leftover invitation services", async () => {
+    repository.connection.query
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([]);
+
+    await deleteServiceRole(sid, rid);
+
+    expect(repository.connection.query).toHaveBeenCalledTimes(2);
+
+    const invitationCleanupCall = repository.connection.query.mock.calls[1];
+    expect(invitationCleanupCall[0]).toContain("DELETE ins");
+    expect(invitationCleanupCall[0]).toContain("FROM invitation_services ins");
+    expect(invitationCleanupCall[0]).toContain("WHERE ins.service_id = :sid");
+  });
+
   it("should not delete user services when there are no leftovers", async () => {
     repository.connection.query.mockResolvedValueOnce([]).mockResolvedValue([]);
 

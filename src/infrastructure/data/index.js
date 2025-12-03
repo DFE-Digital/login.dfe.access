@@ -87,6 +87,16 @@ const deleteUserServiceRolesByRoleId = async (rid) => {
   });
 };
 
+const deleteInvitationServiceRolesByRoleId = async (rid) => {
+  await invitationServiceRoles.destroy({
+    where: {
+      role_id: {
+        [Op.eq]: rid,
+      },
+    },
+  });
+};
+
 const userServicesCleanUp = async (sid) => {
   // Remove user_services records when user no longer has any roles
   const leftoverUserServiceIds = await connection.query(
@@ -118,9 +128,32 @@ const userServicesCleanUp = async (sid) => {
   }
 };
 
+const invitationServicesCleanUp = async (sid) => {
+  // Remove invitation_services records when invitation no longer has any roles
+  await connection.query(
+    `DELETE ins 
+     FROM invitation_services ins 
+     WHERE ins.service_id = :sid 
+     AND NOT EXISTS (
+       SELECT 1 FROM invitation_service_roles isr
+       WHERE isr.invitation_id = ins.invitation_id
+       AND isr.organisation_id = ins.organisation_id
+       AND isr.service_id = ins.service_id
+       AND isr.service_id = :sid
+     )`,
+    {
+      type: QueryTypes.DELETE,
+      replacements: { sid },
+    },
+  );
+};
+
 const deleteServiceRole = async (sid, rid) => {
   await deleteUserServiceRolesByRoleId(rid);
   await userServicesCleanUp(sid);
+  await deleteInvitationServiceRolesByRoleId(rid);
+  await invitationServicesCleanUp(sid);
+
   await roles.destroy({
     where: {
       id: {
@@ -881,7 +914,9 @@ module.exports = {
   getServiceRoleByCode,
   createServiceRole,
   deleteUserServiceRolesByRoleId,
+  deleteInvitationServiceRolesByRoleId,
   userServicesCleanUp,
+  invitationServicesCleanUp,
   deleteServiceRole,
   getUserServices,
   getUserService,
