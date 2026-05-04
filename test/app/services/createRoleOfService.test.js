@@ -110,15 +110,15 @@ describe("When creating a role of a service", () => {
     });
   });
 
-  it("should return 400 if roleName exceeds 125 characters", async () => {
-    req.body.roleName = "a".repeat(126);
+  it("should return 400 if roleName exceeds 250 characters", async () => {
+    req.body.roleName = "a".repeat(251);
     validate.mockReturnValue(true);
 
     await createRoleOfService(req, res);
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith({
-      error: "Role name must be 125 characters or less",
+      error: "Role name must be 250 characters or less",
     });
   });
 

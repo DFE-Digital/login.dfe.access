@@ -21,8 +21,8 @@ const validate = (req, serviceRoles) => {
       const name = req.body.name;
       if (!name || typeof name !== "string") {
         errors.push("'name' must be a non-empty string");
-      } else if (name.length > 125) {
-        errors.push("'name' cannot be greater than 125 characters");
+      } else if (name.length > 250) {
+        errors.push("'name' cannot be greater than 250 characters");
       }
     }
     if (key === "code") {
