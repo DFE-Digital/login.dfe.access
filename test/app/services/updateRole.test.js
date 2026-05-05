@@ -107,8 +107,8 @@ describe("When patching a role of a service", () => {
     });
   });
 
-  it("should return 400 if name is greater than 125 characters", async () => {
-    req.body.name = "abcde12345".repeat(12) + "abcdef"; // 126 characters
+  it("should return 400 if name is greater than 250 characters", async () => {
+    req.body.name = "abcde12345".repeat(25) + "a"; // 251 characters
 
     await updateRoleOfService(req, res);
 
@@ -116,7 +116,7 @@ describe("When patching a role of a service", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledTimes(1);
     expect(res.send).toHaveBeenCalledWith({
-      errors: ["'name' cannot be greater than 125 characters"],
+      errors: ["'name' cannot be greater than 250 characters"],
     });
   });
 

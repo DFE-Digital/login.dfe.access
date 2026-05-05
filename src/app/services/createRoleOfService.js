@@ -15,10 +15,10 @@ const createRoleOfService = async (req, res) => {
     return res.status(400).send({ error: "Application ID must be a uuid" });
   }
 
-  if (roleName.length > 125) {
+  if (roleName.length > 250) {
     return res
       .status(400)
-      .send({ error: "Role name must be 125 characters or less" });
+      .send({ error: "Role name must be 250 characters or less" });
   }
 
   if (roleCode.length > 50) {
