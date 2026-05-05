@@ -76,11 +76,11 @@ describe("When removing service from user", () => {
     expect(res.send).toHaveBeenCalledTimes(1);
   });
 
-  it("then it should send notification of user update", async () => {
+  it("then it should send notification of user update with uid, sid, and oid", async () => {
     await removeServiceFromUser(req, res);
 
     expect(notifyUserUpdated).toHaveBeenCalledTimes(1);
-    expect(notifyUserUpdated).toHaveBeenCalledWith(uid);
+    expect(notifyUserUpdated).toHaveBeenCalledWith(uid, sid, oid);
   });
 
   it("should raise an exception if an exception is raised in removeUserService", async () => {
