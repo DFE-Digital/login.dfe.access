@@ -120,6 +120,15 @@ describe("When patching a role of a service", () => {
     });
   });
 
+  it("should accept a name of exactly 250 characters", async () => {
+    req.body.name = "a".repeat(250);
+
+    await updateRoleOfService(req, res);
+
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(202);
+  });
+
   it("should return 400 if code is empty", async () => {
     req.body.code = "";
 
