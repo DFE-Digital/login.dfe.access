@@ -122,6 +122,19 @@ describe("When creating a role of a service", () => {
     });
   });
 
+  it("should accept a roleName of exactly 250 characters", async () => {
+    req.body.roleName = "a".repeat(250);
+    validate.mockReturnValue(true);
+    createServiceRole.mockResolvedValue({
+      role: { id: "new", name: "a".repeat(250) },
+      statusCode: 201,
+    });
+
+    await createRoleOfService(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(201);
+  });
+
   it("should return 400 if roleCode exceeds 50 characters", async () => {
     req.body.roleCode = "b".repeat(51);
     validate.mockReturnValue(true);
