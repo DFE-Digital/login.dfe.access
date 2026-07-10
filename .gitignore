@@ -63,3 +63,4 @@ junit.xml
 /config/
 
 access.log
+.worktrees/
