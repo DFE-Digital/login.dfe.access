@@ -52,15 +52,24 @@ describe("When notifying user updated", () => {
 
   it("does not call the client when notifications are disabled", async () => {
     jest.resetModules();
-    jest.mock("./../../../src/infrastructure/config", () =>
+    jest.doMock("./../../../src/infrastructure/config", () =>
       require("./../../utils").mockConfig({
         toggles: { notificationsEnabled: false },
       }),
     );
+    jest.doMock("login.dfe.jobs-client");
+    const {
+      ServiceNotificationsClient: FreshServiceNotificationsClient,
+    } = require("login.dfe.jobs-client");
+    const freshMockNotifyUserUpdated = jest.fn().mockResolvedValue();
+    FreshServiceNotificationsClient.mockImplementation(() => ({
+      notifyUserUpdated: freshMockNotifyUserUpdated,
+    }));
+
     const {
       notifyUserUpdated: fn,
     } = require("./../../../src/infrastructure/notifications");
     await fn("user-1", "svc-1", "org-1");
-    expect(mockNotifyUserUpdated).not.toHaveBeenCalled();
+    expect(freshMockNotifyUserUpdated).not.toHaveBeenCalled();
   });
 });
