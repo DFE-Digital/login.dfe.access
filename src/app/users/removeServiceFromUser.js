@@ -38,7 +38,17 @@ const removeServiceFromUser = async (req, res) => {
     await removeAllUserServiceIdentifiers(uid, sid, oid);
     await removeUserService(uid, sid, oid);
 
-    await notifyUserUpdated(uid, sid, oid);
+    try {
+      await notifyUserUpdated(uid, sid, oid);
+    } catch (notifyError) {
+      // The access removal above has already succeeded - a WS sync
+      // notification failure here must not turn a successful removal into
+      // an error response to the caller.
+      logger.warn(
+        `Failed to notify legacy WS Sync on service removal for user ${uid}`,
+        { correlationId, error: { ...notifyError } },
+      );
+    }
 
     return res.status(204).send();
   } catch (e) {

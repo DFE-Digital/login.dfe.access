@@ -90,4 +90,16 @@ describe("When removing service from user", () => {
 
     await expect(removeServiceFromUser(req, res)).rejects.toThrow("bad times");
   });
+
+  it("should still return 204 when notifyUserUpdated fails, since the removal already succeeded", async () => {
+    notifyUserUpdated.mockImplementation(() => {
+      throw new Error("ws sync unavailable");
+    });
+
+    await removeServiceFromUser(req, res);
+
+    expect(removeUserService).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(204);
+    expect(res.send).toHaveBeenCalledTimes(1);
+  });
 });
