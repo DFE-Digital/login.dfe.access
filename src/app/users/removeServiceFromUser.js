@@ -21,6 +21,14 @@ const parseAndValidateRequest = (req) => {
   return model;
 };
 
+// Spreading an Error yields {} - its properties are non-enumerable - which
+// drops exactly the detail needed to diagnose a failure from the logs.
+const serialiseError = (error) => ({
+  name: error.name,
+  message: error.message,
+  stack: error.stack,
+});
+
 const removeServiceFromUser = async (req, res) => {
   const { correlationId } = req;
   const model = parseAndValidateRequest(req);
@@ -45,16 +53,13 @@ const removeServiceFromUser = async (req, res) => {
       // notification failure here must not turn a successful removal into
       // an error response to the caller.
       logger.warn(
-        `Failed to notify legacy WS Sync on service removal for user ${uid}`,
+        `Failed to notify legacy WS Sync on removal of service ${sid} with org ${oid} from user ${uid}`,
         {
           correlationId,
-          // Spreading an Error yields {} - its properties are non-enumerable -
-          // which would drop exactly the detail needed to diagnose a WS outage.
-          error: {
-            name: notifyError.name,
-            message: notifyError.message,
-            stack: notifyError.stack,
-          },
+          uid,
+          sid,
+          oid,
+          error: serialiseError(notifyError),
         },
       );
     }
@@ -65,7 +70,7 @@ const removeServiceFromUser = async (req, res) => {
       `Error removing service ${sid} with org ${oid} from user ${uid}`,
       {
         correlationId,
-        error: { ...e },
+        error: serialiseError(e),
       },
     );
     throw e;
