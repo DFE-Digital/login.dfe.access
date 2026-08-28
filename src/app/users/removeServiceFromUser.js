@@ -1,3 +1,4 @@
+const { inspect } = require("util");
 const logger = require("../../infrastructure/logger");
 const { notifyUserUpdated } = require("../../infrastructure/notifications");
 const {
@@ -23,11 +24,13 @@ const parseAndValidateRequest = (req) => {
 
 // Spreading an Error yields {} - its properties are non-enumerable - which
 // drops exactly the detail needed to diagnose a failure from the logs.
-const serialiseError = (error) => ({
-  name: error.name,
-  message: error.message,
-  stack: error.stack,
-});
+// Non-Error rejection values are handled explicitly rather than assumed away:
+// reading .name off null would throw here, replacing the failure being
+// reported with a TypeError and defeating the point of the caller's catch.
+const serialiseError = (error) =>
+  error instanceof Error
+    ? { name: error.name, message: error.message, stack: error.stack }
+    : { name: typeof error, message: inspect(error) };
 
 const removeServiceFromUser = async (req, res) => {
   const { correlationId } = req;

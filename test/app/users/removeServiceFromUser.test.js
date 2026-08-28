@@ -102,4 +102,17 @@ describe("When removing service from user", () => {
     expect(res.status).toHaveBeenCalledWith(204);
     expect(res.send).toHaveBeenCalledTimes(1);
   });
+
+  it("should still return 204 when notifyUserUpdated rejects with a non-Error", async () => {
+    // Serialising the rejection must not itself throw. If it does, the
+    // removal that already succeeded is reported to the caller as a failure -
+    // the exact outcome the surrounding catch exists to prevent.
+    notifyUserUpdated.mockRejectedValueOnce(undefined);
+
+    await removeServiceFromUser(req, res);
+
+    expect(removeUserService).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(204);
+    expect(res.send).toHaveBeenCalledTimes(1);
+  });
 });
