@@ -5,11 +5,15 @@ const serviceNotificationsClient = new ServiceNotificationsClient(
   config.notifications,
 );
 
-const notifyUserUpdated = async (userId) => {
+const notifyUserUpdated = async (userId, removedServiceId, removedOrgId) => {
   const notificationsEnabled =
     config.toggles && config.toggles.notificationsEnabled === true;
   if (notificationsEnabled) {
-    await serviceNotificationsClient.notifyUserUpdated({ sub: userId });
+    await serviceNotificationsClient.notifyUserUpdated({
+      sub: userId,
+      ...(removedServiceId && { removedServiceId }),
+      ...(removedOrgId && { removedOrgId }),
+    });
   }
 };
 

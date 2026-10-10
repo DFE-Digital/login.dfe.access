@@ -38,7 +38,7 @@ const removeServiceFromUser = async (req, res) => {
     await removeAllUserServiceIdentifiers(uid, sid, oid);
     await removeUserService(uid, sid, oid);
 
-    await notifyUserUpdated(uid);
+    await notifyUserUpdated(uid, sid, oid);
 
     return res.status(204).send();
   } catch (e) {
